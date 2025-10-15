@@ -127,23 +127,107 @@
       }, [completedSessions]);
 
       const mixedDoublesWeek = [
-        { day: 'Monday', type: 'Running', focus: 'Intervals', detail: '6x 800m @ race pace, 90s rest' },
-        { day: 'Tuesday', type: 'Strength', focus: 'Upper Body Push', detail: 'SkiErg, Wall Balls, Burpee Broad Jumps' },
-        { day: 'Wednesday', type: 'Running', focus: 'Easy Recovery', detail: '30-40 mins easy pace' },
-        { day: 'Thursday', type: 'Strength', focus: 'Lower Body & Pull', detail: 'Sled Push/Pull, Sandbag Lunges, Farmers Carry' },
-        { day: 'Friday', type: 'Rest', focus: 'Active Recovery', detail: 'Mobility work, light stretching' },
-        { day: 'Saturday', type: 'Hybrid', focus: 'Race Simulation', detail: 'Abbreviated Hyrox workout or long run' },
-        { day: 'Sunday', type: 'Running', focus: 'Long Steady', detail: '60+ mins aerobic pace' }
+        { 
+          day: 'Monday', 
+          type: 'Running', 
+          focus: 'Intervals', 
+          detail: '6x 800m @ race pace, 90s rest',
+          specifics: 'TARGET RACE PACE: 4:30/km (7.4 mph / 13.3 km/h)\n\nWarm-up: 10 min easy\nMain: 6x 800m @ 3:20-3:30/km pace (10.5-11.0 mph), 90s jog recovery\nCool-down: 10 min easy\n\nTreadmill: Set to 10.5-11.0 mph for intervals\nOutdoor: ~2:40-2:48 per 800m rep'
+        },
+        { 
+          day: 'Tuesday', 
+          type: 'Strength', 
+          focus: 'Upper Body Push', 
+          detail: 'SkiErg, Wall Balls, Burpee Broad Jumps',
+          specifics: 'Warm-up: 5 min row/bike\n\nSkiErg: 4x 500m (target: 2:00-2:10 each), 2 min rest\nWall Balls: 4x 20 reps (6kg/14lb ball), 90s rest\nBurpee Broad Jumps: 4x 10 reps, 2 min rest\n\nCore: 3x 30s plank hold'
+        },
+        { 
+          day: 'Wednesday', 
+          type: 'Running', 
+          focus: 'Easy Recovery', 
+          detail: '30-40 mins easy pace',
+          specifics: 'Duration: 30-40 minutes\nPace: 5:30-6:00/km (6.2-6.8 mph / 10.0-10.9 km/h)\nHeart rate: Zone 2 (60-70% max HR)\n\nTreadmill: Set to 6.2-6.8 mph\nFocus on form and relaxation, should be able to hold conversation'
+        },
+        { 
+          day: 'Thursday', 
+          type: 'Strength', 
+          focus: 'Lower Body & Pull', 
+          detail: 'Sled Push/Pull, Sandbag Lunges, Farmers Carry',
+          specifics: 'Warm-up: 5 min row + mobility\n\nSled Push: 4x 50m (2x bodyweight = ~150kg/330lb), 2 min rest\nSled Pull: 4x 50m (1.5x bodyweight = ~112kg/247lb), 2 min rest\nSandbag Lunges: 4x 100m (20kg/44lb bag), 90s rest\nFarmers Carry: 4x 50m (24kg/53lb each hand), 90s rest\n\nFinisher: 100 wall balls for time (6kg/14lb)'
+        },
+        { 
+          day: 'Friday', 
+          type: 'Rest', 
+          focus: 'Active Recovery', 
+          detail: 'Mobility work, light stretching',
+          specifics: '20-30 min session:\n\n• Foam rolling (5 min)\n• Dynamic stretching (10 min)\n• Yoga or light swimming (15 min)\n• Optional: Easy 20 min walk\n\nFocus on hips, shoulders, thoracic spine'
+        },
+        { 
+          day: 'Saturday', 
+          type: 'Hybrid', 
+          focus: 'Race Simulation', 
+          detail: 'Abbreviated Hyrox workout or long run',
+          specifics: 'Option A - Mini Hyrox:\n1km @ race pace (4:30/km = 7.4 mph) → 500m SkiErg → 1km → 50m sled push → 1km → 50m sled pull → 1km\n(Record total time)\n\nOption B - Long Run:\n10-12km @ 4:45-5:00/km (7.0-7.5 mph / 12-12.6 km/h)\nTreadmill: Set to 7.0-7.5 mph\n\nHydrate and fuel as if racing'
+        },
+        { 
+          day: 'Sunday', 
+          type: 'Running', 
+          focus: 'Long Steady', 
+          detail: '60+ mins aerobic pace',
+          specifics: 'Duration: 60-75 minutes\nPace: 5:15-5:45/km (6.5-7.1 mph / 10.4-11.4 km/h)\nHeart rate: Zone 2-3 (65-75% max HR)\n\nTreadmill: Set to 6.5-7.1 mph\nFlat to rolling terrain\nOptional: Include 3x 2 min tempo surges @ 4:15/km (8.3 mph) in final 20 mins'
+        }
       ];
 
       const mensSinglesWeek = [
-        { day: 'Monday', type: 'Running', focus: 'Tempo', detail: '3x 2km @ threshold, 3 min rest' },
-        { day: 'Tuesday', type: 'Strength', focus: 'Full Body Power', detail: 'All 8 stations with intensity' },
-        { day: 'Wednesday', type: 'Running', focus: 'Speed Intervals', detail: '10x 400m fast, 60-90s recovery' },
-        { day: 'Thursday', type: 'Strength', focus: 'Station Specific', detail: 'Focus on weakest 2-3 stations, high volume' },
-        { day: 'Friday', type: 'Running', focus: 'Easy', detail: '40 mins conversational pace' },
-        { day: 'Saturday', type: 'Hybrid', focus: 'Competition Simulation', detail: 'Full or modified Hyrox under race conditions' },
-        { day: 'Sunday', type: 'Running', focus: 'Long Base', detail: '75-90 mins low intensity' }
+        { 
+          day: 'Monday', 
+          type: 'Running', 
+          focus: 'Tempo', 
+          detail: '3x 2km @ threshold, 3 min rest',
+          specifics: 'TARGET RACE PACE: 4:00/km (9.3 mph / 15.0 km/h)\n\nWarm-up: 15 min easy + drills\n\nMain: 3x 2km @ 3:45-3:55/km (9.5-10.0 mph / 15.3-16.0 km/h), 3 min jog recovery\nTreadmill: Set to 9.5-10.0 mph for reps\nTarget splits: 7:30-7:50 per 2km rep\n\nCool-down: 10 min easy\nTotal: 12-14km'
+        },
+        { 
+          day: 'Tuesday', 
+          type: 'Strength', 
+          focus: 'Full Body Power', 
+          detail: 'All 8 stations with intensity',
+          specifics: 'Circuit (3 rounds):\n\n1. SkiErg: 1000m @ 1:50-2:00/500m\n2. Sled Push: 2x 50m (2.5x BW = ~187kg/412lb)\n3. Sled Pull: 2x 50m (2x BW = ~150kg/330lb)\n4. Burpee Broad Jumps: 2x 15 reps\n5. Row: 1000m @ 1:50-2:00/500m\n6. Farmers Carry: 2x 100m (28kg/62lb per hand)\n7. Sandbag Lunges: 2x 100m (25kg/55lb)\n8. Wall Balls: 2x 30 reps (9kg/20lb ball)\n\n90s rest between exercises, 3 min between rounds'
+        },
+        { 
+          day: 'Wednesday', 
+          type: 'Running', 
+          focus: 'Speed Intervals', 
+          detail: '10x 400m fast, 60-90s recovery',
+          specifics: 'Warm-up: 2km easy + strides\n\nMain: 10x 400m @ 1:20-1:25 each (3:20-3:32/km pace)\nTreadmill: Set to 10.6-11.2 mph\nRecovery: 60-90s standing/walking\nTarget pace: ~3:20/km equivalent (11.2 mph)\n\nCool-down: 1-2km easy\nTotal: 10-12km'
+        },
+        { 
+          day: 'Thursday', 
+          type: 'Strength', 
+          focus: 'Station Specific', 
+          detail: 'Focus on weakest 2-3 stations, high volume',
+          specifics: 'Choose your 2-3 weakest stations and do:\n\nExample for SkiErg weakness:\n• 8x 500m @ race pace (1:50-2:00), 90s rest\n• 3x 1000m steady, 2 min rest\n• 1x max calories in 5 min\n\nExample for Sled weakness:\n• 10x 50m push (2.5x BW = 187kg/412lb), 90s rest\n• 5x 100m push (2x BW = 150kg/330lb), 2 min rest\n• EMOM 10 min: 20m heavy push\n\nHigh volume = 2-3x normal training load'
+        },
+        { 
+          day: 'Friday', 
+          type: 'Running', 
+          focus: 'Easy', 
+          detail: '40 mins conversational pace',
+          specifics: 'Duration: 40 minutes\nPace: 5:15-5:45/km (6.5-7.1 mph / 10.4-11.4 km/h)\nHeart rate: Zone 2 (60-70% max HR)\n\nTreadmill: Set to 6.5-7.1 mph\nFlat route preferred\nFocus: Form, breathing rhythm\n\nDistance: ~7-8km'
+        },
+        { 
+          day: 'Saturday', 
+          type: 'Hybrid', 
+          focus: 'Competition Simulation', 
+          detail: 'Full or modified Hyrox under race conditions',
+          specifics: 'Full Simulation (record all splits):\n\n8x (1km run @ 4:00/km = 9.3 mph + station):\n1. 1km → 1000m SkiErg (target: 3:40-4:00)\n2. 1km → 50m Sled Push (2.5x BW = 187kg/412lb)\n3. 1km → 50m Sled Pull (2x BW = 150kg/330lb)\n4. 1km → 80m Burpee Broad Jumps\n5. 1km → 1000m Row (target: 3:40-4:00)\n6. 1km → 200m Farmers (2x 24kg/53lb)\n7. 1km → 100m Sandbag Lunges (25kg/55lb)\n8. 1km → 100 Wall Balls (9kg/20lb)\n\nTreadmill for runs: 9.3 mph\nRace effort! Record Roxzone times.\nTarget: Under 70 mins total'
+        },
+        { 
+          day: 'Sunday', 
+          type: 'Running', 
+          focus: 'Long Base', 
+          detail: '75-90 mins low intensity',
+          specifics: 'Duration: 75-90 minutes\nPace: 5:00-5:30/km (6.8-7.5 mph / 10.9-12.0 km/h)\nHeart rate: Zone 2 (65-72% max HR)\n\nTreadmill: Set to 6.8-7.5 mph\nRolling terrain OK\nDistance: 14-17km\n\nOptional: Include 4x 3 min @ 4:30/km (7.8 mph) in last 30 mins\n\nFuel: Gel or snack at 45 min'
+        }
       ];
 
       const mixedDoublesProgram = {
@@ -539,7 +623,7 @@
                       return (
                         <div 
                           key={idx} 
-                          className={`bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition ${
+                          className={`bg-gray-700 rounded-lg p-4 transition ${
                             isComplete ? 'border-2 border-green-500' : ''
                           }`}
                         >
@@ -570,7 +654,18 @@
                                   {day.type}
                                 </div>
                               </div>
-                              <div className="text-sm text-gray-300">{day.detail}</div>
+                              <div className="text-sm text-gray-300 mb-2">{day.detail}</div>
+                              
+                              {day.specifics && (
+                                <details className="mt-3">
+                                  <summary className="text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer">
+                                    Show Full Workout Details
+                                  </summary>
+                                  <div className="mt-3 p-3 bg-gray-800 rounded text-sm text-gray-200" style={{whiteSpace: 'pre-line'}}>
+                                    {day.specifics}
+                                  </div>
+                                </details>
+                              )}
                             </div>
                           </div>
                         </div>
