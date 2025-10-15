@@ -264,33 +264,23 @@
       ];
 
       const mixedDoublesProgram = {
-        1: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Focus on form and consistency' },
-        2: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Increase volume slightly' },
-        3: { focus: 'Base Building', intensity: 'Moderate', notes: 'Build aerobic capacity' },
-        4: { focus: 'Strength Foundation', intensity: 'Moderate', notes: 'Introduction to all 8 stations' },
-        5: { focus: 'Strength Foundation', intensity: 'Moderate-High', notes: 'Increase station loads' },
-        6: { focus: 'Build Phase', intensity: 'Moderate-High', notes: 'Longer intervals, more volume' },
-        7: { focus: 'Build Phase', intensity: 'High', notes: 'Peak volume week' },
-        8: { focus: 'Recovery', intensity: 'Low', notes: 'Reduce volume by 40%' },
-        9: { focus: 'Intensity Phase', intensity: 'High', notes: 'Race pace efforts' },
-        10: { focus: 'Intensity Phase', intensity: 'High', notes: 'Station combinations' },
-        11: { focus: 'Peak', intensity: 'Very High', notes: 'Race simulations' },
-        12: { focus: 'Taper', intensity: 'Low-Moderate', notes: 'Reduce volume, maintain intensity' }
+        1: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Focus on form and consistency', startDate: '2024-10-20' },
+        2: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Increase volume slightly', startDate: '2024-10-27' },
+        3: { focus: 'Base Building', intensity: 'Moderate', notes: 'Build aerobic capacity', startDate: '2024-11-03' },
+        4: { focus: 'Strength Foundation', intensity: 'Moderate', notes: 'Introduction to all 8 stations', startDate: '2024-11-10' },
+        5: { focus: 'Strength Foundation', intensity: 'Moderate-High', notes: 'Increase station loads', startDate: '2024-11-17' },
+        6: { focus: 'Build Phase', intensity: 'Moderate-High', notes: 'Longer intervals, more volume', startDate: '2024-11-24' },
+        7: { focus: 'Taper', intensity: 'Low-Moderate', notes: 'Reduce volume, maintain intensity - RACE WEEK', startDate: '2024-12-01' }
       };
 
       const mensSinglesProgram = {
-        1: { focus: 'Base Building', intensity: 'Moderate', notes: 'Establish running base' },
-        2: { focus: 'Base Building', intensity: 'Moderate', notes: 'Add station work' },
-        3: { focus: 'Strength Emphasis', intensity: 'Moderate-High', notes: 'Heavy station work' },
-        4: { focus: 'Strength Emphasis', intensity: 'High', notes: 'Max strength development' },
-        5: { focus: 'Build Phase', intensity: 'High', notes: 'Higher running volume' },
-        6: { focus: 'Build Phase', intensity: 'High', notes: 'Combine running + stations' },
-        7: { focus: 'Build Phase', intensity: 'Very High', notes: 'Peak week - highest volume' },
-        8: { focus: 'Recovery', intensity: 'Low', notes: 'Active recovery week' },
-        9: { focus: 'Race Specific', intensity: 'High', notes: 'Full race simulations' },
-        10: { focus: 'Race Specific', intensity: 'High', notes: 'Competition transitions' },
-        11: { focus: 'Peak/Polish', intensity: 'Very High', notes: 'Final race prep' },
-        12: { focus: 'Taper', intensity: 'Moderate', notes: 'Freshen up for race day' }
+        1: { focus: 'Base Building', intensity: 'Moderate', notes: 'Establish running base', startDate: '2024-10-20' },
+        2: { focus: 'Base Building', intensity: 'Moderate', notes: 'Add station work', startDate: '2024-10-27' },
+        3: { focus: 'Strength Emphasis', intensity: 'Moderate-High', notes: 'Heavy station work', startDate: '2024-11-03' },
+        4: { focus: 'Strength Emphasis', intensity: 'High', notes: 'Max strength development', startDate: '2024-11-10' },
+        5: { focus: 'Build Phase', intensity: 'High', notes: 'Higher running volume', startDate: '2024-11-17' },
+        6: { focus: 'Race Specific', intensity: 'High', notes: 'Race simulations and transitions', startDate: '2024-11-24' },
+        7: { focus: 'Taper', intensity: 'Moderate', notes: 'Freshen up for race day - RACE WEEK', startDate: '2024-12-01' }
       };
 
       const toggleSessionComplete = (week, dayIndex) => {
@@ -432,8 +422,8 @@
                 }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user1'
-                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
-                    : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800'
+                    ? 'bg-orange-600 text-white shadow-lg'
+                    : 'bg-white text-black hover:bg-gray-100 border-2 border-gray-200'
                 }`}
               >
                 <User size={20} />
@@ -449,8 +439,8 @@
                 }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user2'
-                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
-                    : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800'
+                    ? 'bg-orange-600 text-white shadow-lg'
+                    : 'bg-white text-black hover:bg-gray-100 border-2 border-gray-200'
                 }`}
               >
                 <User size={20} />
@@ -466,39 +456,40 @@
                 const stats = getWeekStats(selectedUser);
                 return (
                   <>
-                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                      <div className="text-gray-400 text-sm mb-1">This Week</div>
-                      <div className="text-3xl font-bold text-orange-500">{stats.total}</div>
-                      <div className="text-gray-400 text-xs">Total Workouts</div>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                      <div className="text-gray-600 text-sm mb-1">This Week</div>
+                      <div className="text-3xl font-bold" style={{color: '#FF4500'}}>{stats.total}</div>
+                      <div className="text-gray-600 text-xs">Total Workouts</div>
                     </div>
-                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                      <div className="text-gray-400 text-sm mb-1">Running</div>
-                      <div className="text-3xl font-bold text-white">{stats.running}</div>
-                      <div className="text-gray-400 text-xs">Sessions</div>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                      <div className="text-gray-600 text-sm mb-1">Running</div>
+                      <div className="text-3xl font-bold text-black">{stats.running}</div>
+                      <div className="text-gray-600 text-xs">Sessions</div>
                     </div>
-                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                      <div className="text-gray-400 text-sm mb-1">Strength</div>
-                      <div className="text-3xl font-bold text-white">{stats.strength}</div>
-                      <div className="text-gray-400 text-xs">Sessions</div>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                      <div className="text-gray-600 text-sm mb-1">Strength</div>
+                      <div className="text-3xl font-bold text-black">{stats.strength}</div>
+                      <div className="text-gray-600 text-xs">Sessions</div>
                     </div>
-                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
-                      <div className="text-gray-400 text-sm mb-1">Hybrid</div>
-                      <div className="text-3xl font-bold text-white">{stats.hybrid}</div>
-                      <div className="text-gray-400 text-xs">Sessions</div>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                      <div className="text-gray-600 text-sm mb-1">Hybrid</div>
+                      <div className="text-3xl font-bold text-black">{stats.hybrid}</div>
+                      <div className="text-gray-600 text-xs">Sessions</div>
                     </div>
                   </>
                 );
               })()}
             </div>
 
-            <div className="flex gap-2 mb-6 border-b border-gray-800 overflow-x-auto">
+            <div className="flex gap-2 mb-6 border-b-2 border-gray-200 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('plan')}
                 className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                   activeTab === 'plan'
-                    ? 'border-b-2 border-orange-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'border-b-2 text-black'
+                    : 'text-gray-500 hover:text-black'
                 }`}
+                style={activeTab === 'plan' ? {borderBottomColor: '#FF4500'} : {}}
               >
                 <Calendar className="inline mr-2" size={18} />
                 Plan
@@ -508,9 +499,10 @@
                   onClick={() => setActiveTab('nutrition')}
                   className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                     activeTab === 'nutrition'
-                      ? 'border-b-2 border-orange-600 text-white'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'border-b-2 text-black'
+                      : 'text-gray-500 hover:text-black'
                   }`}
+                  style={activeTab === 'nutrition' ? {borderBottomColor: '#FF4500'} : {}}
                 >
                   <Flame className="inline mr-2" size={18} />
                   Nutrition
@@ -520,9 +512,10 @@
                 onClick={() => setActiveTab('log')}
                 className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                   activeTab === 'log'
-                    ? 'border-b-2 border-orange-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'border-b-2 text-black'
+                    : 'text-gray-500 hover:text-black'
                 }`}
+                style={activeTab === 'log' ? {borderBottomColor: '#FF4500'} : {}}
               >
                 <Plus className="inline mr-2" size={18} />
                 Log
@@ -531,22 +524,24 @@
                 onClick={() => setActiveTab('history')}
                 className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                   activeTab === 'history'
-                    ? 'border-b-2 border-orange-600 text-white'
-                    : 'text-gray-400 hover:text-white'
+                    ? 'border-b-2 text-black'
+                    : 'text-gray-500 hover:text-black'
                 }`}
+                style={activeTab === 'history' ? {borderBottomColor: '#FF4500'} : {}}
               >
                 <TrendingUp className="inline mr-2" size={18} />
                 History
               </button>
             </div>
 
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-6 text-black">
               {activeTab === 'log' && (
                 <div>
                   {!showLogForm ? (
                     <button
                       onClick={() => setShowLogForm(true)}
-                      className="w-full py-8 border-2 border-dashed border-gray-800 rounded-lg hover:border-orange-600 hover:bg-gray-900 transition"
+                      className="w-full py-8 border-2 border-dashed border-gray-300 rounded-lg hover:bg-gray-50 transition"
+                      style={{borderColor: '#FF4500', ':hover': {borderColor: '#FF4500'}}}
                     >
                       <Plus className="mx-auto mb-2" size={32} />
                       <div className="text-xl font-semibold">Log New Workout</div>
@@ -561,7 +556,7 @@
                           type="date"
                           value={currentWorkout.date}
                           onChange={(e) => setCurrentWorkout({...currentWorkout, date: e.target.value})}
-                          className="w-full bg-gray-700 text-white rounded px-4 py-2"
+                          className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                         />
                       </div>
 
@@ -604,13 +599,14 @@
                       <div className="flex gap-3">
                         <button
                           onClick={handleLogWorkout}
-                          className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 px-6 py-3 rounded-lg font-semibold transition shadow-lg"
+                          className="flex-1 px-6 py-3 rounded-lg font-semibold transition shadow-lg text-white"
+                          style={{backgroundColor: '#FF4500'}}
                         >
                           Save Workout
                         </button>
                         <button
                           onClick={() => setShowLogForm(false)}
-                          className="px-6 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg font-semibold transition"
+                          className="px-6 py-3 bg-white hover:bg-gray-100 border-2 border-gray-300 rounded-lg font-semibold transition text-black"
                         >
                           Cancel
                         </button>
@@ -624,33 +620,37 @@
                 <div>
                   <div className="mb-6">
                     <h3 className="text-xl font-bold mb-4">
-                      {selectedPlan === 'mixed' ? 'Mixed Doubles' : 'Mens Singles'} - 12 Week Program
+                      {selectedPlan === 'mixed' ? 'Mixed Doubles' : 'Mens Singles'} - 7 Week Program (Race: 6th December)
                     </h3>
                     
                     <div className="flex items-center gap-3 mb-6">
                       <button
                         onClick={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
                         disabled={currentWeek === 1}
-                        className="px-4 py-2 bg-gray-900 border border-gray-800 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black"
                       >
                         ←
                       </button>
                       
                       <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
-                        {[...Array(12)].map((_, i) => {
+                        {[...Array(7)].map((_, i) => {
                           const week = i + 1;
                           const completion = getWeekCompletion(week);
+                          const weekInfo = currentProgram[week];
+                          const weekDate = new Date(weekInfo.startDate);
                           return (
                             <button
                               key={week}
                               onClick={() => setCurrentWeek(week)}
-                              className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border ${
+                              className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${
                                 currentWeek === week
-                                  ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white border-orange-600 shadow-lg'
-                                  : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border-gray-800'
+                                  ? 'text-white shadow-lg'
+                                  : 'bg-white text-black hover:bg-gray-50 border-gray-200'
                               }`}
+                              style={currentWeek === week ? {backgroundColor: '#FF4500', borderColor: '#FF4500'} : {}}
                             >
                               <div className="text-sm">Week {week}</div>
+                              <div className="text-xs opacity-75">{weekDate.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' })}</div>
                               {completion.completed > 0 && (
                                 <div className="text-xs mt-1">{completion.percentage}%</div>
                               )}
@@ -660,33 +660,51 @@
                       </div>
                       
                       <button
-                        onClick={() => setCurrentWeek(Math.min(12, currentWeek + 1))}
-                        disabled={currentWeek === 12}
-                        className="px-4 py-2 bg-gray-900 border border-gray-800 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
+                        onClick={() => setCurrentWeek(Math.min(7, currentWeek + 1))}
+                        disabled={currentWeek === 7}
+                        className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black"
                       >
                         →
                       </button>
                     </div>
 
-                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
-                      <h4 className="text-2xl font-bold mb-2">Week {currentWeek}</h4>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+                      <div className="flex justify-between items-start mb-3">
+                        <div>
+                          <h4 className="text-2xl font-bold text-black">Week {currentWeek}</h4>
+                          <div className="text-sm text-gray-600 mt-1">
+                            Starting: {new Date(currentProgram[currentWeek].startDate).toLocaleDateString('en-GB', { 
+                              weekday: 'long',
+                              day: 'numeric', 
+                              month: 'long',
+                              year: 'numeric'
+                            })}
+                          </div>
+                        </div>
+                        {currentWeek === 7 && (
+                          <div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white"
+                               style={{backgroundColor: '#FF4500'}}>
+                            🏆 RACE WEEK
+                          </div>
+                        )}
+                      </div>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
                         <div>
-                          <div className="text-sm text-gray-300">Phase</div>
-                          <div className="text-lg font-semibold">{currentProgram[currentWeek].focus}</div>
+                          <div className="text-sm text-gray-600">Phase</div>
+                          <div className="text-lg font-semibold text-black">{currentProgram[currentWeek].focus}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-300">Intensity</div>
-                          <div className="text-lg font-semibold">{currentProgram[currentWeek].intensity}</div>
+                          <div className="text-sm text-gray-600">Intensity</div>
+                          <div className="text-lg font-semibold text-black">{currentProgram[currentWeek].intensity}</div>
                         </div>
                         <div>
-                          <div className="text-sm text-gray-300">Completion</div>
-                          <div className="text-lg font-semibold">
+                          <div className="text-sm text-gray-600">Completion</div>
+                          <div className="text-lg font-semibold text-black">
                             {getWeekCompletion(currentWeek).completed}/{getWeekCompletion(currentWeek).total} sessions
                           </div>
                         </div>
                       </div>
-                      <div className="mt-3 text-sm text-gray-200 italic">
+                      <div className="mt-3 text-sm text-gray-700 italic">
                         {currentProgram[currentWeek].notes}
                       </div>
                     </div>
@@ -698,18 +716,20 @@
                       return (
                         <div 
                           key={idx} 
-                          className={`bg-gray-900 border rounded-lg p-4 transition ${
-                            isComplete ? 'border-orange-600 shadow-lg shadow-orange-600/20' : 'border-gray-800'
+                          className={`bg-white border-2 rounded-lg p-4 transition ${
+                            isComplete ? 'shadow-lg' : 'border-gray-200'
                           }`}
+                          style={isComplete ? {borderColor: '#FF4500'} : {}}
                         >
                           <div className="flex items-start gap-4">
                             <button
                               onClick={() => toggleSessionComplete(currentWeek, idx)}
-                              className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition ${
+                              className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${
                                 isComplete 
-                                  ? 'bg-orange-600 border-orange-600' 
-                                  : 'border-gray-600 hover:border-orange-600'
+                                  ? 'border-transparent' 
+                                  : 'border-gray-300 hover:border-gray-400'
                               }`}
+                              style={isComplete ? {backgroundColor: '#FF4500'} : {}}
                             >
                               {isComplete && <CheckCircle size={20} className="text-white" />}
                             </button>
@@ -717,15 +737,13 @@
                             <div className="flex-1">
                               <div className="flex items-start justify-between mb-2">
                                 <div>
-                                  <div className="font-bold text-lg">{day.day}</div>
-                                  <div className="text-sm text-gray-400">{day.type} - {day.focus}</div>
+                                  <div className="font-bold text-lg text-black">{day.day}</div>
+                                  <div className="text-sm text-gray-600">{day.type} - {day.focus}</div>
                                 </div>
-                                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                  day.type === 'Running' ? 'bg-orange-600' :
-                                  day.type === 'Strength' ? 'bg-red-600' :
-                                  day.type === 'Hybrid' ? 'bg-gradient-to-r from-orange-600 to-red-600' :
-                                  'bg-gray-700'
-                                }`}>
+                                <div className={`px-3 py-1 rounded-full text-xs font-semibold text-white`}
+                                     style={{backgroundColor: day.type === 'Running' ? '#FF4500' : 
+                                             day.type === 'Strength' ? '#000000' : 
+                                             day.type === 'Hybrid' ? '#FF4500' : '#666666'}}>
                                   {day.type}
                                 </div>
                               </div>
@@ -736,7 +754,7 @@
                                   <summary className="text-xs text-blue-400 hover:text-blue-300 font-semibold cursor-pointer">
                                     Show Full Workout Details
                                   </summary>
-                                  <div className="mt-3 p-3 bg-gray-800 rounded text-sm text-gray-200" style={{whiteSpace: 'pre-line'}}>
+                                  <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded text-sm text-black" style={{whiteSpace: 'pre-line'}}>
                                     {day.specifics}
                                   </div>
                                 </details>
