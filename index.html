@@ -787,58 +787,59 @@
               {activeTab === 'nutrition' && selectedUser === 'user1' && (
                 <div>
                   <div className="flex justify-between items-center mb-4">
-                    <h3 className="text-xl font-bold">Jade's Nutrition Tracker</h3>
+                    <h3 className="text-xl font-bold text-white">Jade's Nutrition Tracker</h3>
                     <button
                       onClick={() => setShowTargetForm(!showTargetForm)}
-                      className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-lg text-sm font-semibold transition shadow-lg"
+                      className="px-4 py-2 rounded-lg text-sm font-semibold transition shadow-lg text-white"
+                      style={{backgroundColor: '#FF4500'}}
                     >
                       {showTargetForm ? 'Cancel' : 'Edit Targets'}
                     </button>
                   </div>
 
                   {showTargetForm && (
-                    <div className="bg-gray-700 rounded-lg p-6 mb-6">
-                      <h4 className="text-lg font-bold mb-4">Adjust Nutrition Targets</h4>
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+                      <h4 className="text-lg font-bold mb-4 text-black">Adjust Nutrition Targets</h4>
                       <div className="grid grid-cols-2 gap-4 mb-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">Daily Calories</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Daily Calories</label>
                           <input
                             type="number"
                             value={nutritionTargets.calories}
                             onChange={(e) => setNutritionTargets({...nutritionTargets, calories: parseInt(e.target.value)})}
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium mb-2">Protein (g)</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Protein (g)</label>
                           <input
                             type="number"
                             value={nutritionTargets.protein}
                             onChange={(e) => setNutritionTargets({...nutritionTargets, protein: parseInt(e.target.value)})}
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium mb-2">Carbs (g)</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Carbs (g)</label>
                           <input
                             type="number"
                             value={nutritionTargets.carbs}
                             onChange={(e) => setNutritionTargets({...nutritionTargets, carbs: parseInt(e.target.value)})}
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
                         <div>
-                          <label className="block text-sm font-medium mb-2">Fats (g)</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Fats (g)</label>
                           <input
                             type="number"
                             value={nutritionTargets.fats}
                             onChange={(e) => setNutritionTargets({...nutritionTargets, fats: parseInt(e.target.value)})}
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
                       </div>
-                      <div className="bg-blue-900 rounded p-4 text-sm">
-                        <p className="font-bold mb-2">💡 Weight Loss Guidelines:</p>
+                      <div className="bg-gray-800 rounded p-4 text-sm">
+                        <p className="font-bold mb-2 text-white">💡 Weight Loss Guidelines:</p>
                         <ul className="space-y-1 text-gray-200">
                           <li>• Moderate deficit: -300-500 cal/day (0.5kg/week loss)</li>
                           <li>• Aggressive deficit: -500-750 cal/day (0.75kg/week loss)</li>
@@ -849,31 +850,32 @@
                       </div>
                       <button
                         onClick={() => setShowTargetForm(false)}
-                        className="mt-4 w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 px-6 py-3 rounded-lg font-semibold transition shadow-lg"
+                        className="mt-4 w-full px-6 py-3 rounded-lg font-semibold transition shadow-lg text-white"
+                        style={{backgroundColor: '#FF4500'}}
                       >
                         Save Targets
                       </button>
                     </div>
                   )}
                   
-                  <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
-                    <h4 className="text-2xl font-bold mb-2">Daily Targets</h4>
+                  <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+                    <h4 className="text-2xl font-bold mb-2 text-black">Daily Targets</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                       <div>
-                        <div className="text-3xl font-bold text-orange-500">{nutritionTargets.calories}</div>
-                        <div className="text-sm text-gray-300">Calories</div>
+                        <div className="text-3xl font-bold" style={{color: '#FF4500'}}>{nutritionTargets.calories}</div>
+                        <div className="text-sm text-gray-600">Calories</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-orange-400">{nutritionTargets.protein}g</div>
-                        <div className="text-sm text-gray-300">Protein</div>
+                        <div className="text-3xl font-bold" style={{color: '#FF4500'}}>{nutritionTargets.protein}g</div>
+                        <div className="text-sm text-gray-600">Protein</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-orange-300">{nutritionTargets.carbs}g</div>
-                        <div className="text-sm text-gray-300">Carbs</div>
+                        <div className="text-3xl font-bold" style={{color: '#FF4500'}}>{nutritionTargets.carbs}g</div>
+                        <div className="text-sm text-gray-600">Carbs</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-red-400">{nutritionTargets.fats}g</div>
-                        <div className="text-sm text-gray-300">Fats</div>
+                        <div className="text-3xl font-bold" style={{color: '#FF4500'}}>{nutritionTargets.fats}g</div>
+                        <div className="text-sm text-gray-600">Fats</div>
                       </div>
                     </div>
                   </div>
@@ -886,84 +888,82 @@
                     const fatsProgress = (today.fats / nutritionTargets.fats) * 100;
                     
                     return (
-                      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
-                        <h4 className="text-xl font-bold mb-4">Today's Progress</h4>
+                      <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+                        <h4 className="text-xl font-bold mb-4 text-black">Today's Progress</h4>
                         
                         <div className="space-y-4">
                           <div>
                             <div className="flex justify-between mb-2">
-                              <span className="font-semibold">Calories</span>
-                              <span className={`font-bold ${
-                                calorieProgress >= 95 && calorieProgress <= 105 ? 'text-orange-500' :
-                                calorieProgress > 105 ? 'text-red-400' : 'text-gray-400'
-                              }`}>
+                              <span className="font-semibold text-black">Calories</span>
+                              <span className={`font-bold`}
+                                    style={{color: calorieProgress >= 95 && calorieProgress <= 105 ? '#FF4500' : '#6B7280'}}>
                                 {Math.round(today.calories)} / {nutritionTargets.calories} cal
                               </span>
                             </div>
-                            <div className="w-full bg-gray-600 rounded-full h-3">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
                               <div 
-                                className={`h-3 rounded-full transition-all ${
-                                  calorieProgress >= 95 && calorieProgress <= 105 ? 'bg-orange-600' :
-                                  calorieProgress > 105 ? 'bg-red-500' : 'bg-gray-600'
-                                }`}
-                                style={{width: `${Math.min(calorieProgress, 100)}%`}}
+                                className={`h-3 rounded-full transition-all`}
+                                style={{
+                                  width: `${Math.min(calorieProgress, 100)}%`,
+                                  backgroundColor: calorieProgress >= 95 && calorieProgress <= 105 ? '#FF4500' : '#D1D5DB'
+                                }}
                               />
                             </div>
                           </div>
 
                           <div>
                             <div className="flex justify-between mb-2">
-                              <span className="font-semibold">Protein</span>
-                              <span className={`font-bold ${
-                                proteinProgress >= 95 ? 'text-orange-500' : 'text-gray-400'
-                              }`}>
+                              <span className="font-semibold text-black">Protein</span>
+                              <span className={`font-bold`}
+                                    style={{color: proteinProgress >= 95 ? '#FF4500' : '#6B7280'}}>
                                 {Math.round(today.protein)}g / {nutritionTargets.protein}g
                               </span>
                             </div>
-                            <div className="w-full bg-gray-600 rounded-full h-3">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
                               <div 
-                                className={`h-3 rounded-full transition-all ${
-                                  proteinProgress >= 95 ? 'bg-orange-600' : 'bg-gray-600'
-                                }`}
-                                style={{width: `${Math.min(proteinProgress, 100)}%`}}
+                                className={`h-3 rounded-full transition-all`}
+                                style={{
+                                  width: `${Math.min(proteinProgress, 100)}%`,
+                                  backgroundColor: proteinProgress >= 95 ? '#FF4500' : '#D1D5DB'
+                                }}
                               />
                             </div>
                           </div>
 
                           <div>
                             <div className="flex justify-between mb-2">
-                              <span className="font-semibold">Carbs</span>
-                              <span className={`font-bold ${
-                                carbsProgress >= 95 && carbsProgress <= 105 ? 'text-orange-500' : 'text-gray-400'
-                              }`}>
+                              <span className="font-semibold text-black">Carbs</span>
+                              <span className={`font-bold`}
+                                    style={{color: carbsProgress >= 95 && carbsProgress <= 105 ? '#FF4500' : '#6B7280'}}>
                                 {Math.round(today.carbs)}g / {nutritionTargets.carbs}g
                               </span>
                             </div>
-                            <div className="w-full bg-gray-600 rounded-full h-3">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
                               <div 
-                                className={`h-3 rounded-full transition-all ${
-                                  carbsProgress >= 95 && carbsProgress <= 105 ? 'bg-orange-600' : 'bg-gray-600'
-                                }`}
-                                style={{width: `${Math.min(carbsProgress, 100)}%`}}
+                                className={`h-3 rounded-full transition-all`}
+                                style={{
+                                  width: `${Math.min(carbsProgress, 100)}%`,
+                                  backgroundColor: carbsProgress >= 95 && carbsProgress <= 105 ? '#FF4500' : '#D1D5DB'
+                                }}
                               />
                             </div>
                           </div>
 
                           <div>
                             <div className="flex justify-between mb-2">
-                              <span className="font-semibold">Fats</span>
-                              <span className={`font-bold ${
-                                fatsProgress >= 95 && fatsProgress <= 105 ? 'text-orange-500' : 'text-gray-400'
-                              }`}>
+                              <span className="font-semibold text-black">Fats</span>
+                              <span className={`font-bold`}
+                                    style={{color: fatsProgress >= 95 && fatsProgress <= 105 ? '#FF4500' : '#6B7280'}}>
                                 {Math.round(today.fats)}g / {nutritionTargets.fats}g
                               </span>
                             </div>
-                            <div className="w-full bg-gray-600 rounded-full h-3">
+                            <div className="w-full bg-gray-200 rounded-full h-3">
                               <div 
-                                className={`h-3 rounded-full transition-all ${
-                                  fatsProgress >= 95 && fatsProgress <= 105 ? 'bg-orange-600' : 'bg-gray-600'
-                                }`}
-                                style={{width: `${Math.min(fatsProgress, 100)}%`}}
+                                className={`h-3 rounded-full transition-all`}
+                                style={{
+                                  width: `${Math.min(fatsProgress, 100)}%`,
+                                  backgroundColor: fatsProgress >= 95 && fatsProgress <= 105 ? '#FF4500' : '#D1D5DB'
+                                }}
                               />
                             </div>
                           </div>
@@ -1068,7 +1068,7 @@
                   )}
 
                   <div>
-                    <h4 className="text-lg font-bold mb-3">Recent Meals</h4>
+                    <h4 className="text-lg font-bold mb-3 text-white">Recent Meals</h4>
                     {getRecentNutrition().length === 0 ? (
                       <div className="text-center py-8 text-gray-400">
                         <p>No meals logged yet</p>
@@ -1076,11 +1076,11 @@
                     ) : (
                       <div className="space-y-3">
                         {getRecentNutrition().map((meal) => (
-                          <div key={meal.id} className="bg-gray-700 rounded-lg p-4">
+                          <div key={meal.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
                             <div className="flex justify-between items-start mb-2">
                               <div>
-                                <div className="font-bold">{meal.mealName}</div>
-                                <div className="text-sm text-gray-400">
+                                <div className="font-bold text-black">{meal.mealName}</div>
+                                <div className="text-sm text-gray-600">
                                   {new Date(meal.date).toLocaleDateString('en-GB', {
                                     weekday: 'short',
                                     day: 'numeric',
@@ -1089,10 +1089,10 @@
                                 </div>
                               </div>
                               <div className="text-right">
-                                <div className="text-lg font-bold text-pink-400">{meal.calories} cal</div>
+                                <div className="text-lg font-bold" style={{color: '#FF4500'}}>{meal.calories} cal</div>
                               </div>
                             </div>
-                            <div className="flex gap-4 text-sm text-gray-300">
+                            <div className="flex gap-4 text-sm text-gray-700">
                               <span>P: {meal.protein}g</span>
                               <span>C: {meal.carbs}g</span>
                               <span>F: {meal.fats}g</span>
@@ -1103,9 +1103,9 @@
                     )}
                   </div>
 
-                  <div className="mt-6 bg-blue-900 rounded-lg p-5">
-                    <h4 className="font-bold text-lg mb-3">💧 Hydration & Supplements</h4>
-                    <ul className="space-y-2 text-sm">
+                  <div className="mt-6 bg-gray-800 rounded-lg p-5">
+                    <h4 className="font-bold text-lg mb-3 text-white">💧 Hydration & Supplements</h4>
+                    <ul className="space-y-2 text-sm text-gray-200">
                       <li>• 2.5-3 liters of water daily</li>
                       <li>• Electrolytes during intense sessions</li>
                       <li>• Multivitamin with breakfast</li>
