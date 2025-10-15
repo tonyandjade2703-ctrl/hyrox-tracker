@@ -92,7 +92,7 @@
     );
 
     const HyroxTrainingApp = () => {
-      const [activeTab, setActiveTab] = useState('log');
+      const [activeTab, setActiveTab] = useState('plan');
       const [selectedUser, setSelectedUser] = useState('user1');
       const [selectedPlan, setSelectedPlan] = useState('mixed');
       const [workouts, setWorkouts] = useState([]);
@@ -402,7 +402,7 @@
       const currentProgram = selectedPlan === 'mixed' ? mixedDoublesProgram : mensSinglesProgram;
 
       return (
-        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-4">
+        <div className="min-h-screen bg-black text-white p-4">
           <div className="max-w-6xl mx-auto pb-20">
             <div className="mb-8 text-center">
               <div className="flex items-center justify-center gap-3 mb-3">
@@ -432,8 +432,8 @@
                 }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user1'
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
+                    : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800'
                 }`}
               >
                 <User size={20} />
@@ -449,8 +449,8 @@
                 }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user2'
-                    ? 'bg-purple-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                    ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white shadow-lg'
+                    : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border border-gray-800'
                 }`}
               >
                 <User size={20} />
@@ -466,24 +466,24 @@
                 const stats = getWeekStats(selectedUser);
                 return (
                   <>
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">This Week</div>
-                      <div className="text-3xl font-bold">{stats.total}</div>
+                      <div className="text-3xl font-bold text-orange-500">{stats.total}</div>
                       <div className="text-gray-400 text-xs">Total Workouts</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">Running</div>
-                      <div className="text-3xl font-bold text-blue-400">{stats.running}</div>
+                      <div className="text-3xl font-bold text-white">{stats.running}</div>
                       <div className="text-gray-400 text-xs">Sessions</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">Strength</div>
-                      <div className="text-3xl font-bold text-orange-400">{stats.strength}</div>
+                      <div className="text-3xl font-bold text-white">{stats.strength}</div>
                       <div className="text-gray-400 text-xs">Sessions</div>
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-4">
+                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-4">
                       <div className="text-gray-400 text-sm mb-1">Hybrid</div>
-                      <div className="text-3xl font-bold text-purple-400">{stats.hybrid}</div>
+                      <div className="text-3xl font-bold text-white">{stats.hybrid}</div>
                       <div className="text-gray-400 text-xs">Sessions</div>
                     </div>
                   </>
@@ -491,24 +491,13 @@
               })()}
             </div>
 
-            <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto">
-              <button
-                onClick={() => setActiveTab('log')}
-                className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
-                  activeTab === 'log'
-                    ? 'border-b-2 border-blue-500 text-white'
-                    : 'text-gray-400'
-                }`}
-              >
-                <Plus className="inline mr-2" size={18} />
-                Log
-              </button>
+            <div className="flex gap-2 mb-6 border-b border-gray-800 overflow-x-auto">
               <button
                 onClick={() => setActiveTab('plan')}
                 className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                   activeTab === 'plan'
-                    ? 'border-b-2 border-blue-500 text-white'
-                    : 'text-gray-400'
+                    ? 'border-b-2 border-orange-600 text-white'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
                 <Calendar className="inline mr-2" size={18} />
@@ -519,8 +508,8 @@
                   onClick={() => setActiveTab('nutrition')}
                   className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                     activeTab === 'nutrition'
-                      ? 'border-b-2 border-blue-500 text-white'
-                      : 'text-gray-400'
+                      ? 'border-b-2 border-orange-600 text-white'
+                      : 'text-gray-400 hover:text-white'
                   }`}
                 >
                   <Flame className="inline mr-2" size={18} />
@@ -528,11 +517,22 @@
                 </button>
               )}
               <button
+                onClick={() => setActiveTab('log')}
+                className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
+                  activeTab === 'log'
+                    ? 'border-b-2 border-orange-600 text-white'
+                    : 'text-gray-400 hover:text-white'
+                }`}
+              >
+                <Plus className="inline mr-2" size={18} />
+                Log
+              </button>
+              <button
                 onClick={() => setActiveTab('history')}
                 className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
                   activeTab === 'history'
-                    ? 'border-b-2 border-blue-500 text-white'
-                    : 'text-gray-400'
+                    ? 'border-b-2 border-orange-600 text-white'
+                    : 'text-gray-400 hover:text-white'
                 }`}
               >
                 <TrendingUp className="inline mr-2" size={18} />
@@ -540,13 +540,13 @@
               </button>
             </div>
 
-            <div className="bg-gray-800 rounded-lg p-6">
+            <div className="bg-gray-900 border border-gray-800 rounded-lg p-6">
               {activeTab === 'log' && (
                 <div>
                   {!showLogForm ? (
                     <button
                       onClick={() => setShowLogForm(true)}
-                      className="w-full py-8 border-2 border-dashed border-gray-600 rounded-lg hover:border-blue-500 hover:bg-gray-700 transition"
+                      className="w-full py-8 border-2 border-dashed border-gray-800 rounded-lg hover:border-orange-600 hover:bg-gray-900 transition"
                     >
                       <Plus className="mx-auto mb-2" size={32} />
                       <div className="text-xl font-semibold">Log New Workout</div>
@@ -604,13 +604,13 @@
                       <div className="flex gap-3">
                         <button
                           onClick={handleLogWorkout}
-                          className="flex-1 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"
+                          className="flex-1 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 px-6 py-3 rounded-lg font-semibold transition shadow-lg"
                         >
                           Save Workout
                         </button>
                         <button
                           onClick={() => setShowLogForm(false)}
-                          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition"
+                          className="px-6 py-3 bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-lg font-semibold transition"
                         >
                           Cancel
                         </button>
@@ -631,7 +631,7 @@
                       <button
                         onClick={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
                         disabled={currentWeek === 1}
-                        className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-gray-900 border border-gray-800 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         ←
                       </button>
@@ -644,10 +644,10 @@
                             <button
                               key={week}
                               onClick={() => setCurrentWeek(week)}
-                              className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition ${
+                              className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border ${
                                 currentWeek === week
-                                  ? 'bg-blue-600 text-white'
-                                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                  ? 'bg-gradient-to-r from-orange-600 to-red-600 text-white border-orange-600 shadow-lg'
+                                  : 'bg-gray-900 text-gray-300 hover:bg-gray-800 border-gray-800'
                               }`}
                             >
                               <div className="text-sm">Week {week}</div>
@@ -662,13 +662,13 @@
                       <button
                         onClick={() => setCurrentWeek(Math.min(12, currentWeek + 1))}
                         disabled={currentWeek === 12}
-                        className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="px-4 py-2 bg-gray-900 border border-gray-800 rounded hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed"
                       >
                         →
                       </button>
                     </div>
 
-                    <div className="bg-gradient-to-r from-blue-900 to-purple-900 rounded-lg p-5 mb-6">
+                    <div className="bg-gray-900 border border-gray-800 rounded-lg p-5 mb-6">
                       <h4 className="text-2xl font-bold mb-2">Week {currentWeek}</h4>
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
                         <div>
@@ -698,8 +698,8 @@
                       return (
                         <div 
                           key={idx} 
-                          className={`bg-gray-700 rounded-lg p-4 transition ${
-                            isComplete ? 'border-2 border-green-500' : ''
+                          className={`bg-gray-900 border rounded-lg p-4 transition ${
+                            isComplete ? 'border-orange-600 shadow-lg shadow-orange-600/20' : 'border-gray-800'
                           }`}
                         >
                           <div className="flex items-start gap-4">
@@ -707,8 +707,8 @@
                               onClick={() => toggleSessionComplete(currentWeek, idx)}
                               className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition ${
                                 isComplete 
-                                  ? 'bg-green-500 border-green-500' 
-                                  : 'border-gray-500 hover:border-green-500'
+                                  ? 'bg-orange-600 border-orange-600' 
+                                  : 'border-gray-600 hover:border-orange-600'
                               }`}
                             >
                               {isComplete && <CheckCircle size={20} className="text-white" />}
@@ -721,10 +721,10 @@
                                   <div className="text-sm text-gray-400">{day.type} - {day.focus}</div>
                                 </div>
                                 <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
-                                  day.type === 'Running' ? 'bg-blue-600' :
-                                  day.type === 'Strength' ? 'bg-orange-600' :
-                                  day.type === 'Hybrid' ? 'bg-purple-600' :
-                                  'bg-gray-600'
+                                  day.type === 'Running' ? 'bg-orange-600' :
+                                  day.type === 'Strength' ? 'bg-red-600' :
+                                  day.type === 'Hybrid' ? 'bg-gradient-to-r from-orange-600 to-red-600' :
+                                  'bg-gray-700'
                                 }`}>
                                   {day.type}
                                 </div>
@@ -756,7 +756,7 @@
                     <h3 className="text-xl font-bold">Jade's Nutrition Tracker</h3>
                     <button
                       onClick={() => setShowTargetForm(!showTargetForm)}
-                      className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg text-sm font-semibold transition"
+                      className="px-4 py-2 bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 rounded-lg text-sm font-semibold transition shadow-lg"
                     >
                       {showTargetForm ? 'Cancel' : 'Edit Targets'}
                     </button>
@@ -815,30 +815,30 @@
                       </div>
                       <button
                         onClick={() => setShowTargetForm(false)}
-                        className="mt-4 w-full bg-green-600 hover:bg-green-700 px-6 py-3 rounded-lg font-semibold transition"
+                        className="mt-4 w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 px-6 py-3 rounded-lg font-semibold transition shadow-lg"
                       >
                         Save Targets
                       </button>
                     </div>
                   )}
                   
-                  <div className="bg-gradient-to-r from-pink-900 to-purple-900 rounded-lg p-6 mb-6">
+                  <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
                     <h4 className="text-2xl font-bold mb-2">Daily Targets</h4>
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
                       <div>
-                        <div className="text-3xl font-bold text-pink-300">{nutritionTargets.calories}</div>
+                        <div className="text-3xl font-bold text-orange-500">{nutritionTargets.calories}</div>
                         <div className="text-sm text-gray-300">Calories</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-blue-300">{nutritionTargets.protein}g</div>
+                        <div className="text-3xl font-bold text-orange-400">{nutritionTargets.protein}g</div>
                         <div className="text-sm text-gray-300">Protein</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-yellow-300">{nutritionTargets.carbs}g</div>
+                        <div className="text-3xl font-bold text-orange-300">{nutritionTargets.carbs}g</div>
                         <div className="text-sm text-gray-300">Carbs</div>
                       </div>
                       <div>
-                        <div className="text-3xl font-bold text-green-300">{nutritionTargets.fats}g</div>
+                        <div className="text-3xl font-bold text-red-400">{nutritionTargets.fats}g</div>
                         <div className="text-sm text-gray-300">Fats</div>
                       </div>
                     </div>
@@ -852,7 +852,7 @@
                     const fatsProgress = (today.fats / nutritionTargets.fats) * 100;
                     
                     return (
-                      <div className="bg-gray-700 rounded-lg p-6 mb-6">
+                      <div className="bg-gray-900 border border-gray-800 rounded-lg p-6 mb-6">
                         <h4 className="text-xl font-bold mb-4">Today's Progress</h4>
                         
                         <div className="space-y-4">
@@ -860,8 +860,8 @@
                             <div className="flex justify-between mb-2">
                               <span className="font-semibold">Calories</span>
                               <span className={`font-bold ${
-                                calorieProgress >= 95 && calorieProgress <= 105 ? 'text-green-400' :
-                                calorieProgress > 105 ? 'text-orange-400' : 'text-gray-400'
+                                calorieProgress >= 95 && calorieProgress <= 105 ? 'text-orange-500' :
+                                calorieProgress > 105 ? 'text-red-400' : 'text-gray-400'
                               }`}>
                                 {Math.round(today.calories)} / {nutritionTargets.calories} cal
                               </span>
@@ -869,8 +869,8 @@
                             <div className="w-full bg-gray-600 rounded-full h-3">
                               <div 
                                 className={`h-3 rounded-full transition-all ${
-                                  calorieProgress >= 95 && calorieProgress <= 105 ? 'bg-green-500' :
-                                  calorieProgress > 105 ? 'bg-orange-500' : 'bg-blue-500'
+                                  calorieProgress >= 95 && calorieProgress <= 105 ? 'bg-orange-600' :
+                                  calorieProgress > 105 ? 'bg-red-500' : 'bg-gray-600'
                                 }`}
                                 style={{width: `${Math.min(calorieProgress, 100)}%`}}
                               />
@@ -881,7 +881,7 @@
                             <div className="flex justify-between mb-2">
                               <span className="font-semibold">Protein</span>
                               <span className={`font-bold ${
-                                proteinProgress >= 95 ? 'text-green-400' : 'text-gray-400'
+                                proteinProgress >= 95 ? 'text-orange-500' : 'text-gray-400'
                               }`}>
                                 {Math.round(today.protein)}g / {nutritionTargets.protein}g
                               </span>
@@ -889,7 +889,7 @@
                             <div className="w-full bg-gray-600 rounded-full h-3">
                               <div 
                                 className={`h-3 rounded-full transition-all ${
-                                  proteinProgress >= 95 ? 'bg-green-500' : 'bg-blue-500'
+                                  proteinProgress >= 95 ? 'bg-orange-600' : 'bg-gray-600'
                                 }`}
                                 style={{width: `${Math.min(proteinProgress, 100)}%`}}
                               />
@@ -900,7 +900,7 @@
                             <div className="flex justify-between mb-2">
                               <span className="font-semibold">Carbs</span>
                               <span className={`font-bold ${
-                                carbsProgress >= 95 && carbsProgress <= 105 ? 'text-green-400' : 'text-gray-400'
+                                carbsProgress >= 95 && carbsProgress <= 105 ? 'text-orange-500' : 'text-gray-400'
                               }`}>
                                 {Math.round(today.carbs)}g / {nutritionTargets.carbs}g
                               </span>
@@ -908,7 +908,7 @@
                             <div className="w-full bg-gray-600 rounded-full h-3">
                               <div 
                                 className={`h-3 rounded-full transition-all ${
-                                  carbsProgress >= 95 && carbsProgress <= 105 ? 'bg-green-500' : 'bg-yellow-500'
+                                  carbsProgress >= 95 && carbsProgress <= 105 ? 'bg-orange-600' : 'bg-gray-600'
                                 }`}
                                 style={{width: `${Math.min(carbsProgress, 100)}%`}}
                               />
@@ -919,7 +919,7 @@
                             <div className="flex justify-between mb-2">
                               <span className="font-semibold">Fats</span>
                               <span className={`font-bold ${
-                                fatsProgress >= 95 && fatsProgress <= 105 ? 'text-green-400' : 'text-gray-400'
+                                fatsProgress >= 95 && fatsProgress <= 105 ? 'text-orange-500' : 'text-gray-400'
                               }`}>
                                 {Math.round(today.fats)}g / {nutritionTargets.fats}g
                               </span>
@@ -927,7 +927,7 @@
                             <div className="w-full bg-gray-600 rounded-full h-3">
                               <div 
                                 className={`h-3 rounded-full transition-all ${
-                                  fatsProgress >= 95 && fatsProgress <= 105 ? 'bg-green-500' : 'bg-green-300'
+                                  fatsProgress >= 95 && fatsProgress <= 105 ? 'bg-orange-600' : 'bg-gray-600'
                                 }`}
                                 style={{width: `${Math.min(fatsProgress, 100)}%`}}
                               />
