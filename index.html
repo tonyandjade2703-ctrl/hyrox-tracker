@@ -338,7 +338,10 @@
 
             <div className="flex gap-4 mb-6 justify-center">
               <button
-                onClick={() => setSelectedUser('user1')}
+                onClick={() => {
+                  setSelectedUser('user1');
+                  setSelectedPlan('mixed');
+                }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user1'
                     ? 'bg-blue-600 text-white'
@@ -346,10 +349,16 @@
                 }`}
               >
                 <User size={20} />
-                Jade
+                <div>
+                  <div>Jade</div>
+                  <div className="text-xs opacity-75">Mixed Doubles</div>
+                </div>
               </button>
               <button
-                onClick={() => setSelectedUser('user2')}
+                onClick={() => {
+                  setSelectedUser('user2');
+                  setSelectedPlan('mens');
+                }}
                 className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
                   selectedUser === 'user2'
                     ? 'bg-purple-600 text-white'
@@ -357,32 +366,10 @@
                 }`}
               >
                 <User size={20} />
-                Tony
-              </button>
-            </div>
-
-            <div className="flex gap-4 mb-6 justify-center">
-              <button
-                onClick={() => setSelectedPlan('mixed')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-                  selectedPlan === 'mixed'
-                    ? 'bg-pink-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                <Users size={20} />
-                Mixed Doubles
-              </button>
-              <button
-                onClick={() => setSelectedPlan('mens')}
-                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
-                  selectedPlan === 'mens'
-                    ? 'bg-green-600 text-white'
-                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
-                }`}
-              >
-                <User size={20} />
-                Mens Singles
+                <div>
+                  <div>Tony</div>
+                  <div className="text-xs opacity-75">Mens Singles</div>
+                </div>
               </button>
             </div>
 
