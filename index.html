@@ -986,65 +986,65 @@
                       
                       <div className="space-y-4">
                         <div>
-                          <label className="block text-sm font-medium mb-2">Date</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Date</label>
                           <input
                             type="date"
                             value={currentMeal.date}
                             onChange={(e) => setCurrentMeal({...currentMeal, date: e.target.value})}
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
 
                         <div>
-                          <label className="block text-sm font-medium mb-2">Meal Name</label>
+                          <label className="block text-sm font-medium mb-2 text-black">Meal Name</label>
                           <input
                             type="text"
                             value={currentMeal.mealName}
                             onChange={(e) => setCurrentMeal({...currentMeal, mealName: e.target.value})}
                             placeholder="e.g., Breakfast, Lunch, Snack"
-                            className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                            className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                           />
                         </div>
 
                         <div className="grid grid-cols-2 gap-4">
                           <div>
-                            <label className="block text-sm font-medium mb-2">Calories</label>
+                            <label className="block text-sm font-medium mb-2 text-black">Calories</label>
                             <input
                               type="number"
                               value={currentMeal.calories}
                               onChange={(e) => setCurrentMeal({...currentMeal, calories: e.target.value})}
                               placeholder="500"
-                              className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                              className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Protein (g)</label>
+                            <label className="block text-sm font-medium mb-2 text-black">Protein (g)</label>
                             <input
                               type="number"
                               value={currentMeal.protein}
                               onChange={(e) => setCurrentMeal({...currentMeal, protein: e.target.value})}
                               placeholder="30"
-                              className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                              className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Carbs (g)</label>
+                            <label className="block text-sm font-medium mb-2 text-black">Carbs (g)</label>
                             <input
                               type="number"
                               value={currentMeal.carbs}
                               onChange={(e) => setCurrentMeal({...currentMeal, carbs: e.target.value})}
                               placeholder="50"
-                              className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                              className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium mb-2">Fats (g)</label>
+                            <label className="block text-sm font-medium mb-2 text-black">Fats (g)</label>
                             <input
                               type="number"
                               value={currentMeal.fats}
                               onChange={(e) => setCurrentMeal({...currentMeal, fats: e.target.value})}
                               placeholder="15"
-                              className="w-full bg-gray-600 text-white rounded px-4 py-2"
+                              className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"
                             />
                           </div>
                         </div>
