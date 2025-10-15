@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Hyrox Tracker">
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%23ff6b35'/><text x='50' y='70' font-size='60' text-anchor='middle' fill='white' font-weight='bold'>H</text></svg>">
+  <title>Hyrox Training Logger</title>
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    * {
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+    }
+    body {
+      overscroll-behavior: none;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+    
+    // Lucide React icons as inline SVG components
+    const Calendar = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+        <line x1="16" y1="2" x2="16" y2="6"></line>
+        <line x1="8" y1="2" x2="8" y2="6"></line>
+        <line x1="3" y1="10" x2="21" y2="10"></line>
+      </svg>
+    );
+    
+    const Plus = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <line x1="12" y1="5" x2="12" y2="19"></line>
+        <line x1="5" y1="12" x2="19" y2="12"></line>
+      </svg>
+    );
+    
+    const TrendingUp = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+        <polyline points="17 6 23 6 23 12"></polyline>
+      </svg>
+    );
+    
+    const User = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+        <circle cx="12" cy="7" r="4"></circle>
+      </svg>
+    );
+    
+    const Users = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+        <circle cx="9" cy="7" r="4"></circle>
+        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+      </svg>
+    );
+    
+    const CheckCircle = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+      </svg>
+    );
+    
+    const Clock = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <circle cx="12" cy="12" r="10"></circle>
+        <polyline points="12 6 12 12 16 14"></polyline>
+      </svg>
+    );
+    
+    const Flame = ({ size = 24, className = "" }) => (
+      <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className={className}>
+        <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"></path>
+      </svg>
+    );
+
+    const HyroxTrainingApp = () => {
+      const [activeTab, setActiveTab] = useState('log');
+      const [selectedUser, setSelectedUser] = useState('user1');
+      const [selectedPlan, setSelectedPlan] = useState('mixed');
+      const [workouts, setWorkouts] = useState([]);
+      const [completedSessions, setCompletedSessions] = useState({});
+      const [currentWeek, setCurrentWeek] = useState(1);
+      const [showLogForm, setShowLogForm] = useState(false);
+      const [currentWorkout, setCurrentWorkout] = useState({
+        date: new Date().toISOString().split('T')[0],
+        type: '',
+        duration: '',
+        notes: '',
+        completed: true
+      });
+
+      useEffect(() => {
+        const saved = localStorage.getItem('hyroxWorkouts');
+        if (saved) {
+          setWorkouts(JSON.parse(saved));
+        }
+        const savedCompleted = localStorage.getItem('completedSessions');
+        if (savedCompleted) {
+          setCompletedSessions(JSON.parse(savedCompleted));
+        }
+      }, []);
+
+      useEffect(() => {
+        localStorage.setItem('hyroxWorkouts', JSON.stringify(workouts));
+      }, [workouts]);
+
+      useEffect(() => {
+        localStorage.setItem('completedSessions', JSON.stringify(completedSessions));
+      }, [completedSessions]);
+
+      const mixedDoublesWeek = [
+        { day: 'Monday', type: 'Running', focus: 'Intervals', detail: '6x 800m @ race pace, 90s rest' },
+        { day: 'Tuesday', type: 'Strength', focus: 'Upper Body Push', detail: 'SkiErg, Wall Balls, Burpee Broad Jumps' },
+        { day: 'Wednesday', type: 'Running', focus: 'Easy Recovery', detail: '30-40 mins easy pace' },
+        { day: 'Thursday', type: 'Strength', focus: 'Lower Body & Pull', detail: 'Sled Push/Pull, Sandbag Lunges, Farmers Carry' },
+        { day: 'Friday', type: 'Rest', focus: 'Active Recovery', detail: 'Mobility work, light stretching' },
+        { day: 'Saturday', type: 'Hybrid', focus: 'Race Simulation', detail: 'Abbreviated Hyrox workout or long run' },
+        { day: 'Sunday', type: 'Running', focus: 'Long Steady', detail: '60+ mins aerobic pace' }
+      ];
+
+      const mensSinglesWeek = [
+        { day: 'Monday', type: 'Running', focus: 'Tempo', detail: '3x 2km @ threshold, 3 min rest' },
+        { day: 'Tuesday', type: 'Strength', focus: 'Full Body Power', detail: 'All 8 stations with intensity' },
+        { day: 'Wednesday', type: 'Running', focus: 'Speed Intervals', detail: '10x 400m fast, 60-90s recovery' },
+        { day: 'Thursday', type: 'Strength', focus: 'Station Specific', detail: 'Focus on weakest 2-3 stations, high volume' },
+        { day: 'Friday', type: 'Running', focus: 'Easy', detail: '40 mins conversational pace' },
+        { day: 'Saturday', type: 'Hybrid', focus: 'Competition Simulation', detail: 'Full or modified Hyrox under race conditions' },
+        { day: 'Sunday', type: 'Running', focus: 'Long Base', detail: '75-90 mins low intensity' }
+      ];
+
+      const mixedDoublesProgram = {
+        1: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Focus on form and consistency' },
+        2: { focus: 'Base Building', intensity: 'Low-Moderate', notes: 'Increase volume slightly' },
+        3: { focus: 'Base Building', intensity: 'Moderate', notes: 'Build aerobic capacity' },
+        4: { focus: 'Strength Foundation', intensity: 'Moderate', notes: 'Introduction to all 8 stations' },
+        5: { focus: 'Strength Foundation', intensity: 'Moderate-High', notes: 'Increase station loads' },
+        6: { focus: 'Build Phase', intensity: 'Moderate-High', notes: 'Longer intervals, more volume' },
+        7: { focus: 'Build Phase', intensity: 'High', notes: 'Peak volume week' },
+        8: { focus: 'Recovery', intensity: 'Low', notes: 'Reduce volume by 40%' },
+        9: { focus: 'Intensity Phase', intensity: 'High', notes: 'Race pace efforts' },
+        10: { focus: 'Intensity Phase', intensity: 'High', notes: 'Station combinations' },
+        11: { focus: 'Peak', intensity: 'Very High', notes: 'Race simulations' },
+        12: { focus: 'Taper', intensity: 'Low-Moderate', notes: 'Reduce volume, maintain intensity' }
+      };
+
+      const mensSinglesProgram = {
+        1: { focus: 'Base Building', intensity: 'Moderate', notes: 'Establish running base' },
+        2: { focus: 'Base Building', intensity: 'Moderate', notes: 'Add station work' },
+        3: { focus: 'Strength Emphasis', intensity: 'Moderate-High', notes: 'Heavy station work' },
+        4: { focus: 'Strength Emphasis', intensity: 'High', notes: 'Max strength development' },
+        5: { focus: 'Build Phase', intensity: 'High', notes: 'Higher running volume' },
+        6: { focus: 'Build Phase', intensity: 'High', notes: 'Combine running + stations' },
+        7: { focus: 'Build Phase', intensity: 'Very High', notes: 'Peak week - highest volume' },
+        8: { focus: 'Recovery', intensity: 'Low', notes: 'Active recovery week' },
+        9: { focus: 'Race Specific', intensity: 'High', notes: 'Full race simulations' },
+        10: { focus: 'Race Specific', intensity: 'High', notes: 'Competition transitions' },
+        11: { focus: 'Peak/Polish', intensity: 'Very High', notes: 'Final race prep' },
+        12: { focus: 'Taper', intensity: 'Moderate', notes: 'Freshen up for race day' }
+      };
+
+      const toggleSessionComplete = (week, dayIndex) => {
+        const key = `${selectedUser}-${selectedPlan}-${week}-${dayIndex}`;
+        setCompletedSessions(prev => ({
+          ...prev,
+          [key]: !prev[key]
+        }));
+      };
+
+      const isSessionComplete = (week, dayIndex) => {
+        const key = `${selectedUser}-${selectedPlan}-${week}-${dayIndex}`;
+        return completedSessions[key] || false;
+      };
+
+      const getWeekCompletion = (week) => {
+        const template = selectedPlan === 'mixed' ? mixedDoublesWeek : mensSinglesWeek;
+        let completed = 0;
+        template.forEach((_, idx) => {
+          if (isSessionComplete(week, idx)) completed++;
+        });
+        return { completed, total: template.length, percentage: Math.round((completed / template.length) * 100) };
+      };
+
+      const handleLogWorkout = () => {
+        if (!currentWorkout.type) return;
+        
+        const newWorkout = {
+          ...currentWorkout,
+          id: Date.now(),
+          user: selectedUser,
+          plan: selectedPlan
+        };
+        
+        setWorkouts([newWorkout, ...workouts]);
+        setCurrentWorkout({
+          date: new Date().toISOString().split('T')[0],
+          type: '',
+          duration: '',
+          notes: '',
+          completed: true
+        });
+        setShowLogForm(false);
+      };
+
+      const getUserWorkouts = (user) => {
+        return workouts.filter(w => w.user === user);
+      };
+
+      const getWeekStats = (user) => {
+        const weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        const weekWorkouts = workouts.filter(w => 
+          w.user === user && new Date(w.date) >= weekAgo
+        );
+        
+        return {
+          total: weekWorkouts.length,
+          running: weekWorkouts.filter(w => w.type === 'Running').length,
+          strength: weekWorkouts.filter(w => w.type === 'Strength').length,
+          hybrid: weekWorkouts.filter(w => w.type === 'Hybrid').length
+        };
+      };
+
+      const currentPlan = selectedPlan === 'mixed' ? mixedDoublesWeek : mensSinglesWeek;
+      const currentProgram = selectedPlan === 'mixed' ? mixedDoublesProgram : mensSinglesProgram;
+
+      return (
+        <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-gray-900 text-white p-4">
+          <div className="max-w-6xl mx-auto pb-20">
+            <div className="mb-8 text-center">
+              <h1 className="text-4xl font-bold mb-2 flex items-center justify-center gap-3">
+                <Flame className="text-orange-500" size={40} />
+                Hyrox Training Logger
+              </h1>
+              <p className="text-gray-300">Track your journey to race day</p>
+            </div>
+
+            <div className="flex gap-4 mb-6 justify-center">
+              <button
+                onClick={() => setSelectedUser('user1')}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                  selectedUser === 'user1'
+                    ? 'bg-blue-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <User size={20} />
+                Jade
+              </button>
+              <button
+                onClick={() => setSelectedUser('user2')}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                  selectedUser === 'user2'
+                    ? 'bg-purple-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <User size={20} />
+                Tony
+              </button>
+            </div>
+
+            <div className="flex gap-4 mb-6 justify-center">
+              <button
+                onClick={() => setSelectedPlan('mixed')}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                  selectedPlan === 'mixed'
+                    ? 'bg-pink-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <Users size={20} />
+                Mixed Doubles
+              </button>
+              <button
+                onClick={() => setSelectedPlan('mens')}
+                className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${
+                  selectedPlan === 'mens'
+                    ? 'bg-green-600 text-white'
+                    : 'bg-gray-800 text-gray-300 hover:bg-gray-700'
+                }`}
+              >
+                <User size={20} />
+                Mens Singles
+              </button>
+            </div>
+
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+              {(() => {
+                const stats = getWeekStats(selectedUser);
+                return (
+                  <>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">This Week</div>
+                      <div className="text-3xl font-bold">{stats.total}</div>
+                      <div className="text-gray-400 text-xs">Total Workouts</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">Running</div>
+                      <div className="text-3xl font-bold text-blue-400">{stats.running}</div>
+                      <div className="text-gray-400 text-xs">Sessions</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">Strength</div>
+                      <div className="text-3xl font-bold text-orange-400">{stats.strength}</div>
+                      <div className="text-gray-400 text-xs">Sessions</div>
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-4">
+                      <div className="text-gray-400 text-sm mb-1">Hybrid</div>
+                      <div className="text-3xl font-bold text-purple-400">{stats.hybrid}</div>
+                      <div className="text-gray-400 text-xs">Sessions</div>
+                    </div>
+                  </>
+                );
+              })()}
+            </div>
+
+            <div className="flex gap-2 mb-6 border-b border-gray-700 overflow-x-auto">
+              <button
+                onClick={() => setActiveTab('log')}
+                className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
+                  activeTab === 'log'
+                    ? 'border-b-2 border-blue-500 text-white'
+                    : 'text-gray-400'
+                }`}
+              >
+                <Plus className="inline mr-2" size={18} />
+                Log
+              </button>
+              <button
+                onClick={() => setActiveTab('plan')}
+                className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
+                  activeTab === 'plan'
+                    ? 'border-b-2 border-blue-500 text-white'
+                    : 'text-gray-400'
+                }`}
+              >
+                <Calendar className="inline mr-2" size={18} />
+                Plan
+              </button>
+              {selectedUser === 'user1' && (
+                <button
+                  onClick={() => setActiveTab('nutrition')}
+                  className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
+                    activeTab === 'nutrition'
+                      ? 'border-b-2 border-blue-500 text-white'
+                      : 'text-gray-400'
+                  }`}
+                >
+                  <Flame className="inline mr-2" size={18} />
+                  Nutrition
+                </button>
+              )}
+              <button
+                onClick={() => setActiveTab('history')}
+                className={`px-6 py-3 font-semibold transition whitespace-nowrap ${
+                  activeTab === 'history'
+                    ? 'border-b-2 border-blue-500 text-white'
+                    : 'text-gray-400'
+                }`}
+              >
+                <TrendingUp className="inline mr-2" size={18} />
+                History
+              </button>
+            </div>
+
+            <div className="bg-gray-800 rounded-lg p-6">
+              {activeTab === 'log' && (
+                <div>
+                  {!showLogForm ? (
+                    <button
+                      onClick={() => setShowLogForm(true)}
+                      className="w-full py-8 border-2 border-dashed border-gray-600 rounded-lg hover:border-blue-500 hover:bg-gray-700 transition"
+                    >
+                      <Plus className="mx-auto mb-2" size={32} />
+                      <div className="text-xl font-semibold">Log New Workout</div>
+                    </button>
+                  ) : (
+                    <div className="space-y-4">
+                      <h3 className="text-xl font-bold mb-4">Log Workout</h3>
+                      
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Date</label>
+                        <input
+                          type="date"
+                          value={currentWorkout.date}
+                          onChange={(e) => setCurrentWorkout({...currentWorkout, date: e.target.value})}
+                          className="w-full bg-gray-700 text-white rounded px-4 py-2"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Workout Type</label>
+                        <select
+                          value={currentWorkout.type}
+                          onChange={(e) => setCurrentWorkout({...currentWorkout, type: e.target.value})}
+                          className="w-full bg-gray-700 text-white rounded px-4 py-2"
+                        >
+                          <option value="">Select type...</option>
+                          <option value="Running">Running</option>
+                          <option value="Strength">Strength</option>
+                          <option value="Hybrid">Hybrid</option>
+                          <option value="Rest">Rest/Recovery</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Duration (minutes)</label>
+                        <input
+                          type="number"
+                          value={currentWorkout.duration}
+                          onChange={(e) => setCurrentWorkout({...currentWorkout, duration: e.target.value})}
+                          placeholder="60"
+                          className="w-full bg-gray-700 text-white rounded px-4 py-2"
+                        />
+                      </div>
+
+                      <div>
+                        <label className="block text-sm font-medium mb-2">Notes</label>
+                        <textarea
+                          value={currentWorkout.notes}
+                          onChange={(e) => setCurrentWorkout({...currentWorkout, notes: e.target.value})}
+                          placeholder="How did it feel? Times? Key observations..."
+                          className="w-full bg-gray-700 text-white rounded px-4 py-2 h-24"
+                        />
+                      </div>
+
+                      <div className="flex gap-3">
+                        <button
+                          onClick={handleLogWorkout}
+                          className="flex-1 bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-semibold transition"
+                        >
+                          Save Workout
+                        </button>
+                        <button
+                          onClick={() => setShowLogForm(false)}
+                          className="px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-lg font-semibold transition"
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {activeTab === 'plan' && (
+                <div>
+                  <div className="mb-6">
+                    <h3 className="text-xl font-bold mb-4">
+                      {selectedPlan === 'mixed' ? 'Mixed Doubles' : 'Mens Singles'} - 12 Week Program
+                    </h3>
+                    
+                    <div className="flex items-center gap-3 mb-6">
+                      <button
+                        onClick={() => setCurrentWeek(Math.max(1, currentWeek - 1))}
+                        disabled={currentWeek === 1}
+                        className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        ←
+                      </button>
+                      
+                      <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
+                        {[...Array(12)].map((_, i) => {
+                          const week = i + 1;
+                          const completion = getWeekCompletion(week);
+                          return (
+                            <button
+                              key={week}
+                              onClick={() => setCurrentWeek(week)}
+                              className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition ${
+                                currentWeek === week
+                                  ? 'bg-blue-600 text-white'
+                                  : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                              }`}
+                            >
+                              <div className="text-sm">Week {week}</div>
+                              {completion.completed > 0 && (
+                                <div className="text-xs mt-1">{completion.percentage}%</div>
+                              )}
+                            </button>
+                          );
+                        })}
+                      </div>
+                      
+                      <button
+                        onClick={() => setCurrentWeek(Math.min(12, currentWeek + 1))}
+                        disabled={currentWeek === 12}
+                        className="px-4 py-2 bg-gray-700 rounded hover:bg-gray-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        →
+                      </button>
+                    </div>
+
+                    <div className="bg-gradient-to-r from-blue-900 to-purple-900 rounded-lg p-5 mb-6">
+                      <h4 className="text-2xl font-bold mb-2">Week {currentWeek}</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-3">
+                        <div>
+                          <div className="text-sm text-gray-300">Phase</div>
+                          <div className="text-lg font-semibold">{currentProgram[currentWeek].focus}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-300">Intensity</div>
+                          <div className="text-lg font-semibold">{currentProgram[currentWeek].intensity}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-gray-300">Completion</div>
+                          <div className="text-lg font-semibold">
+                            {getWeekCompletion(currentWeek).completed}/{getWeekCompletion(currentWeek).total} sessions
+                          </div>
+                        </div>
+                      </div>
+                      <div className="mt-3 text-sm text-gray-200 italic">
+                        {currentProgram[currentWeek].notes}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3">
+                    {currentPlan.map((day, idx) => {
+                      const isComplete = isSessionComplete(currentWeek, idx);
+                      return (
+                        <div 
+                          key={idx} 
+                          className={`bg-gray-700 rounded-lg p-4 hover:bg-gray-650 transition ${
+                            isComplete ? 'border-2 border-green-500' : ''
+                          }`}
+                        >
+                          <div className="flex items-start gap-4">
+                            <button
+                              onClick={() => toggleSessionComplete(currentWeek, idx)}
+                              className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition ${
+                                isComplete 
+                                  ? 'bg-green-500 border-green-500' 
+                                  : 'border-gray-500 hover:border-green-500'
+                              }`}
+                            >
+                              {isComplete && <CheckCircle size={20} className="text-white" />}
+                            </button>
+                            
+                            <div className="flex-1">
+                              <div className="flex items-start justify-between mb-2">
+                                <div>
+                                  <div className="font-bold text-lg">{day.day}</div>
+                                  <div className="text-sm text-gray-400">{day.type} - {day.focus}</div>
+                                </div>
+                                <div className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                                  day.type === 'Running' ? 'bg-blue-600' :
+                                  day.type === 'Strength' ? 'bg-orange-600' :
+                                  day.type === 'Hybrid' ? 'bg-purple-600' :
+                                  'bg-gray-600'
+                                }`}>
+                                  {day.type}
+                                </div>
+                              </div>
+                              <div className="text-sm text-gray-300">{day.detail}</div>
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'nutrition' && selectedUser === 'user1' && (
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Jade's Nutrition Plan</h3>
+                  
+                  <div className="bg-gradient-to-r from-pink-900 to-purple-900 rounded-lg p-6 mb-6">
+                    <h4 className="text-2xl font-bold mb-2">Daily Targets</h4>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                      <div>
+                        <div className="text-3xl font-bold text-pink-300">2000-2200</div>
+                        <div className="text-sm text-gray-300">Calories</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-blue-300">120-140g</div>
+                        <div className="text-sm text-gray-300">Protein</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-yellow-300">200-250g</div>
+                        <div className="text-sm text-gray-300">Carbs</div>
+                      </div>
+                      <div>
+                        <div className="text-3xl font-bold text-green-300">60-70g</div>
+                        <div className="text-sm text-gray-300">Fats</div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-4">
+                    <div className="bg-gray-700 rounded-lg p-5">
+                      <h4 className="font-bold text-lg mb-3">🌅 Breakfast (7:00 AM)</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>• Overnight oats (60g oats, almond milk, berries)</span>
+                          <span className="text-gray-400">~400 cal</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>• 2 boiled eggs</span>
+                          <span className="text-gray-400">~140 cal</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
+                        25g protein, 55g carbs, 12g fat
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-700 rounded-lg p-5">
+                      <h4 className="font-bold text-lg mb-3">🥤 Mid-Morning (10:30 AM)</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>• Greek yogurt (170g) with honey</span>
+                          <span className="text-gray-400">~150 cal</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>• Handful of almonds (20g)</span>
+                          <span className="text-gray-400">~120 cal</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
+                        18g protein, 15g carbs, 10g fat
+                      </div>
+                    </div>
+
+                    <div className="bg-gray-700 rounded-lg p-5">
+                      <h4 className="font-bold text-lg mb-3">🍽️ Lunch (1:00 PM)</h4>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between">
+                          <span>• Grilled chicken breast (150g)</span>
+                          <span className="text-gray-400">~250 cal</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>• Brown rice or quinoa (80g cooked)</span>
+                          <span className="text-gray-400">~120 cal</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>• Mixed salad with olive oil</span>
+                          <span className="text-gray-400">~100 cal</span>
+                        </div>
+                      </div>
+                      <div className="mt-3 pt-3 border-t border-gray-600 text-xs text-gray-400">
+                        40g protein, 45g carbs, 12g fat
+                      </div>
+                    </div>
+
+                    <div className="bg-blue-900 rounded-lg p-5 mt-6">
+                      <h4 className="font-bold text-lg mb-3">💧 Hydration</h4>
+                      <ul className="space-y-2 text-sm">
+                        <li>• 2.5-3 liters of water daily</li>
+                        <li>• Electrolytes during intense sessions</li>
+                        <li>• Multivitamin with breakfast</li>
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {activeTab === 'history' && (
+                <div>
+                  <h3 className="text-xl font-bold mb-4">Workout History</h3>
+                  {getUserWorkouts(selectedUser).length === 0 ? (
+                    <div className="text-center py-12 text-gray-400">
+                      <Clock size={48} className="mx-auto mb-4 opacity-50" />
+                      <p>No workouts logged yet</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-3">
+                      {getUserWorkouts(selectedUser).map((workout) => (
+                        <div key={workout.id} className="bg-gray-700 rounded-lg p-4">
+                          <div className="flex items-start justify-between mb-2">
+                            <div>
+                              <div className="font-bold">{workout.type}</div>
+                              <div className="text-sm text-gray-400">
+                                {new Date(workout.date).toLocaleDateString('en-GB', {
+                                  weekday: 'short',
+                                  day: 'numeric',
+                                  month: 'short'
+                                })}
+                              </div>
+                            </div>
+                            <div className="text-sm font-semibold">{workout.duration} mins</div>
+                          </div>
+                          {workout.notes && (
+                            <div className="text-sm text-gray-300 mt-2 pt-2 border-t border-gray-600">
+                              {workout.notes}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    };
+
+    ReactDOM.render(<HyroxTrainingApp />, document.getElementById('root'));
+  </script>
+</body>
+</html>
