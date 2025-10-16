@@ -99,7 +99,28 @@
       const toggleComplete = (w,d) => { const k = `${selectedUser}-${selectedPlan}-${w}-${d}`; setCompletedSessions(p=>({...p,[k]:!p[k]})); };
       const isComplete = (w,d) => { const k = `${selectedUser}-${selectedPlan}-${w}-${d}`; return completedSessions[k]||false; };
       const getCompletion = (w) => { const t = selectedPlan==='mixed'?mixedWeek:getMensWorkouts(w); let c=0; t.forEach((_,i)=>{if(isComplete(w,i))c++;}); return {completed:c,total:t.length,percentage:Math.round((c/t.length)*100)}; };
-      const getRunKm = (w) => { const t = selectedPlan==='mixed'?mixedWeek:getMensWorkouts(w); let km=0; t.forEach((d,i)=>{if(isComplete(w,i)&&d.type==='Running'){const s=d.specifics.toLowerCase(); if(s.includes('10km'))km+=10; if(s.includes('11km'))km+=11; if(s.includes('10.5km'))km+=10.5; if(s.includes('14km'))km+=14; if(s.includes('15km'))km+=15; if(s.includes('16km'))km+=16; if(s.includes('17km'))km+=17; if(s.includes('13km'))km+=13; if(s.includes('9km'))km+=9; if(s.includes('6km'))km+=6; if(s.includes('5km'))km+=5;}}); return km; };
+      const getRunKm = (w) => { 
+        const t = selectedPlan==='mixed'?mixedWeek:getMensWorkouts(w); 
+        let km=0; 
+        t.forEach((d,i)=>{
+          if(isComplete(w,i)&&d.type==='Running'){
+            const s=d.specifics.toLowerCase(); 
+            // Check for various km formats in the text
+            if(s.match(/\b17km\b/)) km+=17;
+            else if(s.match(/\b16km\b/)) km+=16;
+            else if(s.match(/\b15km\b/)) km+=15;
+            else if(s.match(/\b14km\b/)) km+=14;
+            else if(s.match(/\b13km\b/)) km+=13;
+            else if(s.match(/\b11km\b/)) km+=11;
+            else if(s.match(/10\.5km/)) km+=10.5;
+            else if(s.match(/\b10km\b/)) km+=10;
+            else if(s.match(/\b9km\b/)) km+=9;
+            else if(s.match(/\b6km\b/)) km+=6;
+            else if(s.match(/\b5km\b/)) km+=5;
+          }
+        }); 
+        return km; 
+      };
       const logWorkout = () => { if(!currentWorkout.type)return; setWorkouts([{...currentWorkout,id:Date.now(),user:selectedUser,plan:selectedPlan},...workouts]); setCurrentWorkout({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''}); setShowLogForm(false); };
       const logMeal = () => { if(!currentMeal.mealName||!currentMeal.calories)return; setNutritionLog([{...currentMeal,id:Date.now(),calories:parseFloat(currentMeal.calories),protein:parseFloat(currentMeal.protein)||0,carbs:parseFloat(currentMeal.carbs)||0,fats:parseFloat(currentMeal.fats)||0},...nutritionLog]); setCurrentMeal({date:new Date().toISOString().split('T')[0],mealName:'',calories:'',protein:'',carbs:'',fats:''}); setShowNutritionForm(false); };
       const getUserWorkouts = (u) => workouts.filter(w=>w.user===u);
@@ -165,9 +186,9 @@
             </div>
           </div>)}
 
-          {activeTab==='nutrition'&&selectedUser==='user1'&&(<div>
+          {activeTab==='nutrition'&&(selectedUser==='user1'||selectedUser==='user3')&&(<div>
             <div className="flex justify-between mb-4">
-              <h3 className="text-xl font-bold text-white">Jade's Nutrition</h3>
+              <h3 className="text-xl font-bold text-white">{selectedUser==='user1'?'Jade\'s':'Nathan\'s'} Nutrition</h3>
               <button onClick={()=>setShowTargetForm(!showTargetForm)} className="px-4 py-2 rounded-lg text-sm font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>{showTargetForm?'Cancel':'Edit Targets'}</button>
             </div>
 
