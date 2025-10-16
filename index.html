@@ -18,15 +18,16 @@
   <script type="text/babel">
     const { useState, useEffect } = React;
     
-    const Calendar = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>;
-    const Plus = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>;
-    const TrendingUp = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>;
-    const User = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>;
-    const CheckCircle = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>;
-    const Clock = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>;
-    const Flame = ({size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/></svg>;
+    const Icon = ({d,size=24}) => <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{__html:d}} />;
+    const Calendar = ({size=24}) => <Icon d='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' size={size} />;
+    const Plus = ({size=24}) => <Icon d='<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' size={size} />;
+    const TrendingUp = ({size=24}) => <Icon d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' size={size} />;
+    const User = ({size=24}) => <Icon d='<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' size={size} />;
+    const CheckCircle = ({size=24}) => <Icon d='<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' size={size} />;
+    const Clock = ({size=24}) => <Icon d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' size={size} />;
+    const Flame = ({size=24}) => <Icon d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>' size={size} />;
 
-    function HyroxTrainingApp() {
+    function App() {
       const [activeTab, setActiveTab] = useState('plan');
       const [selectedUser, setSelectedUser] = useState('user1');
       const [selectedPlan, setSelectedPlan] = useState('mixed');
@@ -37,512 +38,218 @@
       const [nutritionLog, setNutritionLog] = useState([]);
       const [showNutritionForm, setShowNutritionForm] = useState(false);
       const [showTargetForm, setShowTargetForm] = useState(false);
-      const [nutritionTargets, setNutritionTargets] = useState({calories: 2100, protein: 130, carbs: 225, fats: 65});
-      const [currentMeal, setCurrentMeal] = useState({date: new Date().toISOString().split('T')[0], mealName: '', calories: '', protein: '', carbs: '', fats: ''});
-      const [currentWorkout, setCurrentWorkout] = useState({date: new Date().toISOString().split('T')[0], type: '', duration: '', notes: ''});
+      const [nutritionTargets, setNutritionTargets] = useState({calories:2100,protein:130,carbs:225,fats:65});
+      const [currentMeal, setCurrentMeal] = useState({date:new Date().toISOString().split('T')[0],mealName:'',calories:'',protein:'',carbs:'',fats:''});
+      const [currentWorkout, setCurrentWorkout] = useState({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
 
       useEffect(() => {
-        const saved = localStorage.getItem('hyroxWorkouts');
-        if (saved) setWorkouts(JSON.parse(saved));
-        const sc = localStorage.getItem('completedSessions');
-        if (sc) setCompletedSessions(JSON.parse(sc));
-        const sn = localStorage.getItem('nutritionLog');
-        if (sn) setNutritionLog(JSON.parse(sn));
-        const st = localStorage.getItem('nutritionTargets');
-        if (st) setNutritionTargets(JSON.parse(st));
+        try {
+          const w = localStorage.getItem('hyroxWorkouts'); if(w) setWorkouts(JSON.parse(w));
+          const c = localStorage.getItem('completedSessions'); if(c) setCompletedSessions(JSON.parse(c));
+          const n = localStorage.getItem('nutritionLog'); if(n) setNutritionLog(JSON.parse(n));
+          const t = localStorage.getItem('nutritionTargets'); if(t) setNutritionTargets(JSON.parse(t));
+        } catch(e) { console.error(e); }
       }, []);
 
-      useEffect(() => { localStorage.setItem('hyroxWorkouts', JSON.stringify(workouts)); }, [workouts]);
-      useEffect(() => { localStorage.setItem('completedSessions', JSON.stringify(completedSessions)); }, [completedSessions]);
-      useEffect(() => { localStorage.setItem('nutritionLog', JSON.stringify(nutritionLog)); }, [nutritionLog]);
-      useEffect(() => { localStorage.setItem('nutritionTargets', JSON.stringify(nutritionTargets)); }, [nutritionTargets]);
+      useEffect(() => { try{ localStorage.setItem('hyroxWorkouts',JSON.stringify(workouts)); }catch(e){} }, [workouts]);
+      useEffect(() => { try{ localStorage.setItem('completedSessions',JSON.stringify(completedSessions)); }catch(e){} }, [completedSessions]);
+      useEffect(() => { try{ localStorage.setItem('nutritionLog',JSON.stringify(nutritionLog)); }catch(e){} }, [nutritionLog]);
+      useEffect(() => { try{ localStorage.setItem('nutritionTargets',JSON.stringify(nutritionTargets)); }catch(e){} }, [nutritionTargets]);
 
-      const mixedDoublesWeek = [
-        {day:'Monday',type:'Running',focus:'Intervals',detail:'6x 800m @ race pace',specifics:'TARGET RACE PACE: 4:30/km (7.4 mph)\n\nWarm-up: 10 min easy\nMain: 6x 800m @ 3:20-3:30/km (10.5-11.0 mph)\nCool-down: 10 min\n\nTreadmill: 10.5-11.0 mph'},
-        {day:'Tuesday',type:'Strength',focus:'Upper Body',detail:'SkiErg, Wall Balls',specifics:'Warm-up: 5 min row\n\nSkiErg: 4x 500m\nWall Balls: 4x 20 (6kg)\nBurpees: 4x 10\nCore: 3x 30s plank'},
-        {day:'Wednesday',type:'Running',focus:'Easy Recovery',detail:'30-40 mins easy',specifics:'Duration: 30-40 min\nPace: 5:30-6:00/km (6.2-6.8 mph)\n\nTreadmill: 6.2-6.8 mph'},
-        {day:'Thursday',type:'Strength',focus:'Lower Body',detail:'Sled, Sandbag, Farmers',specifics:'Warm-up: 5 min row\n\nSled Push: 4x 50m (150kg)\nSled Pull: 4x 50m (112kg)\nSandbag: 4x 100m (20kg)\nFarmers: 4x 50m (24kg each)\n\nFinisher: 100 wall balls (6kg)'},
-        {day:'Friday',type:'Rest',focus:'Active Recovery',detail:'Mobility',specifics:'20-30 min:\n• Foam rolling\n• Stretching\n• Yoga or swimming'},
-        {day:'Saturday',type:'Hybrid',focus:'Race Simulation',detail:'Mini Hyrox',specifics:'Mini Hyrox:\n1km @ 7.4 mph → 500m SkiErg → 1km → sled → 1km\n\nOR Long Run: 10-12km @ 7.0-7.5 mph'},
-        {day:'Sunday',type:'Running',focus:'Long Steady',detail:'60-75 mins',specifics:'Duration: 60-75 min\nPace: 5:15-5:45/km (6.5-7.1 mph)\n\nTreadmill: 6.5-7.1 mph'}
-      ];
+      const mixedWeek = [{day:'Mon',type:'Running',focus:'Intervals',detail:'6x800m',specifics:'Race pace: 4:30/km (7.4mph)\n6x800m @ 10.5-11.0mph'},{day:'Tue',type:'Strength',focus:'Upper',detail:'SkiErg, Walls',specifics:'SkiErg: 4x500m\nWall Balls: 4x20 (6kg)\nBurpees: 4x10'},{day:'Wed',type:'Running',focus:'Easy',detail:'30-40min',specifics:'30-40min @ 6.2-6.8mph'},{day:'Thu',type:'Strength',focus:'Lower',detail:'Sled, Sandbag',specifics:'Sled Push: 4x50m (150kg)\nSled Pull: 4x50m (112kg)\nSandbag: 4x100m (20kg)\nFarmers: 4x50m (24kg)'},{day:'Fri',type:'Rest',focus:'Recovery',detail:'Mobility',specifics:'Foam rolling\nStretching\nYoga'},{day:'Sat',type:'Hybrid',focus:'Sim',detail:'Mini Hyrox',specifics:'1km → SkiErg → 1km → sled\nOR 10-12km easy'},{day:'Sun',type:'Running',focus:'Long',detail:'60-75min',specifics:'60-75min @ 6.5-7.1mph\nZone 2-3'}];
 
-      const mixedDoublesProgram = {
-        1: {focus:'Base Building',intensity:'Low-Moderate',notes:'Focus on form and consistency',startDate:'2025-10-20'},
-        2: {focus:'Base Building',intensity:'Low-Moderate',notes:'Increase volume slightly',startDate:'2025-10-27'},
-        3: {focus:'Base Building',intensity:'Moderate',notes:'Build aerobic capacity',startDate:'2025-11-03'},
-        4: {focus:'Strength Foundation',intensity:'Moderate',notes:'Introduction to all 8 stations',startDate:'2025-11-10'},
-        5: {focus:'Strength Foundation',intensity:'Moderate-High',notes:'Increase station loads',startDate:'2025-11-17'},
-        6: {focus:'Build Phase',intensity:'Moderate-High',notes:'Longer intervals, more volume',startDate:'2025-11-24'},
-        7: {focus:'Taper',intensity:'Low-Moderate',notes:'Reduce volume, maintain intensity - RACE WEEK',startDate:'2025-12-01'}
-      };
+      const mixedProg = {1:{focus:'Base',intensity:'Low-Mod',notes:'Form focus',startDate:'2025-10-20'},2:{focus:'Base',intensity:'Low-Mod',notes:'Volume up',startDate:'2025-10-27'},3:{focus:'Base',intensity:'Mod',notes:'Aerobic',startDate:'2025-11-03'},4:{focus:'Strength',intensity:'Mod',notes:'8 stations',startDate:'2025-11-10'},5:{focus:'Strength',intensity:'Mod-High',notes:'Load up',startDate:'2025-11-17'},6:{focus:'Build',intensity:'Mod-High',notes:'More volume',startDate:'2025-11-24'},7:{focus:'Taper',intensity:'Low-Mod',notes:'RACE WEEK',startDate:'2025-12-01'}};
 
-      const mensSinglesProgram = {
-        1: {focus:'Base Building',intensity:'Moderate',notes:'WEEK 1: Sled Push 160kg / Pull 110kg / Wall Balls 10 @ 9kg / Farmers 20kg',startDate:'2025-10-20'},
-        2: {focus:'Strength Foundation',intensity:'Moderate-High',notes:'WEEK 2: Sled Push 170kg / Pull 120kg / Wall Balls 20 @ 12kg / Farmers 24kg',startDate:'2025-10-27'},
-        3: {focus:'Intensity Ramp',intensity:'High',notes:'WEEK 3: Sled Push 170kg / Pull 120kg / Wall Balls 25 @ 12kg / Farmers 28kg',startDate:'2025-11-03'},
-        4: {focus:'Race Simulation',intensity:'High',notes:'WEEK 4: Sled Push 170kg / Pull 120kg (12 reps) / Wall Balls 30 @ 12kg',startDate:'2025-11-10'},
-        5: {focus:'Peak Intensity',intensity:'Very High',notes:'WEEK 5: PEAK - Push 175kg / Pull 125kg / Wall Balls 35 @ 12kg',startDate:'2025-11-17'},
-        6: {focus:'Race Rehearsal',intensity:'Moderate-High',notes:'WEEK 6: Push 160kg / Pull 110kg / Wall Balls 25-30 @ 12kg (taper)',startDate:'2025-11-24'},
-        7: {focus:'Taper',intensity:'Low',notes:'WEEK 7: RACE WEIGHTS! Push 152kg / Pull 102kg. RACE: 6 Dec',startDate:'2025-12-01'}
-      };
+      const mensProg = {1:{focus:'Base',intensity:'Mod',notes:'Push 160kg / Pull 110kg / 10 walls @ 9kg / Farmers 20kg',startDate:'2025-10-20'},2:{focus:'Strength',intensity:'Mod-High',notes:'Push 170kg / Pull 120kg / 20 walls @ 12kg / Farmers 24kg',startDate:'2025-10-27'},3:{focus:'Intensity',intensity:'High',notes:'Push 170kg / Pull 120kg / 25 walls @ 12kg / Farmers 28kg',startDate:'2025-11-03'},4:{focus:'Race Sim',intensity:'High',notes:'Push 170kg / Pull 120kg (12 reps) / 30 walls @ 12kg',startDate:'2025-11-10'},5:{focus:'PEAK',intensity:'V.High',notes:'PEAK: Push 175kg / Pull 125kg / 35 walls @ 12kg',startDate:'2025-11-17'},6:{focus:'Rehearsal',intensity:'Mod-High',notes:'Push 160kg / Pull 110kg / 25-30 walls (taper)',startDate:'2025-11-24'},7:{focus:'Taper',intensity:'Low',notes:'RACE WEIGHTS! 152kg/102kg. RACE: 6 Dec',startDate:'2025-12-01'}};
 
-      const getMensSinglesWorkouts = (week) => {
-        const all = {
-          1:[
-            {day:'Monday',type:'Strength',focus:'Lower Body',detail:'Sled 160kg/110kg',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 5 × 50m @ 160kg (353 lbs)\nSingle-leg RDLs: 3 × 8 each (12kg each hand)\nSled Pull: 6 × 50m @ 110kg (243 lbs)\nBulgarian split squats: 3 × 8 each (10kg each hand)\nCore: 3 × 12\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'Easy Aerobic',detail:'10km easy',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 7km @ 10.2 km/h (6.34 mph - 5:52/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.2 km/h\nTotal: 10km'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'Rows, SkiErg, Farmers 20kg',specifics:'Warm-up: 500m row + mobility\n\nRows: 4 × 6 (80-100kg / 176-220 lbs)\nChest press: 3 × 8 (60-80kg / 132-176 lbs)\nSkiErg: 6 × 250m (45s hard / 15s rest)\nPull-ups: 3 × 8\nFarmers: 3 × 40m @ 20kg each hand (44 lbs)\nCore: 3 × 20 hollow rocks\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Tempo',detail:'4 × 1km threshold',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 4 × 1km @ 10.5 km/h (6.53 mph - 5:43/km)\nRecovery: 90s jog @ 9.5 km/h (5.9 mph)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.5 km/h intervals\nTotal: 10km'},
-            {day:'Friday',type:'Running',focus:'Long Run',detail:'14km steady',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 11km steady @ 10.2 km/h (6.34 mph - 5:52/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.2 km/h\nTotal: 14km'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Active recovery',specifics:'Rest Day:\n• 30min walk\n• Stretching\n• Foam rolling\n• Mobility work'},
-            {day:'Sunday',type:'Hybrid',focus:'Station Circuits',detail:'10 wall balls @ 9kg',specifics:'Warm-up: 2km run + dynamic work\n\nCircuit (2 rounds, minimal rest):\n• 50m sled push @ 60kg (132 lbs)\n• 80m burpee broad jumps\n• 100m sandbag lunges @ 15kg (33 lbs)\n• 200m farmers @ 15kg each hand (33 lbs)\n• 10 wall balls @ 9kg (20 lbs)\n\n4 × 2min moderate rowing\n\nCool-down: 5min'}
-          ],
-          2:[
-            {day:'Monday',type:'Strength',focus:'Lower Body',detail:'Sled 170kg/120kg',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 5 × 50m @ 170kg (375 lbs)\nDeficit RDLs: 3 × 6 (16kg each hand)\nSled Pull: 8 × 50m @ 120kg (265 lbs)\nJump squats: 3 × 6 (20kg plate)\nWaiter walk: 3 × 40m each @ 16kg (35 lbs)\nPlanks: 3 × 45s\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'Easy Aerobic',detail:'10km easy',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 7km easy @ 10.2 km/h (6.34 mph - 5:52/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.2 km/h\nTotal: 10km'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'Deadlifts, SkiErg 8×250m, Farmers 24kg',specifics:'Warm-up: 500m row + mobility\n\nDeadlifts: 4 × 5 (120-140kg / 265-308 lbs)\nIncline press: 3 × 8 (70-90kg / 154-198 lbs)\nSkiErg: 8 × 250m (50s hard / 10s rest)\nLat pulldowns: 3 × 10 (80-100kg / 176-220 lbs)\nFarmers: 3 × 50m @ 24kg each hand (53 lbs)\nSuitcase: 3 × 40m @ 20kg (44 lbs)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Tempo',detail:'5 × 1km threshold',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 5 × 1km @ 10.5 km/h (6.53 mph - 5:43/km)\nRecovery: 75s jog @ 9.8 km/h (6.09 mph)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.5 km/h\nTotal: 10km'},
-            {day:'Friday',type:'Running',focus:'Long Run',detail:'14km steady',specifics:'Warm-up: 2km easy (9.5 km/h / 5.9 mph)\n\nMain: 11km steady @ 9.6 km/h (5.97 mph - 6:15/km)\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph)\n\nTreadmill: 9.6 km/h\nTotal: 14km'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Active recovery',specifics:'Rest Day:\n• 30min walk\n• Stretching\n• Foam rolling'},
-            {day:'Sunday',type:'Hybrid',focus:'Station Circuits',detail:'20 wall balls @ 12kg',specifics:'Warm-up: 2km run + dynamic work\n\n2 rounds, 90s rest between:\n• 50m sled push @ 170kg (375 lbs)\n• 80m burpee broad jumps (1.5m+ per rep)\n• 100m sandbag lunges @ 20kg (44 lbs) - target 5:50/100m\n• 200m farmers @ 20kg each hand (44 lbs)\n• 20 wall balls @ 12kg (26 lbs) - unbroken\n\n5 × 90s moderate-hard rowing (1:50/500m)\n\nCool-down: 5min'}
-          ],
-          3:[
-            {day:'Monday',type:'Strength',focus:'Lower Body Power',detail:'Sled 170kg/120kg (10 reps)',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 6 × 50m @ 170kg (375 lbs) - explosive\nBox jumps: 4 × 5 (20-24cm)\nSled Pull: 10 × 50m @ 120kg (265 lbs)\nPistol squats: 3 × 5 each\nHeavy carries: 3 × 30m (20kg each + 20kg suitcase)\nLeg raises: 3 × 8\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'Fartlek',detail:'8 × 3min hard',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 8 × 3min hard @ 10.5 km/h (6.53 mph - 5:43/km)\nRecovery: 2min easy @ 9.8 km/h (6.09 mph - 6:10/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: Alternate 10.5 / 9.8 km/h\nTotal: 10.5km'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'500m row test, Farmers 28kg',specifics:'Warm-up: 500m row + mobility\n\nBarbell rows: 5 × 5 @ 130-150kg (286-330 lbs)\nPush press: 3 × 5 (80-100kg / 176-220 lbs)\n500m row test (aim 1:45/500m - ALL OUT)\nChest rows: 3 × 8 (100-120kg / 220-265 lbs)\nPull-ups: 4 × 6\nFarmers: 3 × 40m @ 28kg each hand (62 lbs)\nRenegade rows: 3 × 10 (12kg dumbbells)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'VO2Max',detail:'6 × 800m RACE PACE',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 6 × 800m hard @ 11.0 km/h (6.84 mph - 5:27/km RACE PACE)\nRecovery: 90s jog @ 9.5 km/h (5.9 mph - 6:19/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 11.0 km/h\nTotal: 10km'},
-            {day:'Friday',type:'Running',focus:'Long Run',detail:'15km with tempo',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 10km @ 10.2 km/h (6.34 mph - 5:52/km)\nPlus: 2 × 1km @ 10.5 km/h (6.53 mph - 5:43/km) within run\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: Alternate speeds\nTotal: 15km'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Active recovery',specifics:'Rest Day:\n• 30min walk\n• Stretching\n• Foam rolling'},
-            {day:'Sunday',type:'Hybrid',focus:'Station Circuits',detail:'25 wall balls @ 12kg',specifics:'Warm-up: 2km run + dynamic prep\n\nCircuit (3 rounds, 2min rest between):\n• 50m sled push @ 170kg (375 lbs)\n• 80m burpee broad jumps (aggressive 1.5m+)\n• 100m sandbag lunges @ 20kg (44 lbs) - target 5:45/100m\n• 200m farmers @ 20kg each hand (44 lbs)\n• 25 wall balls @ 12kg (26 lbs) - VOLUME FOCUS\n\n3 × 3min moderate-hard rowing (1:50/500m+)\n\nCool-down: 5min'}
-          ],
-          4:[
-            {day:'Monday',type:'Strength',focus:'Lower Body',detail:'Sled 170kg/120kg (12 REPS pull)',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 4 × 50m @ 170kg (375 lbs)\nFront squats: 3 × 6 (100-120kg / 220-265 lbs)\nSled Pull: 12 × 50m @ 120kg (265 lbs) - 6 fast, 6 controlled\nBulgarian squats: 3 × 8 @ 18kg each hand (40 lbs)\nLandmine rotations: 3 × 8 each (20kg)\nDead bugs: 3 × 10 each (5-8kg)\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'Tempo Block',detail:'2 × 3km threshold',specifics:'Warm-up: 2km easy (9.5 km/h / 5.9 mph)\n\nMain: 2 × 3km @ 10.2 km/h (6.34 mph - 5:55/km)\nRecovery: 3min jog @ 9.2 km/h (5.72 mph)\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph)\n\nTreadmill: 10.2 km/h for reps\nTotal: 10km'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'SkiErg 4×500m, Farmers 24kg',specifics:'Warm-up: 500m row + mobility\n\nPendulum rows: 4 × 6 (120-140kg / 265-308 lbs)\nIncline press: 3 × 6 (80-100kg / 176-220 lbs)\nSkiErg: 4 × 500m @ 1:50-2:00/500m (2min recovery)\nT-bar rows: 3 × 8 (100-120kg / 220-265 lbs)\nWeighted pull-ups: 3 × 5 (add 10-20kg / 22-44 lbs)\nPlate pinch carries: 3 × 30m (25kg plate each)\nWeighted crunches: 3 × 15 (8kg plate)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Lactate Threshold',detail:'5 × 1km RACE EFFORT',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n1km jog (10.0 km/h / 6.21 mph)\n\nMain: 5 × 1km hard @ 10.8 km/h (6.71 mph - 5:33/km RACE EFFORT)\nRecovery: 60s walk/jog @ 9.0 km/h (5.59 mph - 6:45/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.8 km/h\nTotal: 11km'},
-            {day:'Friday',type:'Running',focus:'Long Run',detail:'16km aerobic base',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 13km steady @ 10.2 km/h (6.34 mph - 5:52/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.2 km/h\nTotal: 16km - building engine'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Active recovery',specifics:'Rest Day:\n• 30min walk\n• Stretching\n• Foam rolling'},
-            {day:'Sunday',type:'Hybrid',focus:'Mini-Course Sim',detail:'30 wall balls @ 12kg',specifics:'Warm-up: 2km run + dynamic prep\n\nMini-Course Simulation (2 rounds, 3min rest):\n• 1000m run @ 10.2 km/h (6.34 mph - 5:52/km)\n• 50m sled push @ 170kg (375 lbs) - aggressive\n• 1000m run @ 10.5 km/h (6.53 mph - 5:43/km)\n• 50m sled pull @ 120kg (265 lbs) - HARD\n• 1000m run @ 10.5 km/h (6.53 mph)\n• 80m burpee broad jumps - aggressive\n• 100m sandbag @ 20kg (44 lbs) - target 5:45/100m\n• 200m farmers @ 24kg each hand (53 lbs)\n• 30 wall balls @ 12kg (26 lbs) - max volume\n\nCool-down: 5min walk/stretch'}
-          ],
-          5:[
-            {day:'Monday',type:'Strength',focus:'Lower Body PEAK',detail:'Sled 175kg/125kg MAXIMUM',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 1 × 50m sprint @ 175kg (386 lbs) - MAX OVERLOAD\nSled Push: 4 × 50m @ 170kg (375 lbs) - max effort\nJump squats: 4 × 6 (resistance band or 10kg plate)\nSled Pull: 12 × 50m @ 125kg (276 lbs) - MAXIMUM OVERLOAD\nSingle-leg squats: 3 × 5 each\nHeavy suitcase: 3 × 50m @ 24kg (53 lbs)\nPallof press: 3 × 8 each (20kg)\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'VO2Max',detail:'8 × 600m FAST',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 8 × 600m hard @ 11.2 km/h (6.96 mph - 5:22/km FAST)\nRecovery: 90s jog @ 9.5 km/h (5.9 mph - 6:19/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 11.2 km/h\nTotal: 10.5km - running power'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'1000m row test, Farmers 28kg',specifics:'Warm-up: 500m row + mobility\n\nPower cleans: 5 × 3 (80-100kg / 176-220 lbs)\n1000m row test (aim 3:30 - ALL OUT EFFORT)\nRows: 4 × 6 @ 140kg (308 lbs) - heavy\nWeighted dips: 3 × 6 (add 15-20kg / 33-44 lbs)\nFarmers: 4 × 50m @ 28kg each hand (62 lbs)\nPush-up holds: 3 × 20s (weighted vest optional)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Tempo Endurance',detail:'8km continuous threshold',specifics:'Warm-up: 2km easy (9.5 km/h / 5.9 mph)\n\nMain: 8km @ threshold 10.2 km/h (6.34 mph - 5:55/km)\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph)\n\nTreadmill: 10.2 km/h\nTotal: 11km'},
-            {day:'Friday',type:'Running',focus:'Long Run PEAK',detail:'17km MAX DISTANCE',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 14km steady @ 10.2 km/h (6.34 mph - 5:52/km)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.2 km/h\nTotal: 17km - PEAK AEROBIC VOLUME'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Active recovery',specifics:'Rest Day:\n• 30min walk\n• Stretching\n• Foam rolling'},
-            {day:'Sunday',type:'Hybrid',focus:'Full Hyrox Sim',detail:'35 wall balls @ 12kg PEAK',specifics:'Warm-up: 2km run + prep\n\nFull Hyrox Simulation @ 90% effort:\n• 1000m SkiErg hard (target 4:10-4:15 - improving from 4:28)\n• 50m sled push @ 170kg (375 lbs) - overload\n• 50m sled pull @ 125kg (276 lbs) - MAX OVERLOAD\n• 80m burpee broad jumps - aggressive\n• 100m sandbag @ 20kg (44 lbs) - target 5:45\n• 200m farmers @ 24kg each hand (53 lbs)\n• 1000m SkiErg - all out\n• 35 wall balls @ 12kg (26 lbs) - PEAK VOLUME\n\nFull roxzone (target 8:15)\nRecord ALL splits\n\nCool-down: 10min walk/stretch/foam roll'}
-          ],
-          6:[
-            {day:'Monday',type:'Strength',focus:'Lower Body Taper',detail:'Sled 160kg/110kg - reduced volume',specifics:'Warm-up: 5min row + mobility\n\nSled Push: 3 × 50m @ 160kg (353 lbs) - feeling strong\nBulgarian squats: 2 × 8 @ 16kg each hand (35 lbs)\nSled Pull: 8 × 50m @ 110kg (243 lbs) - maintaining power\nSingle-leg RDLs: 2 × 8 @ 12kg each hand (26 lbs)\nFarmers: 2 × 50m @ 24kg each hand (53 lbs)\nPlanks: 2 × 30s\n\nCool-down: 5min row'},
-            {day:'Tuesday',type:'Running',focus:'Easy Recovery',detail:'9km VERY EASY',specifics:'Warm-up: 2km easy (9.8 km/h / 6.09 mph - 6:10/km)\n\nMain: 6km VERY EASY @ 9.8 km/h (6.09 mph - 6:10/km conversational)\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph - 6:19/km)\n\nTreadmill: 9.8 km/h\nTotal: 9km - active recovery, no intensity'},
-            {day:'Wednesday',type:'Strength',focus:'Upper Body',detail:'SkiErg race pace, Farmers 22kg',specifics:'Warm-up: 500m row + mobility\n\nSkiErg race pace: 4 × 250m (aim 1:50/500m = 4:28 pace)\nRows: 3 × 6 @ 110-120kg (242-265 lbs) - moderate\nFarmers: 3 × 40m @ 22kg each hand (49 lbs)\nPush-ups: 2 × 10 (bodyweight or vest)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Tempo Endurance',detail:'7km sustained RACE PACE',specifics:'Warm-up: 2km easy (10.0 km/h / 6.21 mph - 6:00/km)\n\nMain: 7km @ threshold 10.5 km/h (6.53 mph - 5:43/km RACE PACE SUSTAINED)\n\nCool-down: 1km easy (10.0 km/h / 6.21 mph)\n\nTreadmill: 10.5 km/h\nTotal: 10km - building race-pace endurance'},
-            {day:'Friday',type:'Running',focus:'Easy Long Run',detail:'13km easy pace',specifics:'Warm-up: 2km easy (9.2 km/h / 5.72 mph - 6:30/km)\n\nMain: 10km easy @ 9.3 km/h (5.78 mph - 6:25/km or slower)\n\nCool-down: 1km easy (9.2 km/h / 5.72 mph - 6:30/km)\n\nTreadmill: 9.3 km/h\nTotal: 13km'},
-            {day:'Saturday',type:'Rest',focus:'Recovery',detail:'Mobility focus',specifics:'Rest Day:\n• 30min walk\n• Extended stretching session\n• Foam rolling\n• Mobility work'},
-            {day:'Sunday',type:'Hybrid',focus:'Race Rehearsal',detail:'25-30 wall balls @ 12kg, 85% effort',specifics:'Warm-up: 2km run + dynamic prep\n\nStations @ target race pace (run between if doing full):\n• 50m sled push @ 160kg (353 lbs) - race weight feels fast\n• 50m sled pull @ 110kg (243 lbs) - race weight feels light\n• 80m burpee broad jumps - race pace\n• 100m sandbag @ 20kg (44 lbs) - target 5:50/100m\n• 200m farmers @ 22kg each hand (49 lbs)\n• 1000m SkiErg race pace (1:50/500m = 4:10 target)\n• 25-30 wall balls @ 12kg (26 lbs) - race pace 8:00-8:30\n\nRoxzone: 8:15 target\nOR: Full course @ 85% effort\n\nCool-down: 8min walk/stretch'}
-          ],
-          7:[
-            {day:'Monday',type:'Strength',focus:'Activation',detail:'RACE WEIGHTS 152kg/102kg!',specifics:'Warm-up: 5min row + leg mobility\n\nSled Push: 2 × 50m @ 152kg (335 lbs) - RACE WEIGHT! Easy-moderate pace\nSled Pull: 3 × 50m @ 102kg (225 lbs) - RACE WEIGHT! Easy-moderate pace\n\nAfter overload training, these feel LIGHT!\n\nLight leg work: 2 × 8 squats or lunges (bodyweight or 20kg)\n\nCool-down: 5min walk'},
-            {day:'Tuesday',type:'Running',focus:'Shakeout',detail:'6km very easy activation',specifics:'Warm-up: 2km easy (9.8 km/h / 6.09 mph - 6:10/km)\n\nMain: 3 × 800m easy @ 9.8 km/h (6.09 mph - 6:10/km)\nRecovery: 2min walk between\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph - 6:19/km)\n\nTreadmill: 9.8 km/h\nTotal: 6km - very easy, just activation'},
-            {day:'Wednesday',type:'Strength',focus:'Light Activation',detail:'Easy movement only',specifics:'Warm-up: 500m row + mobility\n\nSkiErg: 3 × 250m easy pace (2:00+/500m - just movement)\nLight rows: 2 × 6 @ 80kg (176 lbs)\nFarmers: 2 × 30m @ 16kg each hand (35 lbs)\n\nCool-down: 3min row'},
-            {day:'Thursday',type:'Running',focus:'Shakeout',detail:'5km very light',specifics:'Warm-up: 1km easy (9.8 km/h / 6.09 mph - 6:10/km)\n\nMain: 2 × 1km easy @ 9.8 km/h (6.09 mph - 6:10/km)\nRecovery: 1min walk\n\nCool-down: 1km easy (9.5 km/h / 5.9 mph - 6:19/km)\n\nTreadmill: 9.8 km/h\nTotal: 5km - very light activation only'},
-            {day:'Friday',type:'Rest',focus:'Complete Rest',detail:'Rest before RACE',specifics:'Complete rest day OR optional very easy 30min walk @ 8 km/h (4.97 mph - 7:30/km)\n\nFocus:\n• Hydration\n• Quality sleep\n• Mental preparation for Saturday\n• Pack race bag\n• Review race strategy'},
-            {day:'Saturday',type:'Hybrid',focus:'RACE DAY! 🏆',detail:'Hyrox Competition - 6 December',specifics:'🏆 RACE DAY - 6 December 2025\n\nArrive 1.5-2 hours early\n\nDynamic warm-up:\n• Leg swings, arm circles\n• Light jog (9.2 km/h / 5.72 mph - 6:30/km)\n• Station practice: light sled @ 60-80kg, wall balls @ 9kg\n\nRACE TARGETS after overload training:\n• Sled Push: Sub 3:00 (was 3:17)\n• Sled Pull: 4:45-5:00 (was 5:47) ← BIG GAIN\n• Wall Balls: 7:15-7:30 (was 8:30)\n• Sandbag Lunges: 5:50-6:00 (was 6:48)\n• Running pace: 5:50-5:55/km (was 6:18/km)\n• SkiErg: 4:10-4:15 (was 4:28)\n• Roxzone: 8:15-8:30 (was 9:03)\n\n🎯 OVERALL TARGET: SUB 1:30:00\n\nGood luck Tony! 🔥'},
-            {day:'Sunday',type:'Rest',focus:'Post-Race Recovery',detail:'Celebrate! 🎉',specifics:'Post-Race Recovery:\n\n• Light 20-30min walk\n• Gentle stretching\n• Ice bath or contrast shower (optional)\n• Refuel: carbs + protein\n• Hydrate well\n• Review race performance\n• CELEBRATE YOUR ACHIEVEMENT! 🏆🎉\n\nYou earned it!'}
-          ]
+      const getMensWorkouts = (w) => {
+        const data = {
+          1:[{day:'Mon',type:'Strength',focus:'Lower',detail:'160kg/110kg',specifics:'Sled Push: 5x50m @ 160kg\nRDLs: 3x8 (12kg each)\nSled Pull: 6x50m @ 110kg\nBulgarian: 3x8 (10kg each)'},{day:'Tue',type:'Running',focus:'Easy',detail:'10km',specifics:'10km @ 10.2 km/h (6.34 mph - 5:52/km)\nTotal: 10km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'Farmers 20kg',specifics:'Rows: 4x6 (80-100kg)\nPress: 3x8 (60-80kg)\nSkiErg: 6x250m\nFarmers: 3x40m @ 20kg each'},{day:'Thu',type:'Running',focus:'Tempo',detail:'4x1km',specifics:'4x1km @ 10.5 km/h (6.53mph - 5:43/km)\n90s recovery\nTotal: 10km'},{day:'Fri',type:'Running',focus:'Long',detail:'14km',specifics:'14km @ 10.2 km/h (6.34mph - 5:52/km)\nTotal: 14km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch\nFoam roll'},{day:'Sun',type:'Hybrid',focus:'Circuits',detail:'10 walls @ 9kg',specifics:'2 rounds:\nSled 60kg / Burpees / Sandbag 15kg / Farmers 15kg / 10 walls @ 9kg\n4x2min row'}],
+          2:[{day:'Mon',type:'Strength',focus:'Lower',detail:'170kg/120kg',specifics:'Sled Push: 5x50m @ 170kg\nRDLs: 3x6 (16kg each)\nSled Pull: 8x50m @ 120kg\nJump squats: 3x6'},{day:'Tue',type:'Running',focus:'Easy',detail:'10km',specifics:'10km @ 10.2 km/h (6.34mph)\nTotal: 10km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'Farmers 24kg',specifics:'Deadlifts: 4x5 (120-140kg)\nPress: 3x8 (70-90kg)\nSkiErg: 8x250m\nFarmers: 3x50m @ 24kg each'},{day:'Thu',type:'Running',focus:'Tempo',detail:'5x1km',specifics:'5x1km @ 10.5 km/h (6.53mph)\n75s recovery\nTotal: 10km'},{day:'Fri',type:'Running',focus:'Long',detail:'14km',specifics:'14km @ 9.6 km/h (5.97mph - 6:15/km)\nTotal: 14km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch\nFoam roll'},{day:'Sun',type:'Hybrid',focus:'Circuits',detail:'20 walls @ 12kg',specifics:'2 rounds, 90s rest:\nSled 170kg / Burpees / Sandbag 20kg / Farmers 20kg / 20 walls @ 12kg\n5x90s row'}],
+          3:[{day:'Mon',type:'Strength',focus:'Lower',detail:'170kg/120kg (10)',specifics:'Sled Push: 6x50m @ 170kg\nBox jumps: 4x5\nSled Pull: 10x50m @ 120kg\nPistol squats: 3x5'},{day:'Tue',type:'Running',focus:'Fartlek',detail:'8x3min',specifics:'8x3min @ 10.5 km/h\n2min recovery @ 9.8 km/h\nTotal: 10.5km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'500m test, 28kg',specifics:'Rows: 5x5 @ 130-150kg\n500m row test (1:45)\nFarmers: 3x40m @ 28kg each'},{day:'Thu',type:'Running',focus:'VO2Max',detail:'6x800m',specifics:'6x800m @ 11.0 km/h (6.84mph - 5:27/km)\nTotal: 10km'},{day:'Fri',type:'Running',focus:'Long',detail:'15km',specifics:'10km @ 10.2 km/h + 2x1km @ 10.5 km/h\nTotal: 15km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch'},{day:'Sun',type:'Hybrid',focus:'Circuits',detail:'25 walls @ 12kg',specifics:'3 rounds:\nSled 170kg / Burpees / Sandbag 20kg / Farmers 20kg / 25 walls @ 12kg\n3x3min row'}],
+          4:[{day:'Mon',type:'Strength',focus:'Lower',detail:'170kg/120kg (12)',specifics:'Sled Push: 4x50m @ 170kg\nFront squat: 3x6 (100-120kg)\nSled Pull: 12x50m @ 120kg\nBulgarian: 3x8 @ 18kg'},{day:'Tue',type:'Running',focus:'Tempo',detail:'2x3km',specifics:'2x3km @ 10.2 km/h (5:55/km)\n3min recovery\nTotal: 10km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'4x500m SkiErg',specifics:'Rows: 4x6 (120-140kg)\nSkiErg: 4x500m @ 1:50-2:00\nFarmers: 3x30m @ 25kg plate'},{day:'Thu',type:'Running',focus:'Threshold',detail:'5x1km RACE',specifics:'5x1km @ 10.8 km/h (5:33/km)\n60s recovery\nTotal: 11km'},{day:'Fri',type:'Running',focus:'Long',detail:'16km',specifics:'16km @ 10.2 km/h (5:52/km)\nTotal: 16km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch'},{day:'Sun',type:'Hybrid',focus:'Mini-Course',detail:'30 walls @ 12kg',specifics:'Mini-Course (2 rounds):\n1km run / Sled 170kg / 1km / Pull 120kg / Burpees / Sandbag 20kg / Farmers 24kg / 30 walls @ 12kg'}],
+          5:[{day:'Mon',type:'Strength',focus:'Lower PEAK',detail:'175kg/125kg MAX',specifics:'Sled Push: 1x50m @ 175kg MAX\nSled Push: 4x50m @ 170kg\nSled Pull: 12x50m @ 125kg MAX'},{day:'Tue',type:'Running',focus:'VO2Max',detail:'8x600m',specifics:'8x600m @ 11.2 km/h (5:22/km)\nTotal: 10.5km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'1000m test, 28kg',specifics:'Power cleans: 5x3 (80-100kg)\n1000m row test (3:30)\nRows: 4x6 @ 140kg\nFarmers: 4x50m @ 28kg each'},{day:'Thu',type:'Running',focus:'Tempo',detail:'8km continuous',specifics:'8km @ 10.2 km/h (5:55/km)\nTotal: 11km'},{day:'Fri',type:'Running',focus:'Long PEAK',detail:'17km MAX',specifics:'17km @ 10.2 km/h (5:52/km)\nPEAK VOLUME\nTotal: 17km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch'},{day:'Sun',type:'Hybrid',focus:'Full Sim',detail:'35 walls PEAK',specifics:'Full Hyrox @ 90%:\nSkiErg 1km / Sled 170kg / Pull 125kg / Burpees / Sandbag / Farmers 24kg / SkiErg 1km / 35 walls @ 12kg\nRecord all splits'}],
+          6:[{day:'Mon',type:'Strength',focus:'Lower Taper',detail:'160kg/110kg',specifics:'Sled Push: 3x50m @ 160kg\nSled Pull: 8x50m @ 110kg\nFarmers: 2x50m @ 24kg'},{day:'Tue',type:'Running',focus:'Easy',detail:'9km',specifics:'9km EASY @ 9.8 km/h\nTotal: 9km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'Race pace, 22kg',specifics:'SkiErg: 4x250m race pace\nRows: 3x6 @ 110-120kg\nFarmers: 3x40m @ 22kg each'},{day:'Thu',type:'Running',focus:'Tempo',detail:'7km race pace',specifics:'7km @ 10.5 km/h (5:43/km)\nTotal: 10km'},{day:'Fri',type:'Running',focus:'Easy',detail:'13km',specifics:'13km easy @ 9.3 km/h\nTotal: 13km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Mobility',specifics:'Extended stretch\nFoam roll\nMobility'},{day:'Sun',type:'Hybrid',focus:'Rehearsal',detail:'25-30 walls, 85%',specifics:'Stations @ 85%:\nSled 160kg / Pull 110kg / Burpees / Sandbag 20kg / Farmers 22kg / SkiErg / 25-30 walls @ 12kg\nRoxzone: 8:15'}],
+          7:[{day:'Mon',type:'Strength',focus:'Activation',detail:'RACE 152kg/102kg',specifics:'Sled Push: 2x50m @ 152kg RACE WEIGHT\nSled Pull: 3x50m @ 102kg RACE WEIGHT\nFeels LIGHT!'},{day:'Tue',type:'Running',focus:'Shakeout',detail:'6km',specifics:'6km easy @ 9.8 km/h\nTotal: 6km'},{day:'Wed',type:'Strength',focus:'Light',detail:'Easy movement',specifics:'SkiErg: 3x250m easy\nRows: 2x6 @ 80kg\nFarmers: 2x30m @ 16kg'},{day:'Thu',type:'Running',focus:'Shakeout',detail:'5km',specifics:'5km easy @ 9.8 km/h\nTotal: 5km'},{day:'Fri',type:'Rest',focus:'REST',detail:'Complete rest',specifics:'Rest or 30min walk\nHydrate\nSleep\nMental prep'},{day:'Sat',type:'Hybrid',focus:'RACE DAY 🏆',detail:'6 December',specifics:'RACE DAY!\n\nTARGETS:\nPush: Sub 3:00\nPull: 4:45-5:00 (BIG GAIN)\nWalls: 7:15-7:30\nSandbag: 5:50-6:00\nRun: 5:50-5:55/km\nSkiErg: 4:10-4:15\n\nTARGET: SUB 1:30:00 🔥'},{day:'Sun',type:'Rest',focus:'Celebrate',detail:'Recovery',specifics:'Post-race recovery:\nWalk\nStretch\nRefuel\nCELEBRATE! 🏆'}]
         };
-        return all[week] || all[1];
+        return data[w] || data[1];
       };
 
-      const currentPlan = selectedPlan === 'mixed' ? mixedDoublesWeek : getMensSinglesWorkouts(currentWeek);
-      const currentProgram = selectedPlan === 'mixed' ? mixedDoublesProgram : mensSinglesProgram;
+      const currentPlan = selectedPlan==='mixed' ? mixedWeek : getMensWorkouts(currentWeek);
+      const currentProgram = selectedPlan==='mixed' ? mixedProg : mensProg;
 
-      const toggleSessionComplete = (week, dayIndex) => {
-        const key = `${selectedUser}-${selectedPlan}-${week}-${dayIndex}`;
-        setCompletedSessions(prev => ({...prev, [key]: !prev[key]}));
-      };
+      const toggleComplete = (w,d) => { const k = `${selectedUser}-${selectedPlan}-${w}-${d}`; setCompletedSessions(p=>({...p,[k]:!p[k]})); };
+      const isComplete = (w,d) => { const k = `${selectedUser}-${selectedPlan}-${w}-${d}`; return completedSessions[k]||false; };
+      const getCompletion = (w) => { const t = selectedPlan==='mixed'?mixedWeek:getMensWorkouts(w); let c=0; t.forEach((_,i)=>{if(isComplete(w,i))c++;}); return {completed:c,total:t.length,percentage:Math.round((c/t.length)*100)}; };
+      const getRunKm = (w) => { const t = selectedPlan==='mixed'?mixedWeek:getMensWorkouts(w); let km=0; t.forEach((d,i)=>{if(isComplete(w,i)&&d.type==='Running'){const s=d.specifics.toLowerCase(); if(s.includes('10km'))km+=10; if(s.includes('11km'))km+=11; if(s.includes('10.5km'))km+=10.5; if(s.includes('14km'))km+=14; if(s.includes('15km'))km+=15; if(s.includes('16km'))km+=16; if(s.includes('17km'))km+=17; if(s.includes('13km'))km+=13; if(s.includes('9km'))km+=9; if(s.includes('6km'))km+=6; if(s.includes('5km'))km+=5;}}); return km; };
+      const logWorkout = () => { if(!currentWorkout.type)return; setWorkouts([{...currentWorkout,id:Date.now(),user:selectedUser,plan:selectedPlan},...workouts]); setCurrentWorkout({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''}); setShowLogForm(false); };
+      const logMeal = () => { if(!currentMeal.mealName||!currentMeal.calories)return; setNutritionLog([{...currentMeal,id:Date.now(),calories:parseFloat(currentMeal.calories),protein:parseFloat(currentMeal.protein)||0,carbs:parseFloat(currentMeal.carbs)||0,fats:parseFloat(currentMeal.fats)||0},...nutritionLog]); setCurrentMeal({date:new Date().toISOString().split('T')[0],mealName:'',calories:'',protein:'',carbs:'',fats:''}); setShowNutritionForm(false); };
+      const getUserWorkouts = (u) => workouts.filter(w=>w.user===u);
+      const getStats = (u) => { const wa=new Date(); wa.setDate(wa.getDate()-7); const ww=workouts.filter(w=>w.user===u&&new Date(w.date)>=wa); return {total:ww.length,running:ww.filter(w=>w.type==='Running').length,strength:ww.filter(w=>w.type==='Strength').length,hybrid:ww.filter(w=>w.type==='Hybrid').length}; };
+      const getTodayNutrition = () => { const td=new Date().toISOString().split('T')[0]; return nutritionLog.filter(m=>m.date===td).reduce((a,m)=>({calories:a.calories+m.calories,protein:a.protein+m.protein,carbs:a.carbs+m.carbs,fats:a.fats+m.fats}),{calories:0,protein:0,carbs:0,fats:0}); };
+      const getRecentNutrition = () => { const c=new Date(); c.setDate(c.getDate()-7); return nutritionLog.filter(m=>new Date(m.date)>=c); };
 
-      const isSessionComplete = (week, dayIndex) => {
-        const key = `${selectedUser}-${selectedPlan}-${week}-${dayIndex}`;
-        return completedSessions[key] || false;
-      };
+      return (<div className="min-h-screen bg-black text-white p-4"><div className="max-w-6xl mx-auto pb-20">
+        <div className="mb-8 text-center">
+          <div className="flex items-center justify-center gap-3 mb-3">
+            <img src="https://hyrox.com/wp-content/uploads/2023/09/hyrox_logo.svg" alt="Hyrox" className="h-12" onError={(e)=>{e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
+            <div style={{display:'none'}} className="items-center gap-3"><Flame size={40} style={{color:'#FF4500'}} /><h1 className="text-4xl font-bold">HYROX</h1></div>
+          </div>
+          <h2 className="text-2xl font-semibold">Training Logger</h2>
+          <p className="text-gray-300">Track your journey to race day</p>
+        </div>
 
-      const getWeekCompletion = (week) => {
-        const template = selectedPlan === 'mixed' ? mixedDoublesWeek : getMensSinglesWorkouts(week);
-        let completed = 0;
-        template.forEach((_, idx) => { if (isSessionComplete(week, idx)) completed++; });
-        return {completed, total: template.length, percentage: Math.round((completed / template.length) * 100)};
-      };
+        <div className="flex gap-4 mb-6 justify-center">
+          <button onClick={()=>{setSelectedUser('user1');setSelectedPlan('mixed');}} className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${selectedUser==='user1'?'text-white shadow-lg':'bg-white text-black border-2 border-gray-200'}`} style={selectedUser==='user1'?{backgroundColor:'#FF4500'}:{}}><User size={20}/><div><div>Jade</div><div className="text-xs opacity-75">Mixed Doubles</div></div></button>
+          <button onClick={()=>{setSelectedUser('user2');setSelectedPlan('mens');}} className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${selectedUser==='user2'?'text-white shadow-lg':'bg-white text-black border-2 border-gray-200'}`} style={selectedUser==='user2'?{backgroundColor:'#FF4500'}:{}}><User size={20}/><div><div>Tony</div><div className="text-xs opacity-75">Mens Singles</div></div></button>
+        </div>
 
-      const getWeekRunningKm = (week) => {
-        const template = selectedPlan === 'mixed' ? mixedDoublesWeek : getMensSinglesWorkouts(week);
-        let totalKm = 0;
-        template.forEach((day, idx) => {
-          if (isSessionComplete(week, idx) && day.type === 'Running') {
-            const spec = day.specifics.toLowerCase();
-            if (spec.includes('total: 10km')) totalKm += 10;
-            if (spec.includes('total: 11km')) totalKm += 11;
-            if (spec.includes('total: 10.5km')) totalKm += 10.5;
-            if (spec.includes('total: 14km')) totalKm += 14;
-            if (spec.includes('total: 15km')) totalKm += 15;
-            if (spec.includes('total: 16km')) totalKm += 16;
-            if (spec.includes('total: 17km')) totalKm += 17;
-            if (spec.includes('total: 13km')) totalKm += 13;
-            if (spec.includes('total: 9km')) totalKm += 9;
-            if (spec.includes('total: 6km')) totalKm += 6;
-            if (spec.includes('total: 5km')) totalKm += 5;
-          }
-        });
-        return totalKm;
-      };
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          {(()=>{const s=getStats(selectedUser);return(<>
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-4"><div className="text-gray-600 text-sm">This Week</div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{s.total}</div><div className="text-gray-600 text-xs">Total</div></div>
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-4"><div className="text-gray-600 text-sm">Running</div><div className="text-3xl font-bold text-black">{s.running}</div><div className="text-gray-600 text-xs">Sessions</div></div>
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-4"><div className="text-gray-600 text-sm">Strength</div><div className="text-3xl font-bold text-black">{s.strength}</div><div className="text-gray-600 text-xs">Sessions</div></div>
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-4"><div className="text-gray-600 text-sm">Hybrid</div><div className="text-3xl font-bold text-black">{s.hybrid}</div><div className="text-gray-600 text-xs">Sessions</div></div>
+          </>);})()}
+        </div>
 
-      const handleLogWorkout = () => {
-        if (!currentWorkout.type) return;
-        setWorkouts([{...currentWorkout, id: Date.now(), user: selectedUser, plan: selectedPlan}, ...workouts]);
-        setCurrentWorkout({date: new Date().toISOString().split('T')[0], type: '', duration: '', notes: ''});
-        setShowLogForm(false);
-      };
+        <div className="flex gap-2 mb-6 border-b-2 border-gray-200 overflow-x-auto">
+          {['plan','nutrition','log','history'].map(tab=>{if(tab==='nutrition'&&selectedUser!=='user1')return null;const icons={plan:Calendar,nutrition:Flame,log:Plus,history:TrendingUp};const Icon=icons[tab];const labels={plan:'Plan',nutrition:'Nutrition',log:'Log',history:'History'};return(<button key={tab} onClick={()=>setActiveTab(tab)} className={`px-6 py-3 font-semibold transition whitespace-nowrap ${activeTab===tab?'border-b-2':'text-gray-500'}`} style={activeTab===tab?{borderBottomColor:'#FF4500',color:'#FF4500'}:{}} onMouseEnter={(e)=>e.currentTarget.style.color='#FF4500'} onMouseLeave={(e)=>{if(activeTab!==tab)e.currentTarget.style.color='#6B7280';}}><Icon size={18} className="inline mr-2"/>{labels[tab]}</button>);})}
+        </div>
 
-      const handleLogMeal = () => {
-        if (!currentMeal.mealName || !currentMeal.calories) return;
-        setNutritionLog([{...currentMeal, id: Date.now(), calories: parseFloat(currentMeal.calories), protein: parseFloat(currentMeal.protein) || 0, carbs: parseFloat(currentMeal.carbs) || 0, fats: parseFloat(currentMeal.fats) || 0}, ...nutritionLog]);
-        setCurrentMeal({date: new Date().toISOString().split('T')[0], mealName: '', calories: '', protein: '', carbs: '', fats: ''});
-        setShowNutritionForm(false);
-      };
+        <div className="bg-white border-2 border-gray-200 rounded-lg p-6 text-black">
+          {activeTab==='plan'&&(<div>
+            <h3 className="text-xl font-bold mb-4">{selectedPlan==='mixed'?'Mixed Doubles':'Mens Singles'} - 7 Weeks (Race: 6 Dec)</h3>
+            <div className="flex items-center gap-3 mb-6">
+              <button onClick={()=>setCurrentWeek(Math.max(1,currentWeek-1))} disabled={currentWeek===1} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 text-black">←</button>
+              <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
+                {[...Array(7)].map((_,i)=>{const w=i+1;const c=getCompletion(w);const info=currentProgram[w];const d=new Date(info.startDate);return(<button key={w} onClick={()=>setCurrentWeek(w)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold border-2 ${currentWeek===w?'text-white shadow-lg':'bg-white text-black border-gray-200'}`} style={currentWeek===w?{backgroundColor:'#FF4500',borderColor:'#FF4500'}:{}}><div className="text-sm">Week {w}</div><div className="text-xs opacity-75">{d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>{c.completed>0&&<div className="text-xs mt-1">{c.percentage}%</div>}</button>);})}
+              </div>
+              <button onClick={()=>setCurrentWeek(Math.min(7,currentWeek+1))} disabled={currentWeek===7} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 text-black">→</button>
+            </div>
 
-      const getUserWorkouts = (user) => workouts.filter(w => w.user === user);
-      const getWeekStats = (user) => {
-        const weekAgo = new Date();
-        weekAgo.setDate(weekAgo.getDate() - 7);
-        const ww = workouts.filter(w => w.user === user && new Date(w.date) >= weekAgo);
-        return {total: ww.length, running: ww.filter(w => w.type === 'Running').length, strength: ww.filter(w => w.type === 'Strength').length, hybrid: ww.filter(w => w.type === 'Hybrid').length};
-      };
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+              <div className="flex justify-between mb-3">
+                <div><h4 className="text-2xl font-bold text-black">Week {currentWeek}</h4><div className="text-sm text-gray-600 mt-1">Starting: {new Date(currentProgram[currentWeek].startDate).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div></div>
+                {currentWeek===7&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 mb-4">
+                <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold text-black">{currentProgram[currentWeek].focus}</div></div>
+                <div><div className="text-sm text-gray-600">Intensity</div><div className="text-lg font-semibold text-black">{currentProgram[currentWeek].intensity}</div></div>
+                <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getCompletion(currentWeek).completed}/{getCompletion(currentWeek).total}</div></div>
+                <div><div className="text-sm text-gray-600">Running</div><div className="text-lg font-semibold" style={{color:'#FF4500'}}>{getRunKm(currentWeek).toFixed(1)} km</div></div>
+              </div>
+              <div className="text-sm text-gray-700 italic">{currentProgram[currentWeek].notes}</div>
+            </div>
 
-      const getTodayNutrition = () => {
-        const today = new Date().toISOString().split('T')[0];
-        return nutritionLog.filter(m => m.date === today).reduce((acc, m) => ({calories: acc.calories + m.calories, protein: acc.protein + m.protein, carbs: acc.carbs + m.carbs, fats: acc.fats + m.fats}), {calories: 0, protein: 0, carbs: 0, fats: 0});
-      };
+            <div className="space-y-3">
+              {currentPlan.map((day,idx)=>{const ic=isComplete(currentWeek,idx);const [sd,setSd]=React.useState(false);return(<div key={`${currentWeek}-${idx}`} className={`bg-white border-2 rounded-lg p-4 ${ic?'shadow-lg':'border-gray-200'}`} style={ic?{borderColor:'#FF4500'}:{}}>
+                <div className="flex items-start gap-4">
+                  <button onClick={()=>toggleComplete(currentWeek,idx)} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center text-white ${ic?'border-transparent':'border-gray-300'}`} style={ic?{backgroundColor:'#FF4500'}:{}}>{ic&&<CheckCircle size={20}/>}</button>
+                  <div className="flex-1">
+                    <div className="flex justify-between mb-2">
+                      <div><div className="font-bold text-lg text-black">{day.day}</div><div className="text-sm text-gray-600">{day.type} - {day.focus}</div></div>
+                      <div className="px-3 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor:day.type==='Running'?'#FF4500':day.type==='Strength'?'#000000':'#FF4500'}}>{day.type}</div>
+                    </div>
+                    <div className="text-sm text-gray-700 mb-2">{day.detail}</div>
+                    <button onClick={()=>setSd(!sd)} className="text-xs font-semibold" style={{color:'#FF4500'}}>{sd?'▼ Hide':'▶ Show Full Workout'}</button>
+                    {sd&&<div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded text-sm text-black whitespace-pre-line">{day.specifics}</div>}
+                  </div>
+                </div>
+              </div>);})}
+            </div>
+          </div>)}
 
-      const getRecentNutrition = () => {
-        const cutoff = new Date();
-        cutoff.setDate(cutoff.getDate() - 7);
-        return nutritionLog.filter(m => new Date(m.date) >= cutoff);
-      };
+          {activeTab==='nutrition'&&selectedUser==='user1'&&(<div>
+            <div className="flex justify-between mb-4">
+              <h3 className="text-xl font-bold text-white">Jade's Nutrition</h3>
+              <button onClick={()=>setShowTargetForm(!showTargetForm)} className="px-4 py-2 rounded-lg text-sm font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>{showTargetForm?'Cancel':'Edit Targets'}</button>
+            </div>
 
-      return (
-        <div className="min-h-screen bg-black text-white p-4">
-          <div className="max-w-6xl mx-auto pb-20">
-            <div className="mb-8 text-center">
-              <div className="flex items-center justify-center gap-3 mb-3">
-                <img src="https://hyrox.com/wp-content/uploads/2023/09/hyrox_logo.svg" alt="Hyrox" className="h-12" onError={(e) => {e.target.style.display='none';e.target.nextSibling.style.display='flex';}} />
-                <div style={{display:'none'}} className="items-center gap-3">
-                  <Flame size={40} style={{color:'#FF4500'}} />
-                  <h1 className="text-4xl font-bold">HYROX</h1>
+            {showTargetForm&&(<div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+              <h4 className="text-lg font-bold mb-4 text-black">Adjust Targets</h4>
+              <div className="grid grid-cols-2 gap-4 mb-4">
+                <div><label className="block text-sm font-bold mb-2 text-black">Calories</label><input type="number" value={nutritionTargets.calories} onChange={(e)=>setNutritionTargets({...nutritionTargets,calories:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+                <div><label className="block text-sm font-bold mb-2 text-black">Protein (g)</label><input type="number" value={nutritionTargets.protein} onChange={(e)=>setNutritionTargets({...nutritionTargets,protein:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+                <div><label className="block text-sm font-bold mb-2 text-black">Carbs (g)</label><input type="number" value={nutritionTargets.carbs} onChange={(e)=>setNutritionTargets({...nutritionTargets,carbs:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+                <div><label className="block text-sm font-bold mb-2 text-black">Fats (g)</label><input type="number" value={nutritionTargets.fats} onChange={(e)=>setNutritionTargets({...nutritionTargets,fats:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+              </div>
+              <div className="bg-gray-800 rounded p-4 text-sm mb-4"><p className="font-bold mb-2 text-white">💡 Weight Loss:</p><ul className="text-sm text-gray-200"><li>• Moderate: -300-500 cal/day (0.5kg/week)</li><li>• Aggressive: -500-750 cal/day (0.75kg/week)</li><li>• Keep protein 2g/kg bodyweight</li><li>• Min 1600 cal while training</li></ul></div>
+              <button onClick={()=>setShowTargetForm(false)} className="w-full px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save</button>
+            </div>)}
+
+            <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+              <h4 className="text-2xl font-bold mb-2 text-black">Daily Targets</h4>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
+                <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.calories}</div><div className="text-sm text-gray-600">Calories</div></div>
+                <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.protein}g</div><div className="text-sm text-gray-600">Protein</div></div>
+                <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.carbs}g</div><div className="text-sm text-gray-600">Carbs</div></div>
+                <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.fats}g</div><div className="text-sm text-gray-600">Fats</div></div>
+              </div>
+            </div>
+
+            {(()=>{const t=getTodayNutrition();const cp=(t.calories/nutritionTargets.calories)*100;const pp=(t.protein/nutritionTargets.protein)*100;const crp=(t.carbs/nutritionTargets.carbs)*100;const fp=(t.fats/nutritionTargets.fats)*100;return(<div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+              <h4 className="text-xl font-bold mb-4 text-black">Today's Progress</h4>
+              <div className="space-y-4">
+                <div><div className="flex justify-between mb-2"><span className="font-semibold text-black">Calories</span><span className="font-bold" style={{color:cp>=95&&cp<=105?'#FF4500':'#6B7280'}}>{Math.round(t.calories)}/{nutritionTargets.calories}</span></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full" style={{width:`${Math.min(cp,100)}%`,backgroundColor:cp>=95&&cp<=105?'#FF4500':'#D1D5DB'}}/></div></div>
+                <div><div className="flex justify-between mb-2"><span className="font-semibold text-black">Protein</span><span className="font-bold" style={{color:pp>=95?'#FF4500':'#6B7280'}}>{Math.round(t.protein)}g/{nutritionTargets.protein}g</span></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full" style={{width:`${Math.min(pp,100)}%`,backgroundColor:pp>=95?'#FF4500':'#D1D5DB'}}/></div></div>
+                <div><div className="flex justify-between mb-2"><span className="font-semibold text-black">Carbs</span><span className="font-bold" style={{color:crp>=95&&crp<=105?'#FF4500':'#6B7280'}}>{Math.round(t.carbs)}g/{nutritionTargets.carbs}g</span></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full" style={{width:`${Math.min(crp,100)}%`,backgroundColor:crp>=95&&crp<=105?'#FF4500':'#D1D5DB'}}/></div></div>
+                <div><div className="flex justify-between mb-2"><span className="font-semibold text-black">Fats</span><span className="font-bold" style={{color:fp>=95&&fp<=105?'#FF4500':'#6B7280'}}>{Math.round(t.fats)}g/{nutritionTargets.fats}g</span></div><div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full" style={{width:`${Math.min(fp,100)}%`,backgroundColor:fp>=95&&fp<=105?'#FF4500':'#D1D5DB'}}/></div></div>
+              </div>
+            </div>);})()}
+
+            {!showNutritionForm?(<button onClick={()=>setShowNutritionForm(true)} className="w-full py-6 mb-6 border-2 border-dashed rounded-lg" style={{borderColor:'#FF4500',backgroundColor:'#FFF'}} onMouseEnter={(e)=>e.currentTarget.style.backgroundColor='#FFF5F0'} onMouseLeave={(e)=>e.currentTarget.style.backgroundColor='#FFF'}><Plus size={28} className="mx-auto mb-2" style={{color:'#FF4500'}}/><div className="text-lg font-semibold" style={{color:'#FF4500'}}>Log Meal</div></button>):(<div className="bg-gray-800 border-2 border-gray-700 rounded-lg p-6 mb-6">
+              <h4 className="text-lg font-bold mb-4 text-white">Log Meal</h4>
+              <div className="space-y-4">
+                <div><label className="block text-sm font-bold mb-2 text-white">Date</label><input type="date" value={currentMeal.date} onChange={(e)=>setCurrentMeal({...currentMeal,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div><label className="block text-sm font-bold mb-2 text-white">Meal Name</label><input type="text" value={currentMeal.mealName} onChange={(e)=>setCurrentMeal({...currentMeal,mealName:e.target.value})} placeholder="Breakfast, Lunch, Snack" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div><label className="block text-sm font-bold mb-2 text-white">Calories</label><input type="number" value={currentMeal.calories} onChange={(e)=>setCurrentMeal({...currentMeal,calories:e.target.value})} placeholder="500" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div><label className="block text-sm font-bold mb-2 text-white">Protein (g)</label><input type="number" value={currentMeal.protein} onChange={(e)=>setCurrentMeal({...currentMeal,protein:e.target.value})} placeholder="30" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div><label className="block text-sm font-bold mb-2 text-white">Carbs (g)</label><input type="number" value={currentMeal.carbs} onChange={(e)=>setCurrentMeal({...currentMeal,carbs:e.target.value})} placeholder="50" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div><label className="block text-sm font-bold mb-2 text-white">Fats (g)</label><input type="number" value={currentMeal.fats} onChange={(e)=>setCurrentMeal({...currentMeal,fats:e.target.value})} placeholder="15" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}}/></div>
+                <div className="flex gap-3">
+                  <button onClick={logMeal} className="flex-1 px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save</button>
+                  <button onClick={()=>setShowNutritionForm(false)} className="px-6 py-3 bg-white hover:bg-gray-100 border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button>
                 </div>
               </div>
-              <h2 className="text-2xl font-semibold mb-2">Training Logger</h2>
-              <p className="text-gray-300">Track your journey to race day</p>
+            </div>)}
+
+            <div><h4 className="text-lg font-bold mb-3 text-white">Recent Meals</h4>
+              {getRecentNutrition().length===0?(<div className="text-center py-8 text-gray-400"><p>No meals logged</p></div>):(<div className="space-y-3">{getRecentNutrition().map(m=>(<div key={m.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
+                <div className="flex justify-between mb-2"><div><div className="font-bold text-black">{m.mealName}</div><div className="text-sm text-gray-600">{new Date(m.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-lg font-bold" style={{color:'#FF4500'}}>{m.calories} cal</div></div>
+                <div className="flex gap-4 text-sm text-gray-700"><span>P: {m.protein}g</span><span>C: {m.carbs}g</span><span>F: {m.fats}g</span></div>
+              </div>))}</div>)}
             </div>
 
-            <div className="flex gap-4 mb-6 justify-center">
-              <button onClick={() => {setSelectedUser('user1');setSelectedPlan('mixed');}} className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${selectedUser==='user1'?'text-white shadow-lg':'bg-white text-black hover:bg-gray-100 border-2 border-gray-200'}`} style={selectedUser==='user1'?{backgroundColor:'#FF4500'}:{}}>
-                <User size={20} /><div><div>Jade</div><div className="text-xs opacity-75">Mixed Doubles</div></div>
-              </button>
-              <button onClick={() => {setSelectedUser('user2');setSelectedPlan('mens');}} className={`flex items-center gap-2 px-6 py-3 rounded-lg font-semibold transition ${selectedUser==='user2'?'text-white shadow-lg':'bg-white text-black hover:bg-gray-100 border-2 border-gray-200'}`} style={selectedUser==='user2'?{backgroundColor:'#FF4500'}:{}}>
-                <User size={20} /><div><div>Tony</div><div className="text-xs opacity-75">Mens Singles</div></div>
-              </button>
-            </div>
+            <div className="mt-6 bg-gray-800 rounded-lg p-5"><h4 className="font-bold text-lg mb-3 text-white">💧 Hydration</h4><ul className="text-sm text-gray-200"><li>• 2.5-3L water daily</li><li>• Electrolytes in sessions</li><li>• Multivitamin</li><li>• Omega-3</li><li>• Optional: Creatine 5g, BCAAs</li></ul></div>
+          </div>)}
 
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-              {(() => {
-                const stats = getWeekStats(selectedUser);
-                return (<>
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                    <div className="text-gray-600 text-sm mb-1">This Week</div>
-                    <div className="text-3xl font-bold" style={{color:'#FF4500'}}>{stats.total}</div>
-                    <div className="text-gray-600 text-xs">Total Workouts</div>
-                  </div>
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                    <div className="text-gray-600 text-sm mb-1">Running</div>
-                    <div className="text-3xl font-bold text-black">{stats.running}</div>
-                    <div className="text-gray-600 text-xs">Sessions</div>
-                  </div>
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                    <div className="text-gray-600 text-sm mb-1">Strength</div>
-                    <div className="text-3xl font-bold text-black">{stats.strength}</div>
-                    <div className="text-gray-600 text-xs">Sessions</div>
-                  </div>
-                  <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                    <div className="text-gray-600 text-sm mb-1">Hybrid</div>
-                    <div className="text-3xl font-bold text-black">{stats.hybrid}</div>
-                    <div className="text-gray-600 text-xs">Sessions</div>
-                  </div>
-                </>);
-              })()}
-            </div>
+          {activeTab==='log'&&(<div>
+            {!showLogForm?(<button onClick={()=>setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg" style={{borderColor:'#FF4500',backgroundColor:'#FFF'}} onMouseEnter={(e)=>e.currentTarget.style.backgroundColor='#FFF5F0'} onMouseLeave={(e)=>e.currentTarget.style.backgroundColor='#FFF'}><Plus size={32} className="mx-auto mb-2" style={{color:'#FF4500'}}/><div className="text-xl font-semibold" style={{color:'#FF4500'}}>Log Workout</div></button>):(<div className="space-y-4">
+              <h3 className="text-xl font-bold text-white">Log Workout</h3>
+              <div><label className="block text-sm font-medium mb-2 text-white">Date</label><input type="date" value={currentWorkout.date} onChange={(e)=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+              <div><label className="block text-sm font-medium mb-2 text-white">Type</label><select value={currentWorkout.type} onChange={(e)=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"><option value="">Select...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest</option></select></div>
+              <div><label className="block text-sm font-medium mb-2 text-white">Duration (min)</label><input type="number" value={currentWorkout.duration} onChange={(e)=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
+              <div><label className="block text-sm font-medium mb-2 text-white">Notes</label><textarea value={currentWorkout.notes} onChange={(e)=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel?" className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2 border-gray-200"/></div>
+              <div className="flex gap-3">
+                <button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save</button>
+                <button onClick={()=>setShowLogForm(false)} className="px-6 py-3 bg-white hover:bg-gray-100 border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button>
+              </div>
+            </div>)}
+          </div>)}
 
-            <div className="flex gap-2 mb-6 border-b-2 border-gray-200 overflow-x-auto">
-              {['plan','nutrition','log','history'].map(tab => {
-                if (tab === 'nutrition' && selectedUser !== 'user1') return null;
-                const icons = {plan:Calendar,nutrition:Flame,log:Plus,history:TrendingUp};
-                const Icon = icons[tab];
-                const labels = {plan:'Plan',nutrition:'Nutrition',log:'Log',history:'History'};
-                return (<button key={tab} onClick={() => setActiveTab(tab)} className={`px-6 py-3 font-semibold transition whitespace-nowrap ${activeTab===tab?'border-b-2':'text-gray-500'}`} style={activeTab===tab?{borderBottomColor:'#FF4500',color:'#FF4500'}:{}} onMouseEnter={(e)=>e.currentTarget.style.color='#FF4500'} onMouseLeave={(e)=>{if(activeTab!==tab)e.currentTarget.style.color='#6B7280';}}>
-                  <Icon size={18} className="inline mr-2" />{labels[tab]}
-                </button>);
-              })}
-            </div>
-
-            <div className="bg-white border-2 border-gray-200 rounded-lg p-6 text-black">
-              {activeTab==='plan' && (<div>
-                <h3 className="text-xl font-bold mb-4">{selectedPlan==='mixed'?'Mixed Doubles':'Mens Singles'} - 7 Week Program (Race: 6th December)</h3>
-                
-                <div className="flex items-center gap-3 mb-6">
-                  <button onClick={() => setCurrentWeek(Math.max(1,currentWeek-1))} disabled={currentWeek===1} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 text-black">←</button>
-                  
-                  <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
-                    {[...Array(7)].map((_,i) => {
-                      const week = i+1;
-                      const completion = getWeekCompletion(week);
-                      const weekInfo = currentProgram[week];
-                      const weekDate = new Date(weekInfo.startDate);
-                      return (<button key={week} onClick={() => setCurrentWeek(week)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${currentWeek===week?'text-white shadow-lg':'bg-white text-black hover:bg-gray-50 border-gray-200'}`} style={currentWeek===week?{backgroundColor:'#FF4500',borderColor:'#FF4500'}:{}}>
-                        <div className="text-sm">Week {week}</div>
-                        <div className="text-xs opacity-75">{weekDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>
-                        {completion.completed>0 && <div className="text-xs mt-1">{completion.percentage}%</div>}
-                      </button>);
-                    })}
-                  </div>
-                  
-                  <button onClick={() => setCurrentWeek(Math.min(7,currentWeek+1))} disabled={currentWeek===7} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 text-black">→</button>
-                </div>
-
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
-                  <div className="flex justify-between items-start mb-3">
-                    <div>
-                      <h4 className="text-2xl font-bold text-black">Week {currentWeek}</h4>
-                      <div className="text-sm text-gray-600 mt-1">Starting: {new Date(currentProgram[currentWeek].startDate).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
-                    </div>
-                    {currentWeek===7 && <div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
-                  </div>
-                  
-                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mt-4 mb-4">
-                    <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold text-black">{currentProgram[currentWeek].focus}</div></div>
-                    <div><div className="text-sm text-gray-600">Intensity</div><div className="text-lg font-semibold text-black">{currentProgram[currentWeek].intensity}</div></div>
-                    <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getWeekCompletion(currentWeek).completed}/{getWeekCompletion(currentWeek).total} sessions</div></div>
-                    <div><div className="text-sm text-gray-600">Running Volume</div><div className="text-lg font-semibold" style={{color:'#FF4500'}}>{getWeekRunningKm(currentWeek).toFixed(1)} km</div></div>
-                  </div>
-                  <div className="mt-3 text-sm text-gray-700 italic">{currentProgram[currentWeek].notes}</div>
-                </div>
-
-                <div className="space-y-3">
-                  {currentPlan.map((day,idx) => {
-                    const isComplete = isSessionComplete(currentWeek,idx);
-                    const [showDetails,setShowDetails] = React.useState(false);
-                    return (<div key={`${currentWeek}-${idx}`} className={`bg-white border-2 rounded-lg p-4 transition ${isComplete?'shadow-lg':'border-gray-200'}`} style={isComplete?{borderColor:'#FF4500'}:{}}>
-                      <div className="flex items-start gap-4">
-                        <button onClick={() => toggleSessionComplete(currentWeek,idx)} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${isComplete?'border-transparent':'border-gray-300 hover:border-gray-400'}`} style={isComplete?{backgroundColor:'#FF4500'}:{}}>
-                          {isComplete && <CheckCircle size={20} />}
-                        </button>
-                        
-                        <div className="flex-1">
-                          <div className="flex items-start justify-between mb-2">
-                            <div>
-                              <div className="font-bold text-lg text-black">{day.day}</div>
-                              <div className="text-sm text-gray-600">{day.type} - {day.focus}</div>
-                            </div>
-                            <div className="px-3 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor:day.type==='Running'?'#FF4500':day.type==='Strength'?'#000000':day.type==='Hybrid'?'#FF4500':'#666666'}}>
-                              {day.type}
-                            </div>
-                          </div>
-                          <div className="text-sm text-gray-700 mb-2">{day.detail}</div>
-                          
-                          <button onClick={() => setShowDetails(!showDetails)} className="text-xs font-semibold" style={{color:'#FF4500'}}>
-                            {showDetails?'▼ Hide Details':'▶ Show Full Workout'}
-                          </button>
-                          
-                          {showDetails && <div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded text-sm text-black whitespace-pre-line">{day.specifics}</div>}
-                        </div>
-                      </div>
-                    </div>);
-                  })}
-                </div>
-              </div>)}
-
-              {activeTab==='nutrition' && selectedUser==='user1' && (<div>
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-xl font-bold text-white">Jade's Nutrition Tracker</h3>
-                  <button onClick={() => setShowTargetForm(!showTargetForm)} className="px-4 py-2 rounded-lg text-sm font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>
-                    {showTargetForm?'Cancel':'Edit Targets'}
-                  </button>
-                </div>
-
-                {showTargetForm && (<div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
-                  <h4 className="text-lg font-bold mb-4 text-black">Adjust Nutrition Targets</h4>
-                  <div className="grid grid-cols-2 gap-4 mb-4">
-                    <div><label className="block text-sm font-bold mb-2 text-black">Daily Calories</label><input type="number" value={nutritionTargets.calories} onChange={(e)=>setNutritionTargets({...nutritionTargets,calories:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                    <div><label className="block text-sm font-bold mb-2 text-black">Protein (g)</label><input type="number" value={nutritionTargets.protein} onChange={(e)=>setNutritionTargets({...nutritionTargets,protein:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                    <div><label className="block text-sm font-bold mb-2 text-black">Carbs (g)</label><input type="number" value={nutritionTargets.carbs} onChange={(e)=>setNutritionTargets({...nutritionTargets,carbs:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                    <div><label className="block text-sm font-bold mb-2 text-black">Fats (g)</label><input type="number" value={nutritionTargets.fats} onChange={(e)=>setNutritionTargets({...nutritionTargets,fats:parseInt(e.target.value)})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                  </div>
-                  <div className="bg-gray-800 rounded p-4 text-sm mb-4">
-                    <p className="font-bold mb-2 text-white">💡 Weight Loss Guidelines:</p>
-                    <ul className="space-y-1 text-gray-200">
-                      <li>• Moderate deficit: -300-500 cal/day (0.5kg/week loss)</li>
-                      <li>• Aggressive deficit: -500-750 cal/day (0.75kg/week loss)</li>
-                      <li>• Maintain protein at 2g per kg bodyweight</li>
-                      <li>• Reduce carbs and fats proportionally</li>
-                      <li>• Don't go below 1600 calories while training hard</li>
-                    </ul>
-                  </div>
-                  <button onClick={() => setShowTargetForm(false)} className="w-full px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save Targets</button>
-                </div>)}
-                
-                <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
-                  <h4 className="text-2xl font-bold mb-2 text-black">Daily Targets</h4>
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-                    <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.calories}</div><div className="text-sm text-gray-600">Calories</div></div>
-                    <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.protein}g</div><div className="text-sm text-gray-600">Protein</div></div>
-                    <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.carbs}g</div><div className="text-sm text-gray-600">Carbs</div></div>
-                    <div><div className="text-3xl font-bold" style={{color:'#FF4500'}}>{nutritionTargets.fats}g</div><div className="text-sm text-gray-600">Fats</div></div>
-                  </div>
-                </div>
-
-                {(()=>{
-                  const today = getTodayNutrition();
-                  const cp = (today.calories/nutritionTargets.calories)*100;
-                  const pp = (today.protein/nutritionTargets.protein)*100;
-                  const crp = (today.carbs/nutritionTargets.carbs)*100;
-                  const fp = (today.fats/nutritionTargets.fats)*100;
-                  return (<div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
-                    <h4 className="text-xl font-bold mb-4 text-black">Today's Progress</h4>
-                    <div className="space-y-4">
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="font-semibold text-black">Calories</span>
-                          <span className="font-bold" style={{color:cp>=95&&cp<=105?'#FF4500':'#6B7280'}}>{Math.round(today.calories)} / {nutritionTargets.calories} cal</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full transition-all" style={{width:`${Math.min(cp,100)}%`,backgroundColor:cp>=95&&cp<=105?'#FF4500':'#D1D5DB'}} /></div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="font-semibold text-black">Protein</span>
-                          <span className="font-bold" style={{color:pp>=95?'#FF4500':'#6B7280'}}>{Math.round(today.protein)}g / {nutritionTargets.protein}g</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full transition-all" style={{width:`${Math.min(pp,100)}%`,backgroundColor:pp>=95?'#FF4500':'#D1D5DB'}} /></div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="font-semibold text-black">Carbs</span>
-                          <span className="font-bold" style={{color:crp>=95&&crp<=105?'#FF4500':'#6B7280'}}>{Math.round(today.carbs)}g / {nutritionTargets.carbs}g</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full transition-all" style={{width:`${Math.min(crp,100)}%`,backgroundColor:crp>=95&&crp<=105?'#FF4500':'#D1D5DB'}} /></div>
-                      </div>
-                      <div>
-                        <div className="flex justify-between mb-2">
-                          <span className="font-semibold text-black">Fats</span>
-                          <span className="font-bold" style={{color:fp>=95&&fp<=105?'#FF4500':'#6B7280'}}>{Math.round(today.fats)}g / {nutritionTargets.fats}g</span>
-                        </div>
-                        <div className="w-full bg-gray-200 rounded-full h-3"><div className="h-3 rounded-full transition-all" style={{width:`${Math.min(fp,100)}%`,backgroundColor:fp>=95&&fp<=105?'#FF4500':'#D1D5DB'}} /></div>
-                      </div>
-                    </div>
-                  </div>);
-                })()}
-
-                {!showNutritionForm ? (<button onClick={() => setShowNutritionForm(true)} className="w-full py-6 mb-6 border-2 border-dashed rounded-lg transition" style={{borderColor:'#FF4500',backgroundColor:'#FFFFFF'}} onMouseEnter={(e)=>e.currentTarget.style.backgroundColor='#FFF5F0'} onMouseLeave={(e)=>e.currentTarget.style.backgroundColor='#FFFFFF'}>
-                  <Plus size={28} className="mx-auto mb-2" style={{color:'#FF4500'}} />
-                  <div className="text-lg font-semibold" style={{color:'#FF4500'}}>Log Meal</div>
-                </button>) : (<div className="bg-gray-800 border-2 border-gray-700 rounded-lg p-6 mb-6">
-                  <h4 className="text-lg font-bold mb-4 text-white">Log Meal</h4>
-                  <div className="space-y-4">
-                    <div><label className="block text-sm font-bold mb-2 text-white">Date</label><input type="date" value={currentMeal.date} onChange={(e)=>setCurrentMeal({...currentMeal,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                    <div><label className="block text-sm font-bold mb-2 text-white">Meal Name</label><input type="text" value={currentMeal.mealName} onChange={(e)=>setCurrentMeal({...currentMeal,mealName:e.target.value})} placeholder="e.g., Breakfast, Lunch, Snack" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                    <div className="space-y-4">
-                      <div><label className="block text-sm font-bold mb-2 text-white">Calories</label><input type="number" value={currentMeal.calories} onChange={(e)=>setCurrentMeal({...currentMeal,calories:e.target.value})} placeholder="500" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                      <div><label className="block text-sm font-bold mb-2 text-white">Protein (g)</label><input type="number" value={currentMeal.protein} onChange={(e)=>setCurrentMeal({...currentMeal,protein:e.target.value})} placeholder="30" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                      <div><label className="block text-sm font-bold mb-2 text-white">Carbs (g)</label><input type="number" value={currentMeal.carbs} onChange={(e)=>setCurrentMeal({...currentMeal,carbs:e.target.value})} placeholder="50" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                      <div><label className="block text-sm font-bold mb-2 text-white">Fats (g)</label><input type="number" value={currentMeal.fats} onChange={(e)=>setCurrentMeal({...currentMeal,fats:e.target.value})} placeholder="15" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-300 font-medium placeholder-gray-400" style={{height:'42px',fontSize:'16px',boxSizing:'border-box'}} /></div>
-                    </div>
-                    <div className="flex gap-3">
-                      <button onClick={handleLogMeal} className="flex-1 px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save Meal</button>
-                      <button onClick={() => setShowNutritionForm(false)} className="px-6 py-3 bg-white hover:bg-gray-100 border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button>
-                    </div>
-                  </div>
-                </div>)}
-
-                <div>
-                  <h4 className="text-lg font-bold mb-3 text-white">Recent Meals</h4>
-                  {getRecentNutrition().length===0 ? (<div className="text-center py-8 text-gray-400"><p>No meals logged yet</p></div>) : (<div className="space-y-3">
-                    {getRecentNutrition().map(meal => (<div key={meal.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <div className="font-bold text-black">{meal.mealName}</div>
-                          <div className="text-sm text-gray-600">{new Date(meal.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
-                        </div>
-                        <div className="text-lg font-bold" style={{color:'#FF4500'}}>{meal.calories} cal</div>
-                      </div>
-                      <div className="flex gap-4 text-sm text-gray-700">
-                        <span>P: {meal.protein}g</span>
-                        <span>C: {meal.carbs}g</span>
-                        <span>F: {meal.fats}g</span>
-                      </div>
-                    </div>))}
-                  </div>)}
-                </div>
-
-                <div className="mt-6 bg-gray-800 rounded-lg p-5">
-                  <h4 className="font-bold text-lg mb-3 text-white">💧 Hydration & Supplements</h4>
-                  <ul className="space-y-2 text-sm text-gray-200">
-                    <li>• 2.5-3 liters of water daily</li>
-                    <li>• Electrolytes during intense sessions</li>
-                    <li>• Multivitamin with breakfast</li>
-                    <li>• Omega-3 supplement with dinner</li>
-                    <li>• Optional: Creatine (5g daily) and BCAAs</li>
-                  </ul>
-                </div>
-              </div>)}
-
-              {activeTab==='log' && (<div>
-                {!showLogForm ? (<button onClick={() => setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg transition" style={{borderColor:'#FF4500',backgroundColor:'#FFFFFF'}} onMouseEnter={(e)=>e.currentTarget.style.backgroundColor='#FFF5F0'} onMouseLeave={(e)=>e.currentTarget.style.backgroundColor='#FFFFFF'}>
-                  <Plus size={32} className="mx-auto mb-2" style={{color:'#FF4500'}} />
-                  <div className="text-xl font-semibold" style={{color:'#FF4500'}}>Log New Workout</div>
-                </button>) : (<div className="space-y-4">
-                  <h3 className="text-xl font-bold mb-4 text-white">Log Workout</h3>
-                  <div><label className="block text-sm font-medium mb-2 text-white">Date</label><input type="date" value={currentWorkout.date} onChange={(e)=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                  <div><label className="block text-sm font-medium mb-2 text-white">Workout Type</label><select value={currentWorkout.type} onChange={(e)=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"><option value="">Select type...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest/Recovery</option></select></div>
-                  <div><label className="block text-sm font-medium mb-2 text-white">Duration (minutes)</label><input type="number" value={currentWorkout.duration} onChange={(e)=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200" /></div>
-                  <div><label className="block text-sm font-medium mb-2 text-white">Notes</label><textarea value={currentWorkout.notes} onChange={(e)=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel? Times? Key observations..." className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2 border-gray-200" /></div>
-                  <div className="flex gap-3">
-                    <button onClick={handleLogWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>Save Workout</button>
-                    <button onClick={() => setShowLogForm(false)} className="px-6 py-3 bg-white hover:bg-gray-100 border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button>
-                  </div>
-                </div>)}
-              </div>)}
-
-              {activeTab==='history' && (<div>
-                <h3 className="text-xl font-bold mb-4 text-white">Workout History</h3>
-                {getUserWorkouts(selectedUser).length===0 ? (<div className="text-center py-12 text-gray-400"><Clock size={48} className="mx-auto mb-4 opacity-50" /><p>No workouts logged yet</p></div>) : (<div className="space-y-3">
-                  {getUserWorkouts(selectedUser).map(workout => (<div key={workout.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <div className="font-bold text-black">{workout.type}</div>
-                        <div className="text-sm text-gray-600">{new Date(workout.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
-                      </div>
-                      <div className="text-sm font-semibold text-black">{workout.duration} mins</div>
-                    </div>
-                    {workout.notes && <div className="text-sm text-gray-700 mt-2 pt-2 border-t border-gray-300">{workout.notes}</div>}
-                  </div>))}
-                </div>)}
-              </div>)}
-            </div>
-          </div>
+          {activeTab==='history'&&(<div>
+            <h3 className="text-xl font-bold mb-4 text-white">History</h3>
+            {getUserWorkouts(selectedUser).length===0?(<div className="text-center py-12 text-gray-400"><Clock size={48} className="mx-auto mb-4 opacity-50"/><p>No workouts logged</p></div>):(<div className="space-y-3">{getUserWorkouts(selectedUser).map(w=>(<div key={w.id} className="bg-white border-2 border-gray-200 rounded-lg p-4">
+              <div className="flex justify-between mb-2"><div><div className="font-bold text-black">{w.type}</div><div className="text-sm text-gray-600">{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-sm font-semibold text-black">{w.duration} min</div></div>
+              {w.notes&&<div className="text-sm text-gray-700 mt-2 pt-2 border-t border-gray-300">{w.notes}</div>}
+            </div>))}</div>)}
+          </div>)}
         </div>
-      );
+      </div></div>);
     }
 
-    ReactDOM.render(<HyroxTrainingApp />, document.getElementById('root'));
+    ReactDOM.render(<App />, document.getElementById('root'));
   </script>
 </body>
 </html>
