@@ -36,12 +36,11 @@ const CheckCircle=({s=24})=><Icon d='<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14
 const Flame=({s=24})=><Icon d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>' s={s}/>;
 const TrendingUp=({s=24})=><Icon d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' s={s}/>;
 const Clock=({s=24})=><Icon d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' s={s}/>;
-const LogOut=({s=24})=><Icon d='<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>' s={s}/>;
 
 const USERS = {
-  'jade@hyrox.com': { password: 'jade2024', name: 'Jade', plan: 'mixed', category: 'Mixed Doubles' },
-  'tony@hyrox.com': { password: 'tony2024', name: 'Tony', plan: 'mens', category: 'Mens Singles' },
-  'nathan@hyrox.com': { password: 'nathan2024', name: 'Nathan', plan: 'mens', category: 'Mens Singles' }
+  'jade': { name: 'Jade', plan: 'mixed', category: 'Mixed Doubles' },
+  'tony': { name: 'Tony', plan: 'mens', category: 'Mens Singles' },
+  'nathan': { name: 'Nathan', plan: 'mens', category: 'Mens Singles' }
 };
 
 function WorkoutCard({day,isComplete,onToggle}){
@@ -113,8 +112,8 @@ function LoginScreen({onLogin}){
 }
 
 function App(){
-const[currentUser,setCurrentUser]=useState(null);
-const[userEmail,setUserEmail]=useState(null);
+const[currentUser,setCurrentUser]=useState(USERS.jade);
+const[userEmail,setUserEmail]=useState('jade');
 const[tab,setTab]=useState('plan');
 const[workouts,setWorkouts]=useState({});
 const[comp,setComp]=useState({});
@@ -145,14 +144,14 @@ useEffect(()=>{
   }
 },[comp,userEmail]);
 
-const handleLogin=(email,user)=>{
-  setUserEmail(email);
-  setCurrentUser(user);
-};
-
 const handleLogout=()=>{
-  setCurrentUser(null);
-  setUserEmail(null);
+  // Switch between users instead of logout
+  const userKeys=Object.keys(USERS);
+  const currentIndex=userKeys.indexOf(userEmail);
+  const nextIndex=(currentIndex+1)%userKeys.length;
+  const nextUserId=userKeys[nextIndex];
+  setUserEmail(nextUserId);
+  setCurrentUser(USERS[nextUserId]);
   setTab('plan');
   setWeek(1);
 };
@@ -237,10 +236,6 @@ const mensProg={1:{focus:'Base',intensity:'Mod',notes:'Push 160kg / Pull 110kg /
 
 const getMensWorkouts=(w)=>{const data={1:[{day:'Mon',type:'Strength',focus:'Lower',detail:'160kg/110kg',specifics:'Sled Push: 5x50m @ 160kg\nRDLs: 3x8 (12kg each)\nSled Pull: 6x50m @ 110kg\nBulgarian: 3x8 (10kg each)'},{day:'Tue',type:'Running',focus:'Easy',detail:'10km',specifics:'10km @ 10.2 km/h (6.34 mph - 5:52/km)\nTotal: 10km'},{day:'Wed',type:'Strength',focus:'Upper',detail:'Farmers 20kg',specifics:'Rows: 4x6 (80-100kg)\nPress: 3x8 (60-80kg)\nSkiErg: 6x250m\nFarmers: 3x40m @ 20kg each'},{day:'Thu',type:'Running',focus:'Tempo',detail:'4x1km',specifics:'4x1km @ 10.5 km/h (6.53mph - 5:43/km)\n90s recovery\nTotal: 10km'},{day:'Fri',type:'Running',focus:'Long',detail:'14km',specifics:'14km @ 10.2 km/h (6.34mph - 5:52/km)\nTotal: 14km'},{day:'Sat',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Walk\nStretch\nFoam roll'},{day:'Sun',type:'Hybrid',focus:'Circuits',detail:'10 walls @ 9kg',specifics:'2 rounds:\nSled 60kg / Burpees / Sandbag 15kg / Farmers 15kg / 10 walls @ 9kg'}]};return data[w]||data[1];};
 
-if(!currentUser){
-  return <LoginScreen onLogin={handleLogin}/>;
-}
-
 const plan=currentUser.plan;
 const currentPlan=plan==='mixed'?jadeWeeklyPlans[week]:getMensWorkouts(week);
 const currentProgram=plan==='mixed'?mixedProg:mensProg;
@@ -296,8 +291,8 @@ return <div className="min-h-screen bg-black text-white p-4">
           </div>
         </div>
         <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
-          <LogOut s={18}/>
-          <span className="text-sm">Logout</span>
+          <User s={18}/>
+          <span className="text-sm">Switch User</span>
         </button>
       </div>
       <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
