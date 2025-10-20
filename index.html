@@ -309,18 +309,23 @@ const mensProg={
 };
 
 const plan=currentUser.plan;
-const currentPlan=plan==='mixed'?jadeWeeklyPlans[week]:tonyWeeklyPlans[week];
+const currentPlan=plan==='mixed'?jadeWeeklyPlans[week]:tonyWeeklyPlans[week]||[];
 const currentProgram=plan==='mixed'?mixedProg:mensProg;
 
 const toggleComp=(w,i)=>{
   const k=`${userEmail}-${plan}-${w}-${i}`;
-  setComp(p=>({...p,[k]:!p[k]}));
+  setComp(p=>{
+    const newComp={...p,[k]:!p[k]};
+    // Force re-render by updating state
+    return newComp;
+  });
 };
 
 const isComp=(w,i)=>comp[`${userEmail}-${plan}-${w}-${i}`]||false;
 
 const getCompletion=(w)=>{
-  const t=plan==='mixed'?jadeWeeklyPlans[w]:getMensWorkouts(w);
+  const t=plan==='mixed'?jadeWeeklyPlans[w]:tonyWeeklyPlans[w];
+  if(!t)return{completed:0,total:0,percentage:0};
   let c=0;
   t.forEach((_,i)=>{if(isComp(w,i))c++;});
   return{completed:c,total:t.length,percentage:Math.round((c/t.length)*100)};
@@ -449,7 +454,7 @@ return <div className="min-h-screen bg-black text-white p-4">
         </div>
 
         <div className="space-y-3">
-          {currentPlan.map((day,i)=><WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>)}
+          {currentPlan&&currentPlan.length>0?currentPlan.map((day,i)=><WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
         </div>
       </div>}
 
