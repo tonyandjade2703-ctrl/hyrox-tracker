@@ -334,14 +334,34 @@ const getCompletion=(w)=>{
 const getUserWorkouts=()=>workouts[userEmail]||[];
 
 const getStats=()=>{
+  // Get workouts completed this week from workout log
   const wa=new Date();
   wa.setDate(wa.getDate()-7);
   const ww=getUserWorkouts().filter(w=>new Date(w.date)>=wa);
+  
+  // Get completion stats from checkboxes for current week
+  const currentPlanData=plan==='mixed'?jadeWeeklyPlans[week]:tonyWeeklyPlans[week];
+  if(!currentPlanData)return{total:0,running:0,strength:0,hybrid:0};
+  
+  let runningCount=0;
+  let strengthCount=0;
+  let hybridCount=0;
+  let totalCount=0;
+  
+  currentPlanData.forEach((day,i)=>{
+    if(isComp(week,i)){
+      totalCount++;
+      if(day.type==='Running')runningCount++;
+      if(day.type==='Strength')strengthCount++;
+      if(day.type==='Hybrid')hybridCount++;
+    }
+  });
+  
   return{
-    total:ww.length,
-    running:ww.filter(w=>w.type==='Running').length,
-    strength:ww.filter(w=>w.type==='Strength').length,
-    hybrid:ww.filter(w=>w.type==='Hybrid').length
+    total:totalCount,
+    running:runningCount,
+    strength:strengthCount,
+    hybrid:hybridCount
   };
 };
 
@@ -390,7 +410,7 @@ return <div className="min-h-screen bg-black text-white p-4">
           <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
             <div className="text-gray-600 text-sm">This Week</div>
             <div className="text-3xl font-bold" style={{color:'#FF4500'}}>{s.total}</div>
-            <div className="text-gray-600 text-xs">Total</div>
+            <div className="text-gray-600 text-xs">Completed</div>
           </div>
           <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
             <div className="text-gray-600 text-sm">Running</div>
