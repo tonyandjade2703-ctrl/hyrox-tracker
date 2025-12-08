@@ -24,7 +24,7 @@
     }
   </style>
 </head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background-color:#000000">
+<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)">
 <div id="root"></div>
 <script type="text/babel">
 const {useState,useEffect}=React;
@@ -39,14 +39,15 @@ const Clock=({s=24})=><Icon d='<circle cx="12" cy="12" r="10"/><polyline points=
 
 const USER = {
   name: 'Jade',
-  category: '33yo Female Athlete | Half Marathon + Hyrox + Full Marathon'
+  category: 'Hybrid Athlete | Half Marathon + Hyrox + Full Marathon'
 };
-function WorkoutCard({day,isComplete,onToggle,onDragStart,onDragOver,onDrop,isDragging}){
+  function WorkoutCard({day,isComplete,onToggle,onDragStart,onDragOver,onDrop,isDragging}){
   const[showDetails,setShowDetails]=useState(false);
   
   if(!day){
     return <div 
-      className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center text-gray-400"
+      className="border-2 border-dashed rounded-lg p-4 text-center"
+      style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1',color:'#FF69B4'}}
       onDragOver={onDragOver}
       onDrop={onDrop}
     >
@@ -55,23 +56,23 @@ function WorkoutCard({day,isComplete,onToggle,onDragStart,onDragOver,onDrop,isDr
   }
   
   return <div 
-    className={`bg-white border-2 rounded-lg p-4 transition cursor-move ${isComplete?'shadow-lg':'border-gray-200'} ${isDragging?'opacity-50':''}`} 
-    style={isComplete?{borderColor:'#FF69b4'}:{}}
+    className={`bg-white border-2 rounded-lg p-4 transition cursor-move ${isComplete?'shadow-lg':''} ${isDragging?'opacity-50':''}`} 
+    style={isComplete?{borderColor:'#FF69B4'}:{borderColor:'#FFE4F0'}}
     draggable="true"
     onDragStart={onDragStart}
     onDragOver={onDragOver}
     onDrop={onDrop}
   >
     <div className="flex items-start gap-4">
-      <button onClick={onToggle} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${isComplete?'border-transparent':'border-gray-300 hover:border-gray-400'}`} style={isComplete?{backgroundColor:'#FF69b4'}:{}}>{isComplete&&<CheckCircle s={20}/>}</button>
+      <button onClick={onToggle} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${isComplete?'border-transparent':''}`} style={isComplete?{backgroundColor:'#FF69B4',borderColor:'#FF69B4'}:{borderColor:'#FFB6C1'}}>{isComplete&&<CheckCircle s={20}/>}</button>
       <div className="flex-1">
         <div className="flex items-start justify-between mb-2">
           <div><div className="font-bold text-lg text-black">{day.day}</div><div className="text-sm text-gray-600">{day.type} - {day.focus}</div></div>
-          <div className="px-3 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor:day.type==='Running'?'#FF69b4':day.type==='Strength'?'#000000':day.type==='Hybrid'?'#FF69b4':day.type==='Rest'?'#666666':'#333333'}}>{day.type}</div>
+          <div className="px-3 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor:day.type.includes('Rest')?'#E6B8E6':day.type.includes('Strength')?'#FF69B4':'#FFB6C1'}}>{day.type}</div>
         </div>
         <div className="text-sm text-gray-700 mb-2">{day.detail}</div>
-        <button onClick={()=>setShowDetails(!showDetails)} className="text-xs font-semibold" style={{color:'#FF4500'}}>{showDetails?'▼ Hide Details':'▶ Show Full Workout'}</button>
-        {showDetails&&<div className="mt-3 p-3 bg-gray-50 border border-gray-200 rounded text-sm text-black whitespace-pre-line">{day.specifics}</div>}
+        <button onClick={()=>setShowDetails(!showDetails)} className="text-xs font-semibold" style={{color:'#FF69B4'}}>{showDetails?'▼ Hide Details':'▶ Show Full Workout'}</button>
+        {showDetails&&<div className="mt-3 p-3 rounded text-sm text-black whitespace-pre-line border" style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1'}}>{day.specifics}</div>}
       </div>
     </div>
   </div>
@@ -83,24 +84,24 @@ const[comp,setComp]=useState({});
 const[week,setWeek]=useState(1);
 const[showLogForm,setShowLogForm]=useState(false);
 const[currentWorkout,setCurrentWorkout]=useState({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
+const[weekSchedule,setWeekSchedule]=useState({});
+const[draggedWorkout,setDraggedWorkout]=useState(null);
 
 useEffect(()=>{
   try{
     const savedWorkouts=JSON.parse(localStorage.getItem('jade_workouts')||'[]');
     const savedComp=JSON.parse(localStorage.getItem('jade_comp')||'{}');
+    const savedSchedule=JSON.parse(localStorage.getItem('jade_schedule')||'{}');
     setWorkouts(savedWorkouts);
     setComp(savedComp);
+    setWeekSchedule(savedSchedule);
   }catch(e){}
 },[]);
 
-useEffect(()=>{
-  localStorage.setItem('jade_workouts',JSON.stringify(workouts));
-},[workouts]);
-
-useEffect(()=>{
-  localStorage.setItem('jade_comp',JSON.stringify(comp));
-},[comp]);
- const jadeWeeklyPlans = {
+useEffect(()=>{localStorage.setItem('jade_workouts',JSON.stringify(workouts))},[workouts]);
+useEffect(()=>{localStorage.setItem('jade_comp',JSON.stringify(comp))},[comp]);
+useEffect(()=>{localStorage.setItem('jade_schedule',JSON.stringify(weekSchedule))},[weekSchedule]);
+    const jadeWeeklyPlans = {
   1: [
     {day:'Monday Dec 8',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)\n\n**Program starts this week!**'},
     {day:'Tuesday Dec 9',type:'Strength',focus:'Lower Body Foundation',detail:'Back Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike/row easy + dynamic leg swings + glute bridges 2x15\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 75kg (75% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 60kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 16kg DBs, 90s rest\n• Nordic Curls: 3x5 with band assist, 2min rest\n• Hollow Hold: 3x30s\n• Arch Hold: 3x30s\n\nCool-down: 5min walk + stretching'},
@@ -110,7 +111,7 @@ useEffect(()=>{
     {day:'Saturday Dec 13',type:'Strength',focus:'Upper Body & Core',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + band pull-aparts 2x15\n\nMain Lifts:\n• Barbell Bench Press: 4x6 @ 37.5kg (75% 1RM), 3min rest\n• Weighted Pull-ups: 4x5 @ +5kg (or band assisted), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 16kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 20kg each hand, 2min rest\n• Wall Balls: 3x20 @ 6kg ball to 9ft target, 90s rest\n\nCool-down: 5min walk + stretching'},
     {day:'Sunday Dec 14',type:'Long Run',focus:'Aerobic base building',detail:'12km easy + strides',specifics:'Warm-up: 10min easy jog\n\n• Long Run: 12km @ 6:30/km pace\n  Fuel at 6km with gel/snack\n\n• Strides: 3x100m fast but controlled, 90s walk recovery\n\nCool-down: 10min walk + 15min stretching'}
   ],
-  2: [
+      2: [
     {day:'Monday Dec 15',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
     {day:'Tuesday Dec 16',type:'Strength',focus:'Lower Body Progression',detail:'Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 77.5kg (+2.5kg), 3min rest\n• Romanian Deadlift: 3x8 @ 62.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 18kg DBs (+2kg), 90s rest\n• Nordic Curls: 3x6 with band, 2min rest\n• Hollow Hold: 3x35s (+5s)\n• Arch Hold: 3x35s (+5s)\n\nCool-down: 5min walk + stretching'},
     {day:'Wednesday Dec 17',type:'Run + Stations',focus:'Easy run + stations',detail:'5km easy + station work',specifics:'Warm-up: 10min easy + drills\n\n• Easy Run: 5km @ 6:40/km (slightly faster)\n\nThen 3 rounds:\n• SkiErg: 500m (aim for consistent splits)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest between\n\nCool-down: 5min walk'},
@@ -119,7 +120,7 @@ useEffect(()=>{
     {day:'Saturday Dec 20',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x6 @ 38.75kg (+1.25kg), 3min rest\n• Weighted Pull-ups: 4x6 @ +5kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 18kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min walk + stretching'},
     {day:'Sunday Dec 21',type:'Long Run',focus:'Aerobic development',detail:'12km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 12km @ 6:25/km (5s/km faster)\n  Fuel at 6km\n\n• Strides: 3x100m, 90s walk recovery\n\nCool-down: 10min walk + 15min stretching'}
   ],
-   3: [
+  3: [
     {day:'Monday Dec 22',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
     {day:'Tuesday Dec 23',type:'Strength',focus:'Lower Body',detail:'Increased intensity',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 80kg (80% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 65kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 20kg DBs, 90s rest\n• Nordic Curls: 3x7 with light band, 2min rest\n• Hollow Hold: 3x40s\n• Arch Hold: 3x40s\n\nCool-down: 5min + stretching'},
     {day:'Wednesday Dec 24',type:'Run + Stations',focus:'Easy run + stations',detail:'5km + station work',specifics:'Warm-up: 10min + drills\n\n• Easy Run: 5km @ 6:35/km\n\nThen 3 rounds:\n• SkiErg: 500m (consistent times)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest\n\nCool-down: 5min'},
@@ -137,7 +138,7 @@ useEffect(()=>{
     {day:'Saturday Jan 3',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 40kg, 3min rest\n• Weighted Pull-ups: 4x7 @ +6.25kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 14kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min + stretching'},
     {day:'Sunday Jan 4',type:'Long Run',focus:'Base consolidation',detail:'14km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 14km @ 6:20/km (slightly faster)\n  Fuel at 7km\n\n• Strides: 3x100m\n\nCool-down: 10min walk + stretching'}
   ],
-   5: [
+      5: [
     {day:'Monday Jan 5',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Starting intervals this week!**'},
     {day:'Tuesday Jan 6',type:'Strength',focus:'Lower Body - Intensity Up',detail:'Reduced reps, increased weight',specifics:'Warm-up: 5min bike + box step-ups 2x10\n\nMain Lifts:\n• Barbell Back Squat: 4x5 @ 85kg (85% 1RM), 3min rest - HEAVY\n• Romanian Deadlift: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x8 @ 40cm, 2min rest - NEW explosive work\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest - NEW Hyrox specific\n\nCool-down: 5min + stretching'},
     {day:'Wednesday Jan 7',type:'Intervals + Stations',focus:'Speed endurance',detail:'6x800m + stations',specifics:'Warm-up: 2km easy jog + 4x100m strides\n\nMain Set:\n• 6x800m @ 5:20/km pace (4:16 per rep), 2min jog recovery\n  Focus: Consistent splits, HR Zone 4-5 (180-190bpm)\n\nThen 2 rounds:\n• SkiErg: 1000m moderate-hard\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m moderate\n3min rest between rounds\n\nCool-down: 1km easy'},
@@ -155,7 +156,7 @@ useEffect(()=>{
     {day:'Saturday Jan 17',type:'Strength',focus:'Upper Body Volume',detail:'Maintain intensity',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +7.5kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 22.5kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
     {day:'Sunday Jan 18',type:'Long Run',focus:'Sustained aerobic',detail:'16km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 16km @ 6:15/km (5s/km faster)\n  Fuel at 8km and 12km\n\n• Strides: 4x100m\n\nCool-down: 10min + stretching'}
   ],
-   7: [
+  7: [
     {day:'Monday Jan 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Peak base volume week!**'},
     {day:'Tuesday Jan 20',type:'Strength',focus:'Lower Body Peak',detail:'Further intensity increase',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 5x5 @ 85kg (add 1 set), 3min rest\n• RDL: 3x8 @ 75kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 24kg DBs (+2kg), 90s rest\n• Box Jumps: 3x8 @ 45cm (+5cm), 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
     {day:'Wednesday Jan 21',type:'Intervals + Stations',focus:'VO2 max work',detail:'8x800m + stations',specifics:'Warm-up: 2km easy + strides\n\n• 8x800m @ 5:15/km (faster pace), 90sec jog recovery\n  HR Zone 4-5\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy'},
@@ -173,7 +174,7 @@ useEffect(()=>{
     {day:'Saturday Jan 31',type:'Strength',focus:'Upper Body Consolidation',detail:'Maintain peak strength',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +8.75kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 22kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 24kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
     {day:'Sunday Feb 1',type:'Long Run',focus:'Reduce volume',detail:'14km steady',specifics:'Warm-up: 10min easy\n\n• Long Run: 14km @ 6:15/km\n  Fuel at 7km\n\n• Strides: 3x100m\n\nCool-down: 10min + stretching\n\n**Reduced from 18km - beginning taper into Half Marathon phase**'}
   ],
-   9: [
+      9: [
     {day:'Monday Feb 2',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**BASE PHASE COMPLETE - Starting Half Marathon Specific**'},
     {day:'Tuesday Feb 3',type:'Strength',focus:'Maintenance - Lower Body',detail:'Reduced volume, maintain strength',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts (reduced to 3 sets):\n• Back Squat: 3x5 @ 82.5kg, 3min rest\n• RDL: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x6 (reduce reps), 2min rest\n\nCool-down: 5min + stretching\n\n**Half Marathon Phase - reduce strength volume**'},
     {day:'Wednesday Feb 4',type:'Speed Work',focus:'400m intervals',detail:'8x400m',specifics:'Warm-up: 2km easy + 6x100m strides\n\nMain Set:\n• 8x400m @ 5:00/km pace (2:00 per rep), 90s rest\n  HR Zone 4-5 (180-190bpm)\n  Focus: Speed development\n\nCool-down: 1km easy\nTotal: ~7km'},
@@ -191,7 +192,7 @@ useEffect(()=>{
     {day:'Saturday Feb 14',type:'Easy Run',focus:'Recovery run',detail:'6km easy',specifics:'Easy Run: 6km @ 6:45/km\nHR Zone 2 (<150bpm)\n\nOptional: 6x100m strides at end'},
     {day:'Sunday Feb 15',type:'Long Run',focus:'Endurance maintenance',detail:'21km steady',specifics:'Warm-up: 1km easy\n\n• Long Run: 21km @ 6:15-6:30/km\n  Last 3km @ 6:00/km\n  Fuel at 7km, 14km\n\nCool-down: Walk 10min\n\n**LONGEST RUN - peak distance**'}
   ],
-   11: [
+  11: [
     {day:'Monday Feb 16',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Begin taper intensity**'},
     {day:'Tuesday Feb 17',type:'Strength',focus:'Maintenance - Light',detail:'Reduce intensity',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 3x5 @ 77.5kg, 3min rest\n• RDL: 3x8 @ 65kg, 2min rest\n• Step-ups: 3x12 each @ 16kg DBs, 90s rest\n\nCool-down: 5min + stretching'},
     {day:'Wednesday Feb 18',type:'Speed Work',focus:'1200m intervals',detail:'5x1200m',specifics:'Warm-up: 2km easy + strides\n\nMain Set:\n• 5x1200m @ 5:25/km pace, 2.5min jog recovery\n  HR Zone 4 (175-185bpm)\n\nCool-down: 1km easy\nTotal: ~9km'},
@@ -209,7 +210,7 @@ useEffect(()=>{
     {day:'Saturday Feb 28',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Easy jog: 2km @ 6:30/km\n\n• Strides: 4x100m @ race pace feel\n\nCool-down: Walk 5min\n\n**Last run before race**'},
     {day:'Sunday Mar 1',type:'RACE',focus:'🏃‍♀️ HALF MARATHON 🏃‍♀️',detail:'Target: Sub 2:00:00',specifics:'RACE DAY STRATEGY:\n\nTarget Pace: 5:40/km average\n\nPacing Plan:\n• Km 1-5: 5:45/km (settle in)\n• Km 6-15: 5:40/km (cruise)\n• Km 16-21: 5:35/km (push)\n\nFueling:\n• Gel at 30min (5km)\n• Gel at 60min (10km)\n• Gel at 90min (16km)\n\nMental cues:\n• First 5k: "Patience"\n• Middle 10k: "Rhythm & relax"\n• Final 6k: "Strong & controlled"\n\n🎯 TARGET: 1:59:30 🎯'}
   ],
-   13: [
+      13: [
     {day:'Monday Mar 2',type:'Rest',focus:'Post-race recovery',detail:'Complete rest',specifics:'Complete rest\nHydration focus\nLight walking okay (20min max)\n\n**Recovery week after Half Marathon**'},
     {day:'Tuesday Mar 3',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light walk\nFoam rolling, stretching\nFocus on nutrition'},
     {day:'Wednesday Mar 4',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or 20min easy walk\nMobility work'},
@@ -227,7 +228,7 @@ useEffect(()=>{
     {day:'Saturday Mar 14',type:'Threshold Run',focus:'Race pace',detail:'9km tempo',specifics:'Warm-up: 2km easy\n\n• Tempo Run: 5km @ 5:30/km (Hyrox run pace)\n  HR Zone 3-4\n\nCool-down: 2km easy\nTotal: 9km'},
     {day:'Sunday Mar 15',type:'Race Pace Practice',focus:'Hyrox run pace',detail:'6x1km intervals',specifics:'Warm-up: 2km easy\n\nMain Set:\n• 6x1km @ 5:15/km (Hyrox race pace), 2min recovery jog\n  HR Zone 4 (175-185bpm)\n  Target: Run pace between stations\n\nCool-down: 1km easy\nTotal: ~10km'}
   ],
-   15: [
+  15: [
     {day:'Monday Mar 16',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
     {day:'Tuesday Mar 17',type:'Hyrox Simulation',focus:'Full course - race effort',detail:'Near-race intensity',specifics:'Warm-up: 10min easy + dynamic prep\n\n8x1km runs @ 5:20/km with stations:\n• Station 1: SkiErg 1000m (race pace)\n• Station 2: Sled Push 50m x2 @ 102kg\n• Station 3: Sled Pull 50m x2 @ 78kg\n• Station 4: Burpee Broad Jumps x15\n• Station 5: Rowing 1000m (race pace)\n• Station 6: Farmers Carry 2x50m @ 16kg each\n• Station 7: Sandbag Lunges 100m @ 10kg\n• Station 8: Wall Balls x75 @ 6kg\n\n3min recovery between each segment\n\nCool-down: 10min walk\n\n**Near-race effort - build confidence**'},
     {day:'Wednesday Mar 18',type:'Recovery Run',focus:'Easy recovery',detail:'4km easy',specifics:'Very easy: 4km @ 7:00/km\nHR <140bpm'},
@@ -236,7 +237,7 @@ useEffect(()=>{
     {day:'Saturday Mar 21',type:'Threshold Run',focus:'Race pace confidence',detail:'9km tempo',specifics:'Warm-up: 2km easy\n\n• Tempo: 5km @ 5:30/km\n\nCool-down: 2km easy\nTotal: 9km'},
     {day:'Sunday Mar 22',type:'Race Pace Practice',focus:'Final speed work',detail:'6x1km',specifics:'Warm-up: 2km easy\n\n• 6x1km @ 5:15/km, 2min jog recovery\n  Feel strong and controlled\n\nCool-down: 1km easy\nTotal: ~10km\n\n**Final hard run session before taper**'}
   ],
-  16: [
+      16: [
     {day:'Monday Mar 23',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**TAPER WEEK - Stay fresh for Hyrox**'},
     {day:'Tuesday Mar 24',type:'Light Stations',focus:'Technique only',detail:'Light station work',specifics:'Warm-up: 10min easy + dynamics\n\n2 rounds (NOT timed, technique focus):\n• SkiErg: 500m @ 70% effort\n• Sled Push: 25m @ 102kg\n• Wall Balls: 20 reps @ 6kg\n\nCool-down: 5min walk\n\n**TAPER WEEK - technique only, stay fresh**'},
     {day:'Wednesday Mar 25',type:'Easy Run + Strides',focus:'Sharpness maintenance',detail:'4km + strides',specifics:'Warm-up: 1km easy\n\n• Easy Run: 3km @ 6:30/km\n\n• Strides: 4x100m @ race pace feel\n\nCool-down: Walk 5min\nTotal: 4km'},
@@ -245,7 +246,7 @@ useEffect(()=>{
     {day:'Saturday Mar 28',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nCarb loading begins\nHydration: 3-4L water\nEarly to bed'},
     {day:'Sunday Mar 29',type:'RACE',focus:'🔥 SOLO HYROX 🔥',detail:'Target: Sub 1:25:00',specifics:'RACE DAY STRATEGY:\n\nTarget Times:\n• Run 1: 5:15/km (4:12)\n• SkiErg: 4:10-4:20\n• Run 2: 5:15/km (4:12)\n• Sled Push: <3:30\n• Run 3: 5:15/km (4:12)\n• Sled Pull: <4:30\n• Run 4: 5:15/km (4:12)\n• Burpee Broad Jumps: 5:45-6:00\n• Run 5: 5:15/km (4:12)\n• Rowing: 4:00-4:10\n• Run 6: 5:15/km (4:12)\n• Farmers Carry: 2:15-2:30\n• Run 7: 5:15/km (4:12)\n• Sandbag Lunges: 5:50-6:00\n• Run 8: 5:10/km (4:08) - PUSH\n• Wall Balls: 7:30-8:00\n\nPacing:\n• Runs 1-4: Controlled, establish rhythm\n• Runs 5-6: Maintain, push moderate\n• Runs 7-8: Give everything\n\nStations:\n• First 4: Controlled power\n• Last 4: Empty the tank\n\n🎯 TARGET: SUB 1:25:00 🎯\n\n**THIS IS YOUR DAY!**'}
   ],
-   17: [
+  17: [
     {day:'Monday Mar 30',type:'Rest',focus:'Post-Hyrox recovery',detail:'Complete rest',specifics:'Complete rest\nCelebrate your Hyrox! 🎉\nHydration, nutrition, sleep\n\n**Recovery week after Hyrox**'},
     {day:'Tuesday Mar 31',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light 20min walk\nFoam rolling, stretching\nKeep moving gently'},
     {day:'Wednesday Apr 1',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest\nLight mobility work optional\nHydration focus'},
@@ -264,7 +265,7 @@ useEffect(()=>{
     {day:'Sunday Apr 12',type:'RACE',focus:'🏃‍♀️ FULL MARATHON 🏃‍♀️',detail:'Completion Goal',specifics:'MARATHON STRATEGY:\n\n**Important Context:**\nThis marathon comes just 2 weeks after Solo Hyrox\nTreat this as completion/experience race, not time trial\n\nSuggested Pacing:\n• Km 1-10: 6:15/km (settle in comfortably)\n• Km 11-30: 6:00-6:15/km (maintain)\n• Km 31-42: Hold what you can\n\nFueling Strategy:\n• Gel every 5km starting at km 5\n• Water at every station\n• Electrolytes every other station\n\nMental Approach:\n• This is about the experience\n• Enjoy the atmosphere\n• Trust your training from Hyrox\n• You are a FINISHER\n\n**Key:** Listen to your body after recent Hyrox\nAdjust pace as needed\nThe goal is to finish strong and healthy\n\n🎯 GOAL: MARATHON FINISHER 🎯\n\n**YOU\'VE GOT THIS!**'}
   ]
 };
-const programPhases = {
+   const programPhases = {
   1: {phase:'Base Building',dates:'Dec 8-14',focus:'Foundation - aerobic base & strength',intensity:'Low-Moderate',notes:'Building movement patterns, aerobic capacity, strength foundation',startDate:'2025-12-08'},
   2: {phase:'Base Building',dates:'Dec 15-21',focus:'Foundation - volume increase',intensity:'Low-Moderate',notes:'Progressive overload on strength, maintaining easy aerobic pace',startDate:'2025-12-15'},
   3: {phase:'Base Building',dates:'Dec 22-28',focus:'Foundation - intensity increase',intensity:'Moderate',notes:'Increased tempo pace, longer runs, heavier weights',startDate:'2025-12-22'},
@@ -284,7 +285,7 @@ const programPhases = {
   17: {phase:'Recovery Week',dates:'Mar 30-Apr 5',focus:'Post-Hyrox recovery',intensity:'Very Low',notes:'Complete rest Mon-Thu, gentle return Fri onwards',startDate:'2026-03-30'},
   18: {phase:'Marathon Week',dates:'Apr 6-12',focus:'🏃‍♀️ FULL MARATHON - Apr 12',intensity:'Low-Taper',notes:'Light shakeouts only. Completion goal after Hyrox',startDate:'2026-04-06'}
 };
-const toggleComp=(w,i)=>{
+    const toggleComp=(w,i)=>{
   const k=`jade-${w}-${i}`;
   setComp(p=>({...p,[k]:!p[k]}));
 };
@@ -328,53 +329,27 @@ const logWorkout=()=>{
   setShowLogForm(false);
 };
 
-const currentPlan=jadeWeeklyPlans[week]||[];
-const currentPhase=programPhases[week];
-// State for rescheduling
-const[weekSchedule,setWeekSchedule]=useState({});
-const[draggedWorkout,setDraggedWorkout]=useState(null);
-
-// Load custom schedule from localStorage
-useEffect(()=>{
-  try{
-    const savedSchedule=JSON.parse(localStorage.getItem('jade_schedule')||'{}');
-    setWeekSchedule(savedSchedule);
-  }catch(e){}
-},[]);
-
-// Save schedule changes
-useEffect(()=>{
-  localStorage.setItem('jade_schedule',JSON.stringify(weekSchedule));
-},[weekSchedule]);
-
-// Get the actual workout for a given day (considering reschedules)
 const getWorkoutForDay=(weekNum,dayIndex)=>{
   const scheduleKey=`${weekNum}-${dayIndex}`;
   if(weekSchedule[scheduleKey]!==undefined){
-    // This day has been rescheduled to show a different workout
     const originalIndex=weekSchedule[scheduleKey];
     return{workout:jadeWeeklyPlans[weekNum][originalIndex],originalIndex};
   }
-  // Check if this workout has been moved elsewhere
   const movedTo=Object.keys(weekSchedule).find(key=>weekSchedule[key]===dayIndex&&key.startsWith(`${weekNum}-`));
   if(movedTo){
-    // This workout has been moved to another day
     return{workout:null,originalIndex:dayIndex};
   }
   return{workout:jadeWeeklyPlans[weekNum][dayIndex],originalIndex:dayIndex};
 };
 
-// Handle drag start
 const handleDragStart=(weekNum,dayIndex)=>{
   setDraggedWorkout({week:weekNum,index:dayIndex});
 };
 
-// Handle drag over
 const handleDragOver=(e)=>{
   e.preventDefault();
 };
 
-// Handle drop
 const handleDrop=(weekNum,targetDayIndex)=>{
   if(!draggedWorkout||draggedWorkout.week!==weekNum)return;
   
@@ -386,11 +361,9 @@ const handleDrop=(weekNum,targetDayIndex)=>{
     const sourceKey=`${weekNum}-${sourceIndex}`;
     const targetKey=`${weekNum}-${targetDayIndex}`;
     
-    // Get what's currently at source and target
     const sourceWorkoutIndex=prev[sourceKey]!==undefined?prev[sourceKey]:sourceIndex;
     const targetWorkoutIndex=prev[targetKey]!==undefined?prev[targetKey]:targetDayIndex;
     
-    // Swap them
     newSchedule[sourceKey]=targetWorkoutIndex;
     newSchedule[targetKey]=sourceWorkoutIndex;
     
@@ -400,7 +373,6 @@ const handleDrop=(weekNum,targetDayIndex)=>{
   setDraggedWorkout(null);
 };
 
-// Reset week schedule
 const resetWeekSchedule=(weekNum)=>{
   setWeekSchedule(prev=>{
     const newSchedule={...prev};
@@ -413,21 +385,23 @@ const resetWeekSchedule=(weekNum)=>{
   });
 };
 
-    return <div className="min-h-screen bg-black text-white p-4">
+const currentPlan=jadeWeeklyPlans[week]||[];
+const currentPhase=programPhases[week];
+   return <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)'}}>
   <div className="max-w-6xl mx-auto pb-20">
     <div className="mb-8">
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
-          <Flame s={40} style={{color:'#FF4500'}}/>
+          <Flame s={40} style={{color:'#FF69B4'}}/>
           <div>
-            <h1 className="text-3xl font-bold">Jade's Training Plan</h1>
-            <p className="text-gray-400 text-sm">18-Week Marathon & Hyrox Program</p>
+            <h1 className="text-3xl font-bold" style={{color:'#FF69B4'}}>Jade's Training Plan</h1>
+            <p className="text-sm" style={{color:'#C56A9E'}}>18-Week Marathon & Hyrox Program</p>
           </div>
         </div>
       </div>
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+      <div className="bg-white border-2 rounded-lg p-4 shadow-lg" style={{borderColor:'#FFB6C1'}}>
         <div className="flex items-center gap-3">
-          <User s={24} style={{color:'#FF4500'}}/>
+          <User s={24} style={{color:'#FF69B4'}}/>
           <div>
             <div className="font-bold text-black">{USER.name}</div>
             <div className="text-sm text-gray-600">{USER.category}</div>
@@ -435,64 +409,63 @@ const resetWeekSchedule=(weekNum)=>{
         </div>
       </div>
     </div>
-
     <div className="grid grid-cols-3 gap-4 mb-6">
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
         <div className="text-gray-600 text-sm font-semibold">Half Marathon</div>
-        <div className="text-xl font-bold" style={{color:'#FF4500'}}>Mar 1, 2026</div>
+        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Mar 1, 2026</div>
         <div className="text-gray-600 text-xs">Target: Sub 2:00:00</div>
       </div>
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
         <div className="text-gray-600 text-sm font-semibold">Solo Hyrox</div>
-        <div className="text-xl font-bold" style={{color:'#FF4500'}}>Mar 29, 2026</div>
+        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Mar 29, 2026</div>
         <div className="text-gray-600 text-xs">Target: Sub 1:25:00</div>
       </div>
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
         <div className="text-gray-600 text-sm font-semibold">Full Marathon</div>
-        <div className="text-xl font-bold" style={{color:'#FF4500'}}>Apr 12, 2026</div>
+        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Apr 12, 2026</div>
         <div className="text-gray-600 text-xs">Completion</div>
       </div>
     </div>
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
       {(()=>{
         const s=getStats();
         return(<>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
             <div className="text-gray-600 text-sm">This Week</div>
-            <div className="text-3xl font-bold" style={{color:'#FF4500'}}>{s.total}</div>
+            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.total}</div>
             <div className="text-gray-600 text-xs">Completed</div>
           </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
             <div className="text-gray-600 text-sm">Running</div>
-            <div className="text-3xl font-bold text-black">{s.running}</div>
+            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.running}</div>
             <div className="text-gray-600 text-xs">Sessions</div>
           </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
             <div className="text-gray-600 text-sm">Strength</div>
-            <div className="text-3xl font-bold text-black">{s.strength}</div>
+            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.strength}</div>
             <div className="text-gray-600 text-xs">Sessions</div>
           </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
+          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
             <div className="text-gray-600 text-sm">Hybrid</div>
-            <div className="text-3xl font-bold text-black">{s.hybrid}</div>
+            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.hybrid}</div>
             <div className="text-gray-600 text-xs">Sessions</div>
           </div>
         </>);
       })()}
     </div>
-    <div className="flex gap-2 mb-6 border-b-2 border-gray-200 overflow-x-auto">
+   <div className="flex gap-2 mb-6 border-b-2 overflow-x-auto" style={{borderColor:'#FFB6C1'}}>
       {['plan','log','history'].map(t=>{
         const icons={plan:Calendar,log:Plus,history:TrendingUp};
         const I=icons[t];
         const labels={plan:'Plan',log:'Log',history:'History'};
-        return <button key={t} onClick={()=>setTab(t)} className={`px-6 py-3 font-semibold whitespace-nowrap ${tab===t?'border-b-2':'text-gray-500'}`} style={tab===t?{borderBottomColor:'#FF4500',color:'#FF4500'}:{}}><I s={18} className="inline mr-2"/>{labels[t]}</button>
+        return <button key={t} onClick={()=>setTab(t)} className={`px-6 py-3 font-semibold whitespace-nowrap ${tab===t?'border-b-2':''}`} style={tab===t?{borderBottomColor:'#FF69B4',color:'#FF69B4'}:{color:'#999'}}><I s={18} className="inline mr-2"/>{labels[t]}</button>
       })}
     </div>
-    <div className="bg-white border-2 border-gray-200 rounded-lg p-6 text-black">
+ <div className="bg-white border-2 rounded-lg p-6 text-black shadow-lg" style={{borderColor:'#FFB6C1'}}>
       {tab==='plan'&&<div>
-        <h3 className="text-xl font-bold mb-4">18-Week Training Program</h3>
+        <h3 className="text-xl font-bold mb-4" style={{color:'#FF69B4'}}>18-Week Training Program</h3>
         <div className="flex items-center gap-3 mb-6">
-          <button onClick={()=>setWeek(Math.max(1,week-1))} disabled={week===1} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black">←</button>
+          <button onClick={()=>setWeek(Math.max(1,week-1))} disabled={week===1} className="px-4 py-2 bg-white border-2 rounded disabled:opacity-50 disabled:cursor-not-allowed text-black" style={{borderColor:'#FFB6C1'}}>←</button>
           <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
             {[...Array(18)].map((_,i)=>{
               const w=i+1;
@@ -500,38 +473,32 @@ const resetWeekSchedule=(weekNum)=>{
               const info=programPhases[w];
               const d=new Date(info.startDate);
               const isRaceWeek=w===12||w===16||w===18;
-              return <button key={w} onClick={()=>setWeek(w)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${week===w?'text-white shadow-lg':'bg-white text-black hover:bg-gray-50 border-gray-200'}`} style={week===w?{backgroundColor:'#FF4500',borderColor:'#FF4500'}:{}}><div className="text-sm">{isRaceWeek?'🏆 ':''}{w}</div><div className="text-xs opacity-75">{d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>{c.completed>0&&<div className="text-xs mt-1">{c.percentage}%</div>}</button>
+              return <button key={w} onClick={()=>setWeek(w)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${week===w?'text-white shadow-lg':'bg-white text-black'}`} style={week===w?{backgroundColor:'#FF69B4',borderColor:'#FF69B4'}:{borderColor:'#FFE4F0'}}><div className="text-sm">{isRaceWeek?'🏆 ':''}{w}</div><div className="text-xs opacity-75">{d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>{c.completed>0&&<div className="text-xs mt-1">{c.percentage}%</div>}</button>
             })}
           </div>
-          <button onClick={()=>setWeek(Math.min(18,week+1))} disabled={week===18} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black">→</button>
+          <button onClick={()=>setWeek(Math.min(18,week+1))} disabled={week===18} className="px-4 py-2 bg-white border-2 rounded disabled:opacity-50 disabled:cursor-not-allowed text-black" style={{borderColor:'#FFB6C1'}}>→</button>
         </div>
-        {currentPhase&&<div className="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
+    {currentPhase&&<div className="bg-white border-2 rounded-lg p-5 mb-6 shadow-md" style={{borderColor:'#FFB6C1'}}>
           <div className="flex justify-between items-start mb-3">
             <div>
-              <h4 className="text-2xl font-bold text-black">Week {week}</h4>
+              <h4 className="text-2xl font-bold" style={{color:'#FF69B4'}}>Week {week}</h4>
               <div className="text-sm text-gray-600 mt-1">{currentPhase.dates}</div>
             </div>
             <div className="flex gap-2 items-center">
-              {(week===12||week===16||week===18)&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
-              <button 
-                onClick={()=>resetWeekSchedule(week)} 
-                className="px-3 py-2 text-xs font-semibold rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
-              >
-                Reset Schedule
-              </button>
+              {(week===12||week===16||week===18)&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF69B4'}}>🏆 RACE WEEK</div>}
+              <button onClick={()=>resetWeekSchedule(week)} className="px-3 py-2 text-xs font-semibold rounded-lg border-2 hover:bg-pink-50" style={{borderColor:'#FFB6C1',color:'#FF69B4'}}>Reset Schedule</button>
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold text-black">{currentPhase.phase}</div></div>
+            <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold" style={{color:'#FF69B4'}}>{currentPhase.phase}</div></div>
             <div><div className="text-sm text-gray-600">Intensity</div><div className="text-lg font-semibold text-black">{currentPhase.intensity}</div></div>
             <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getCompletion(week).completed}/{getCompletion(week).total} sessions</div></div>
           </div>
           <div className="mt-3 text-sm text-gray-700 italic">{currentPhase.notes}</div>
-          <div className="mt-3 text-xs text-gray-500 bg-blue-50 p-2 rounded border border-blue-200">
+          <div className="mt-3 text-xs p-2 rounded border" style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1',color:'#C56A9E'}}>
             💡 <strong>Tip:</strong> Drag and drop workouts to reschedule them within the week. Click "Reset Schedule" to restore original plan.
           </div>
         </div>}
-
         <div className="space-y-3">
           {currentPlan.length>0?currentPlan.map((day,i)=>{
             const {workout,originalIndex}=getWorkoutForDay(week,i);
@@ -548,19 +515,19 @@ const resetWeekSchedule=(weekNum)=>{
           }):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
         </div>
       </div>}
-      {tab==='log'&&<div>
-        {!showLogForm?<button onClick={()=>setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg" style={{borderColor:'#FF4500',backgroundColor:'#FFF'}}><Plus s={32} style={{color:'#FF4500'}}/><div className="text-xl font-semibold" style={{color:'#FF4500'}}>Log Workout</div></button>:<div className="space-y-4">
-          <h3 className="text-xl font-bold text-black">Log Workout</h3>
-          <div><label className="block text-sm font-medium mb-2 text-black">Date</label><input type="date" value={currentWorkout.date} onChange={e=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Type</label><select value={currentWorkout.type} onChange={e=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"><option value="">Select...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest</option></select></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Duration (min)</label><input type="number" value={currentWorkout.duration} onChange={e=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Notes</label><textarea value={currentWorkout.notes} onChange={e=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel?" className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2 border-gray-200"/></div>
-          <div className="flex gap-3"><button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor:'#FF4500'}}>Save</button><button onClick={()=>setShowLogForm(false)} className="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button></div>
+   {tab==='log'&&<div>
+        {!showLogForm?<button onClick={()=>setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg" style={{borderColor:'#FF69B4',backgroundColor:'#FFF'}}><Plus s={32} style={{color:'#FF69B4'}}/><div className="text-xl font-semibold" style={{color:'#FF69B4'}}>Log Workout</div></button>:<div className="space-y-4">
+          <h3 className="text-xl font-bold" style={{color:'#FF69B4'}}>Log Workout</h3>
+          <div><label className="block text-sm font-medium mb-2 text-black">Date</label><input type="date" value={currentWorkout.date} onChange={e=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}/></div>
+          <div><label className="block text-sm font-medium mb-2 text-black">Type</label><select value={currentWorkout.type} onChange={e=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}><option value="">Select...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest</option></select></div>
+          <div><label className="block text-sm font-medium mb-2 text-black">Duration (min)</label><input type="number" value={currentWorkout.duration} onChange={e=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}/></div>
+          <div><label className="block text-sm font-medium mb-2 text-black">Notes</label><textarea value={currentWorkout.notes} onChange={e=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel?" className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2" style={{borderColor:'#FFB6C1'}}/></div>
+          <div className="flex gap-3"><button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor:'#FF69B4'}}>Save</button><button onClick={()=>setShowLogForm(false)} className="px-6 py-3 bg-white border-2 rounded-lg font-semibold text-black" style={{borderColor:'#FFB6C1'}}>Cancel</button></div>
         </div>}
       </div>}
-      {tab==='history'&&<div>
-        <h3 className="text-xl font-bold mb-4 text-black">History</h3>
-        {workouts.length===0?<div className="text-center py-12 text-gray-400"><Clock s={48} className="mx-auto mb-4 opacity-50"/><p>No workouts logged</p></div>:<div className="space-y-3">{workouts.map(w=><div key={w.id} className="bg-white border-2 rounded-lg p-4"><div className="flex justify-between mb-2"><div><div className="font-bold text-black">{w.type}</div><div className="text-sm text-gray-600">{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-sm font-semibold text-black">{w.duration} min</div></div>{w.notes&&<div className="text-sm text-gray-700 mt-2 pt-2 border-t border-gray-300">{w.notes}</div>}</div>)}</div>}
+   {tab==='history'&&<div>
+        <h3 className="text-xl font-bold mb-4" style={{color:'#FF69B4'}}>History</h3>
+        {workouts.length===0?<div className="text-center py-12" style={{color:'#FFB6C1'}}><Clock s={48} className="mx-auto mb-4 opacity-50"/><p>No workouts logged</p></div>:<div className="space-y-3">{workouts.map(w=><div key={w.id} className="bg-white border-2 rounded-lg p-4 shadow-sm" style={{borderColor:'#FFE4F0'}}><div className="flex justify-between mb-2"><div><div className="font-bold text-black">{w.type}</div><div className="text-sm text-gray-600">{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-sm font-semibold" style={{color:'#FF69B4'}}>{w.duration} min</div></div>{w.notes&&<div className="text-sm text-gray-700 mt-2 pt-2 border-t" style={{borderColor:'#FFE4F0'}}>{w.notes}</div>}</div>)}</div>}
       </div>}
     </div>
   </div>
