@@ -41,9 +41,27 @@ const USER = {
   name: 'Jade',
   category: '33yo Female Athlete | Half Marathon + Hyrox + Full Marathon'
 };
-  function WorkoutCard({day,isComplete,onToggle}){
+function WorkoutCard({day,isComplete,onToggle,onDragStart,onDragOver,onDrop,isDragging}){
   const[showDetails,setShowDetails]=useState(false);
-  return <div className={`bg-white border-2 rounded-lg p-4 transition ${isComplete?'shadow-lg':'border-gray-200'}`} style={isComplete?{borderColor:'#FF4500'}:{}}>
+  
+  if(!day){
+    return <div 
+      className="bg-gray-50 border-2 border-dashed border-gray-300 rounded-lg p-4 text-center text-gray-400"
+      onDragOver={onDragOver}
+      onDrop={onDrop}
+    >
+      Drop workout here to reschedule
+    </div>;
+  }
+  
+  return <div 
+    className={`bg-white border-2 rounded-lg p-4 transition cursor-move ${isComplete?'shadow-lg':'border-gray-200'} ${isDragging?'opacity-50':''}`} 
+    style={isComplete?{borderColor:'#FF4500'}:{}}
+    draggable="true"
+    onDragStart={onDragStart}
+    onDragOver={onDragOver}
+    onDrop={onDrop}
+  >
     <div className="flex items-start gap-4">
       <button onClick={onToggle} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${isComplete?'border-transparent':'border-gray-300 hover:border-gray-400'}`} style={isComplete?{backgroundColor:'#FF4500'}:{}}>{isComplete&&<CheckCircle s={20}/>}</button>
       <div className="flex-1">
@@ -266,7 +284,7 @@ const programPhases = {
   17: {phase:'Recovery Week',dates:'Mar 30-Apr 5',focus:'Post-Hyrox recovery',intensity:'Very Low',notes:'Complete rest Mon-Thu, gentle return Fri onwards',startDate:'2026-03-30'},
   18: {phase:'Marathon Week',dates:'Apr 6-12',focus:'🏃‍♀️ FULL MARATHON - Apr 12',intensity:'Low-Taper',notes:'Light shakeouts only. Completion goal after Hyrox',startDate:'2026-04-06'}
 };
-    const toggleComp=(w,i)=>{
+const toggleComp=(w,i)=>{
   const k=`jade-${w}-${i}`;
   setComp(p=>({...p,[k]:!p[k]}));
 };
@@ -310,6 +328,90 @@ const logWorkout=()=>{
   setShowLogForm(false);
 };
 
+const currentPlan=jadeWeeklyPlans[week]||[];
+const currentPhase=programPhases[week];
+// State for rescheduling
+const[weekSchedule,setWeekSchedule]=useState({});
+const[draggedWorkout,setDraggedWorkout]=useState(null);
+
+// Load custom schedule from localStorage
+useEffect(()=>{
+  try{
+    const savedSchedule=JSON.parse(localStorage.getItem('jade_schedule')||'{}');
+    setWeekSchedule(savedSchedule);
+  }catch(e){}
+},[]);
+
+// Save schedule changes
+useEffect(()=>{
+  localStorage.setItem('jade_schedule',JSON.stringify(weekSchedule));
+},[weekSchedule]);
+
+// Get the actual workout for a given day (considering reschedules)
+const getWorkoutForDay=(weekNum,dayIndex)=>{
+  const scheduleKey=`${weekNum}-${dayIndex}`;
+  if(weekSchedule[scheduleKey]!==undefined){
+    // This day has been rescheduled to show a different workout
+    const originalIndex=weekSchedule[scheduleKey];
+    return{workout:jadeWeeklyPlans[weekNum][originalIndex],originalIndex};
+  }
+  // Check if this workout has been moved elsewhere
+  const movedTo=Object.keys(weekSchedule).find(key=>weekSchedule[key]===dayIndex&&key.startsWith(`${weekNum}-`));
+  if(movedTo){
+    // This workout has been moved to another day
+    return{workout:null,originalIndex:dayIndex};
+  }
+  return{workout:jadeWeeklyPlans[weekNum][dayIndex],originalIndex:dayIndex};
+};
+
+// Handle drag start
+const handleDragStart=(weekNum,dayIndex)=>{
+  setDraggedWorkout({week:weekNum,index:dayIndex});
+};
+
+// Handle drag over
+const handleDragOver=(e)=>{
+  e.preventDefault();
+};
+
+// Handle drop
+const handleDrop=(weekNum,targetDayIndex)=>{
+  if(!draggedWorkout||draggedWorkout.week!==weekNum)return;
+  
+  const sourceIndex=draggedWorkout.index;
+  if(sourceIndex===targetDayIndex)return;
+  
+  setWeekSchedule(prev=>{
+    const newSchedule={...prev};
+    const sourceKey=`${weekNum}-${sourceIndex}`;
+    const targetKey=`${weekNum}-${targetDayIndex}`;
+    
+    // Get what's currently at source and target
+    const sourceWorkoutIndex=prev[sourceKey]!==undefined?prev[sourceKey]:sourceIndex;
+    const targetWorkoutIndex=prev[targetKey]!==undefined?prev[targetKey]:targetDayIndex;
+    
+    // Swap them
+    newSchedule[sourceKey]=targetWorkoutIndex;
+    newSchedule[targetKey]=sourceWorkoutIndex;
+    
+    return newSchedule;
+  });
+  
+  setDraggedWorkout(null);
+};
+
+// Reset week schedule
+const resetWeekSchedule=(weekNum)=>{
+  setWeekSchedule(prev=>{
+    const newSchedule={...prev};
+    Object.keys(newSchedule).forEach(key=>{
+      if(key.startsWith(`${weekNum}-`)){
+        delete newSchedule[key];
+      }
+    });
+    return newSchedule;
+  });
+};
 const currentPlan=jadeWeeklyPlans[week]||[];
 const currentPhase=programPhases[week];
     return <div className="min-h-screen bg-black text-white p-4">
@@ -410,7 +512,15 @@ const currentPhase=programPhases[week];
               <h4 className="text-2xl font-bold text-black">Week {week}</h4>
               <div className="text-sm text-gray-600 mt-1">{currentPhase.dates}</div>
             </div>
-            {(week===12||week===16||week===18)&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
+            <div className="flex gap-2 items-center">
+              {(week===12||week===16||week===18)&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
+              <button 
+                onClick={()=>resetWeekSchedule(week)} 
+                className="px-3 py-2 text-xs font-semibold rounded-lg border-2 border-gray-300 text-gray-700 hover:bg-gray-50"
+              >
+                Reset Schedule
+              </button>
+            </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
             <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold text-black">{currentPhase.phase}</div></div>
@@ -418,10 +528,25 @@ const currentPhase=programPhases[week];
             <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getCompletion(week).completed}/{getCompletion(week).total} sessions</div></div>
           </div>
           <div className="mt-3 text-sm text-gray-700 italic">{currentPhase.notes}</div>
+          <div className="mt-3 text-xs text-gray-500 bg-blue-50 p-2 rounded border border-blue-200">
+            💡 <strong>Tip:</strong> Drag and drop workouts to reschedule them within the week. Click "Reset Schedule" to restore original plan.
+          </div>
         </div>}
 
         <div className="space-y-3">
-          {currentPlan.length>0?currentPlan.map((day,i)=><WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
+          {currentPlan.length>0?currentPlan.map((day,i)=>{
+            const {workout,originalIndex}=getWorkoutForDay(week,i);
+            return <WorkoutCard 
+              key={`${week}-${i}`} 
+              day={workout} 
+              isComplete={isComp(week,originalIndex)} 
+              onToggle={()=>toggleComp(week,originalIndex)}
+              onDragStart={()=>handleDragStart(week,i)}
+              onDragOver={handleDragOver}
+              onDrop={()=>handleDrop(week,i)}
+              isDragging={draggedWorkout?.week===week&&draggedWorkout?.index===i}
+            />
+          }):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
         </div>
       </div>}
       {tab==='log'&&<div>
