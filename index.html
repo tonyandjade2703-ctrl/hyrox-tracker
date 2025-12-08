@@ -5,8 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Hyrox Tracker">
-  <title>Hyrox Training Logger</title>
+  <meta name="apple-mobile-web-app-title" content="Jade Training">
+  <title>Jade's Training Logger</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -37,10 +37,9 @@ const Flame=({s=24})=><Icon d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-
 const TrendingUp=({s=24})=><Icon d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' s={s}/>;
 const Clock=({s=24})=><Icon d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' s={s}/>;
 
-const USERS = {
-  'jade': { name: 'Jade', plan: 'mixed', category: 'Mixed Doubles' },
-  'tony': { name: 'Tony', plan: 'mens', category: 'Mens Singles' },
-  'nathan': { name: 'Nathan', plan: 'mens', category: 'Mens Singles' }
+const USER = {
+  name: 'Jade',
+  category: '33yo Female Athlete | Half Marathon + Hyrox + Full Marathon'
 };
 
 function WorkoutCard({day,isComplete,onToggle}){
@@ -61,444 +60,190 @@ function WorkoutCard({day,isComplete,onToggle}){
   </div>
 }
 
-function LoginScreen({onLogin}){
-  const[email,setEmail]=useState('');
-  const[password,setPassword]=useState('');
-  const[error,setError]=useState('');
-
-  const handleLogin=(e)=>{
-    e.preventDefault();
-    const user=USERS[email.toLowerCase()];
-    if(user&&user.password===password){
-      onLogin(email.toLowerCase(),user);
-      setError('');
-    }else{
-      setError('Invalid email or password');
-    }
-  };
-
-  return <div className="min-h-screen bg-black flex items-center justify-center p-4">
-    <div className="w-full max-w-md">
-      <div className="text-center mb-8">
-        <Flame s={48} style={{color:'#FF4500'}} className="inline-block mb-4"/>
-        <h1 className="text-4xl font-bold text-white mb-2">HYROX</h1>
-        <h2 className="text-xl text-gray-300">Training Tracker</h2>
-      </div>
-      <div className="bg-white rounded-lg p-8 shadow-xl">
-        <h3 className="text-2xl font-bold text-black mb-6">Sign In</h3>
-        <form onSubmit={handleLogin} className="space-y-4">
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Email</label>
-            <input type="email" value={email} onChange={(e)=>setEmail(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none text-black" placeholder="your@email.com" required/>
-          </div>
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">Password</label>
-            <input type="password" value={password} onChange={(e)=>setPassword(e.target.value)} className="w-full px-4 py-3 border-2 border-gray-200 rounded-lg focus:border-orange-500 focus:outline-none text-black" placeholder="••••••••" required/>
-          </div>
-          {error&&<div className="bg-red-50 border-2 border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">{error}</div>}
-          <button type="submit" className="w-full py-3 rounded-lg font-bold text-white text-lg hover:opacity-90 transition" style={{backgroundColor:'#FF4500'}}>Sign In</button>
-        </form>
-        <div className="mt-8 pt-6 border-t border-gray-200">
-          <p className="text-sm text-gray-600 mb-3 font-semibold">Demo Accounts:</p>
-          <div className="space-y-2 text-xs text-gray-500">
-            <div className="bg-gray-50 p-2 rounded"><strong>Jade:</strong> jade@hyrox.com / jade2024</div>
-            <div className="bg-gray-50 p-2 rounded"><strong>Tony:</strong> tony@hyrox.com / tony2024</div>
-            <div className="bg-gray-50 p-2 rounded"><strong>Nathan:</strong> nathan@hyrox.com / nathan2024</div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-}
-
 function App(){
-const[currentUser,setCurrentUser]=useState(USERS.jade);
-const[userEmail,setUserEmail]=useState('jade');
 const[tab,setTab]=useState('plan');
-const[workouts,setWorkouts]=useState({});
+const[workouts,setWorkouts]=useState([]);
 const[comp,setComp]=useState({});
 const[week,setWeek]=useState(1);
 const[showLogForm,setShowLogForm]=useState(false);
 const[currentWorkout,setCurrentWorkout]=useState({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
 
 useEffect(()=>{
-  if(userEmail){
-    try{
-      const savedWorkouts=JSON.parse(localStorage.getItem(`workouts_${userEmail}`)||'[]');
-      const savedComp=JSON.parse(localStorage.getItem(`comp_${userEmail}`)||'{}');
-      setWorkouts({[userEmail]:savedWorkouts});
-      setComp(savedComp);
-    }catch(e){}
-  }
-},[userEmail]);
+  try{
+    const savedWorkouts=JSON.parse(localStorage.getItem('jade_workouts')||'[]');
+    const savedComp=JSON.parse(localStorage.getItem('jade_comp')||'{}');
+    setWorkouts(savedWorkouts);
+    setComp(savedComp);
+  }catch(e){}
+},[]);
 
 useEffect(()=>{
-  if(userEmail&&workouts[userEmail]){
-    localStorage.setItem(`workouts_${userEmail}`,JSON.stringify(workouts[userEmail]));
-  }
-},[workouts,userEmail]);
+  localStorage.setItem('jade_workouts',JSON.stringify(workouts));
+},[workouts]);
 
 useEffect(()=>{
-  if(userEmail){
-    localStorage.setItem(`comp_${userEmail}`,JSON.stringify(comp));
-  }
-},[comp,userEmail]);
+  localStorage.setItem('jade_comp',JSON.stringify(comp));
+},[comp]);
 
-const handleLogout=()=>{
-  // Switch between users instead of logout
-  const userKeys=Object.keys(USERS);
-  const currentIndex=userKeys.indexOf(userEmail);
-  const nextIndex=(currentIndex+1)%userKeys.length;
-  const nextUserId=userKeys[nextIndex];
-  setUserEmail(nextUserId);
-  setCurrentUser(USERS[nextUserId]);
-  setTab('plan');
-  setWeek(1);
-};
-
-// Jade's NEW detailed 7-week plan
 const jadeWeeklyPlans = {
   1: [
-    {day:'Tuesday Oct 21',type:'Running',focus:'Intervals',detail:'8x400m @ 3:45/km',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 8x400m @ 3:45/km pace (16.0 kph | 9.9 mph), 90sec jog recovery\nHeart Rate Zone: Zone 4-5 (90-95% max HR | 180-190 bpm)\nFocus: Hard intervals, full recovery between reps\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~8km'},
-    {day:'Wednesday Oct 22',type:'Rest',focus:'Complete Rest',detail:'Recovery day',specifics:'Complete rest day\nFocus: hydration (3L water), 8+ hours sleep\nLight walk acceptable (20-30min max)\nFoam rolling/stretching (20min)'},
-    {day:'Thursday Oct 23',type:'Strength',focus:'Upper Full Body',detail:'Compound lifts + accessories',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (4 sets each):\n• Lat Pulldown: 10 reps @ 35kg (2min rest)\n• Chest Press Machine or DB Bench: 10 reps @ 20kg DBs (2min rest)\n• Seated Cable Row: 10 reps @ 35kg (90sec rest)\n• DB Shoulder Press: 10 reps @ 12kg DBs (90sec rest)\n\nAccessory (3 sets):\n• Single-Arm Cable Row: 12/arm @ 15kg (60sec rest)\n• Assisted Dips or Tricep Pushdowns: 12 reps (60sec rest)\n• Cable Face Pulls: 15 reps @ 15kg (60sec rest)\n\nCarry & Core (3 rounds):\n• Farmer Carry: 100m @ 2x24kg\n• Hanging Knee Raises or Ab Wheel: 12 reps\n• KB Swings: 20 reps @ 20kg'},
-    {day:'Friday Oct 24',type:'Running',focus:'Long Run',detail:'10km steady',specifics:'10km @ 4:30-4:40/km pace (12.9-13.3 kph | 8.0-8.3 mph)\nHeart Rate Zone: Zone 2-3 (70-80% max HR | 140-160 bpm)\nFocus: Consistent pacing, nasal breathing where possible\nTotal: 45-50min'},
-    {day:'Saturday Oct 25',type:'Rest',focus:'Active Recovery',detail:'Full rest',specifics:'Complete rest day\nPrioritize recovery: 8+ hours sleep\nLight activity acceptable: 20-30min walk\nFoam rolling/yoga (30min)'},
-    {day:'Sunday Oct 26',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Women\'s weights - 3 rounds',specifics:'Warm-up: 10min easy movement + dynamic stretches\n\n3 Rounds For Time:\n• 500m SkiErg\n• 50m Sled Push @ 103kg (women\'s race weight)\n• 50m Sled Pull @ 78kg (women\'s race weight)\n• 80 Burpee Broad Jumps\n• 500m Row\n• 200m Farmers Carry @ 2x16kg (women\'s race weight)\n• 100m Sandbag Lunges @ 10kg (women\'s race weight)\n• 100 Wall Balls @ 6kg (women\'s race weight)\n\nTarget: 60-75min total\nFocus: ALL stations - technique, transitions, pacing'}
+    {day:'Monday Dec 9',type:'Strength',focus:'Lower Body Foundation',detail:'Back Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike/row easy + dynamic leg swings + glute bridges 2x15\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 75kg (75% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 60kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 16kg DBs, 90s rest\n• Nordic Curls: 3x5 with band assist, 2min rest\n• Hollow Hold: 3x30s\n• Arch Hold: 3x30s\n\nCool-down: 5min walk + stretching'},
+    {day:'Tuesday Dec 10',type:'Run + Stations',focus:'Easy aerobic + station work',detail:'5km easy + SkiErg/Sled/Burpees',specifics:'Warm-up: 10min walk/jog + dynamic drills (high knees, butt kicks, A-skips)\n\n• Easy Run: 5km @ 6:45/km pace (Z2, ~140-150bpm)\n\nThen 3 rounds:\n• SkiErg: 500m moderate effort\n• Sled Push: 50m @ 102kg (race weight)\n• Burpee Broad Jump: 10 reps\n3min rest between rounds\n\nCool-down: 5min walk'},
+    {day:'Wednesday Dec 11',type:'Tempo Run',focus:'Threshold development',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + 4x100m strides\n\n• Tempo Run: 4km @ 5:50/km (HR ~165-175bpm)\n  Comfortably hard - "controlled breathless"\n\nCool-down: 1.5km easy\nTotal: 7km'},
+    {day:'Thursday Dec 12',type:'Strength',focus:'Upper Body & Core',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + band pull-aparts 2x15\n\nMain Lifts:\n• Barbell Bench Press: 4x6 @ 37.5kg (75% 1RM), 3min rest\n• Weighted Pull-ups: 4x5 @ +5kg (or band assisted), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 16kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 20kg each hand, 2min rest\n• Wall Balls: 3x20 @ 6kg ball to 9ft target, 90s rest\n\nCool-down: 5min walk + stretching'},
+    {day:'Friday Dec 13',type:'Recovery Run',focus:'Active recovery',detail:'4km very easy',specifics:'Easy jog: 4km @ 7:15/km pace\nHR <140bpm\nShould feel refreshed, not tired\nCut short if fatigued'},
+    {day:'Saturday Dec 14',type:'Long Run',focus:'Aerobic base building',detail:'12km easy + strides',specifics:'Warm-up: 10min easy jog\n\n• Long Run: 12km @ 6:30/km pace\n  Fuel at 6km with gel/snack\n\n• Strides: 3x100m fast but controlled, 90s walk recovery\n\nCool-down: 10min walk + 15min stretching'},
+    {day:'Sunday Dec 15',type:'Active Recovery',focus:'Rest or light activity',detail:'Rest day or easy cross-training',specifics:'Options:\n• Complete rest\n• 30-40min easy bike\n• 30-40min easy swim\n• 20-30min walk\n\nOptional: Mobility work, foam rolling (20min)'}
   ],
   2: [
-    {day:'Monday Oct 27',type:'Strength',focus:'Leg Workout',detail:'Squats, RDLs, lunges',specifics:'Warm-up: 10min bike/row easy + leg swings\n\nMain Strength (4 sets each):\n• Front Squats: 10 reps @ 35-40kg (2min rest)\n• Single-Leg Romanian Deadlifts: 8/leg @ 15kg DBs (90sec rest)\n• Step-Ups: 12/leg @ 18kg DBs (90sec rest)\n• Goblet Reverse Lunges: 10/leg @ 24kg (60sec rest)\n\nAccessory (3 sets):\n• Sumo Squats: 15 reps @ 28kg\n• Lateral Box Step-Overs: 10/side @ bodyweight\n• Banded Good Mornings: 15 reps\n\nCore Finisher: 3x(60sec Plank, 15 Bicycle Crunches, 20 Hollow Rocks, 10 V-Ups)'},
-    {day:'Tuesday Oct 28',type:'Running',focus:'Tempo Run',detail:'4x1200m @ 4:00/km',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 4x1200m @ 4:00/km pace (15.0 kph | 9.3 mph), 2min jog recovery\nHeart Rate Zone: Zone 3-4 (80-90% max HR | 160-180 bpm)\nFocus: Comfortably hard, can speak 1-2 words\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~9km'},
-    {day:'Wednesday Oct 29',type:'Rest',focus:'Complete Rest',detail:'Recovery day',specifics:'Complete rest day\nHydration (3L), sleep (8+ hours)\n20-30min walk optional\nFoam rolling/stretching (20-30min)'},
-    {day:'Thursday Oct 30',type:'Strength',focus:'Upper Full Body',detail:'Compound + accessories',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (4 sets each):\n• Assisted Pull-Ups or Lat Pulldown: 10 reps (2min rest)\n• Incline DB Bench Press: 10 reps @ 18kg DBs (2min rest)\n• Cable Rows (Neutral Grip): 10 reps @ 40kg (90sec rest)\n• Arnold Press: 10 reps @ 10kg DBs (90sec rest)\n\nAccessory (3 sets):\n• Chest-Supported DB Rows: 12 reps @ 16kg DBs (60sec rest)\n• Cable Tricep Extensions: 12 reps @ 20kg (60sec rest)\n• Cable Face Pulls: 20 reps @ 15kg (60sec rest)\n\nCarry & Core (3 rounds):\n• Overhead Carry: 50m @ 15kg (single arm, switch)\n• Farmer Carry: 50m @ 2x28kg\n• Plank with Shoulder Taps: 20 total\n• Dead Bugs: 20 total'},
-    {day:'Friday Oct 31',type:'Running',focus:'Long Run',detail:'11km steady',specifics:'11km @ 4:30-4:40/km pace (12.9-13.3 kph | 8.0-8.3 mph)\nHeart Rate Zone: Zone 2-3 (70-80% max HR | 140-160 bpm)\nFocus: Aerobic development, comfortable pace\nTotal: 50-55min'},
-    {day:'Saturday Nov 1',type:'Rest',focus:'Active Recovery',detail:'Full rest',specifics:'Complete rest day\nRecovery priority: 8-9 hours sleep\nLight walk (20-30min) optional\nFoam rolling/yoga (30min)'},
-    {day:'Sunday Nov 2',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Women\'s + 10%',specifics:'Warm-up: 10min easy + dynamic stretches\n\nFor Time (straight through):\n• 1000m SkiErg\n• 50m Sled Push @ 110kg (women\'s + 7kg)\n• 1000m Row\n• 50m Sled Pull @ 85kg (women\'s + 7kg)\n• 100 Burpee Broad Jumps\n• 200m Farmers Carry @ 2x18kg (women\'s + 2kg per hand)\n• 100 Wall Balls @ 6kg (women\'s weight)\n• 100m Sandbag Lunges @ 12kg (women\'s + 2kg)\n\nTarget: 50-65min total\nFocus: Continuous effort, ALL stations matter'}
+    {day:'Monday Dec 16',type:'Strength',focus:'Lower Body Progression',detail:'Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 77.5kg (+2.5kg), 3min rest\n• Romanian Deadlift: 3x8 @ 62.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 18kg DBs (+2kg), 90s rest\n• Nordic Curls: 3x6 with band, 2min rest\n• Hollow Hold: 3x35s (+5s)\n• Arch Hold: 3x35s (+5s)\n\nCool-down: 5min walk + stretching'},
+    {day:'Tuesday Dec 17',type:'Run + Stations',focus:'Easy run + stations',detail:'5km easy + station work',specifics:'Warm-up: 10min easy + drills\n\n• Easy Run: 5km @ 6:40/km (slightly faster)\n\nThen 3 rounds:\n• SkiErg: 500m (aim for consistent splits)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest between\n\nCool-down: 5min walk'},
+    {day:'Wednesday Dec 18',type:'Tempo Run',focus:'Threshold work',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + 4x100m strides\n\n• Tempo: 4km @ 5:50/km (same pace, should feel easier)\n\nCool-down: 1.5km easy\nTotal: 7km + 10min stretching'},
+    {day:'Thursday Dec 19',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x6 @ 38.75kg (+1.25kg), 3min rest\n• Weighted Pull-ups: 4x6 @ +5kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 18kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min walk + stretching'},
+    {day:'Friday Dec 20',type:'Recovery Run',focus:'Easy recovery',detail:'4.5km easy',specifics:'Easy jog: 4.5km @ 7:10/km pace (+500m)\nHR <140bpm\nVery easy effort'},
+    {day:'Saturday Dec 21',type:'Long Run',focus:'Aerobic development',detail:'12km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 12km @ 6:25/km (5s/km faster)\n  Fuel at 6km\n\n• Strides: 3x100m, 90s walk recovery\n\nCool-down: 10min walk + 15min stretching'},
+    {day:'Sunday Dec 22',type:'Active Recovery',focus:'Rest or light movement',detail:'Recovery day',specifics:'Options:\n• Complete rest\n• 30-40min easy bike/swim\n• Light walk\n\nMobility work optional'}
   ],
   3: [
-    {day:'Monday Nov 3',type:'Strength',focus:'Leg Workout',detail:'Back squats, RDLs, plyos',specifics:'Warm-up: 10min bike/row + dynamic stretches\n\nMain Strength (5 sets each - volume increase):\n• Back Squats: 6 reps @ 55-60kg (2-3min rest)\n• Romanian Deadlifts: 8 reps @ 40kg (2min rest)\n• Walking Lunges: 30 total @ 18kg DBs (90sec rest)\n• Pause Squats: 8 reps @ 45kg (90sec rest)\n\nPlyometric Power (3 sets):\n• Depth Jumps: 8 reps (30cm box)\n• Single-Leg Bounds: 5/leg\n• Box Jumps: 8 reps @ 65cm\n\nCore: 4x(45sec Side Plank/side, 15 Dead Bugs, 20 Russian Twists w/10kg)'},
-    {day:'Tuesday Nov 4',type:'Running',focus:'Intervals',detail:'6x600m @ 3:50/km',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 6x600m @ 3:50/km pace (15.7 kph | 9.7 mph), 90sec jog recovery\nHeart Rate Zone: Zone 4-5 (90-95%+ max HR | 180-190+ bpm)\nFocus: Hard effort, recovery between intervals important\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~8.5km'},
-    {day:'Wednesday Nov 5',type:'Rest',focus:'Complete Rest',detail:'Recovery day',specifics:'Complete rest day\nRecovery focus: hydration, sleep (8+ hours)\nOptional 20-30min walk\nFoam rolling/stretching (30min)'},
-    {day:'Thursday Nov 6',type:'Strength',focus:'Upper Full Body',detail:'Volume increase',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (5 sets each - volume increase):\n• Lat Pulldown (Close Grip): 10 reps @ 40kg (2min rest)\n• DB Bench Press: 10 reps @ 22kg DBs (2min rest)\n• T-Bar Row or Cable Row: 10 reps @ 45kg (90sec rest)\n• Seated DB Shoulder Press: 8 reps @ 14kg DBs (90sec rest)\n\nAccessory (3 sets):\n• Cable Pullovers: 12 reps @ 25kg\n• Incline DB Flyes: 12 reps @ 10kg DBs\n• Single-Arm Cable Row: 10/arm @ 20kg\n\nCarry & Core (4 rounds - increased volume):\n• Waiter Carry: 50m/arm @ 15kg\n• Suitcase Carry: 50m/arm @ 28kg\n• Plank Hold: 45sec\n• Pallof Press: 12/side @ 15kg'},
-    {day:'Friday Nov 7',type:'Running',focus:'Threshold Run',detail:'3x2km @ 4:10/km',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 3x2km @ 4:10/km pace (14.4 kph | 8.9 mph), 3min jog recovery\nHeart Rate Zone: Zone 3-4 (80-88% max HR | 160-175 bpm)\nFocus: "Comfortably hard" - can speak short phrases\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~9km'},
-    {day:'Saturday Nov 8',type:'Rest',focus:'Active Recovery',detail:'Full rest',specifics:'Complete rest day\n8-9 hours sleep priority\nLight walk or complete rest\nRecovery work (30min)'},
-    {day:'Sunday Nov 9',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Women\'s + 20% EMOM',specifics:'Warm-up: 10min easy + dynamics\n\nEMOM Format (Every Minute On the Minute) - 40 minutes:\nMin 1: 250m SkiErg\nMin 2: 25m Sled Push @ 118kg\nMin 3: 250m Row\nMin 4: 25m Sled Pull @ 92kg\nMin 5: 20 Burpee Broad Jumps\nMin 6: 100m Farmers Carry @ 2x20kg\nMin 7: 25 Wall Balls @ 6kg\nMin 8: 50m Sandbag Lunges @ 14kg\nRepeat 5 times through\n\nTarget: Complete within each minute, rest = remaining time\nFocus: Work capacity under time pressure - ALL 8 stations trained'}
+    {day:'Monday Dec 23',type:'Strength',focus:'Lower Body',detail:'Increased intensity',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 80kg (80% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 65kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 20kg DBs, 90s rest\n• Nordic Curls: 3x7 with light band, 2min rest\n• Hollow Hold: 3x40s\n• Arch Hold: 3x40s\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Dec 24',type:'Run + Stations',focus:'Easy run + stations',detail:'5km + station work',specifics:'Warm-up: 10min + drills\n\n• Easy Run: 5km @ 6:35/km\n\nThen 3 rounds:\n• SkiErg: 500m (consistent times)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest\n\nCool-down: 5min'},
+    {day:'Wednesday Dec 25',type:'Tempo Run',focus:'Threshold progression',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo: 4km @ 5:45/km (5s/km faster)\n\nCool-down: 1.5km easy\nTotal: 7km'},
+    {day:'Thursday Dec 26',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows',specifics:'Warm-up: 5min row + prep\n\nMain Lifts:\n• Bench Press: 4x6 @ 40kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +6.25kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 14kg DBs (+2kg), 2min rest\n• DB Bent Over Row: 3x10 @ 18kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min + stretching'},
+    {day:'Friday Dec 27',type:'Recovery Run',focus:'Easy run',detail:'5km easy',specifics:'Easy jog: 5km @ 7:05/km\nHR <140bpm\nFeel fresh'},
+    {day:'Saturday Dec 28',type:'Long Run',focus:'Volume increase',detail:'14km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 14km @ 6:25/km\n  Fuel at 7km\n\n• Strides: 3x100m\n\nCool-down: 10min walk + stretching'},
+    {day:'Sunday Dec 29',type:'Active Recovery',focus:'Rest day',detail:'Recovery',specifics:'Complete rest or light activity\n30-40min easy movement optional'}
   ],
   4: [
-    {day:'Monday Nov 10',type:'Strength',focus:'Leg Workout',detail:'Strength focus',specifics:'Warm-up: 10min bike/row + dynamic stretches\n\nMain Strength (4 sets each - strength focus):\n• Front Squats: 5 reps @ 45-50kg (3min rest)\n• Deficit Deadlifts: 5 reps @ 70-80kg (3min rest)\n• Bulgarian Split Squats: 6/leg @ 22kg DBs (2min rest)\n• Barbell Hip Thrusts: 10 reps @ 60kg (90sec rest)\n\nUnilateral Work (3 sets):\n• Single-Leg Leg Press: 10/leg @ heavy\n• Copenhagen Plank: 20sec/side\n• Cossack Squats: 8/side @ 16kg\n\nCore: 4x(45sec Hollow Hold, 15 Jackknives, 20 Bicycle Crunches)'},
-    {day:'Tuesday Nov 11',type:'Running',focus:'Fartlek Run',detail:'45min variable pace',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set - Fartlek (45 minutes continuous):\n• Alternate: 2min @ 4:30/km (13.3 kph | 8.3 mph) - Zone 3-4 (80-88% max HR)\n• Then: 2min @ 5:30/km (10.9 kph | 6.8 mph) - Zone 2 (70-75% max HR)\n• Repeat pattern throughout\n• No stopping between intervals\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~10-11km\nFocus: Variable pace, race simulation'},
-    {day:'Wednesday Nov 12',type:'Rest',focus:'Complete Rest',detail:'Mid-block check',specifics:'Complete rest day\nHydration (3L+), sleep (8-9 hours)\nOptional light walk (20-30min)\nFoam rolling/stretching (30min)\nMid-block check-in: Assess fatigue, performance'},
-    {day:'Thursday Nov 13',type:'Strength',focus:'Upper Full Body',detail:'Mixed rep ranges',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (4 sets each - mixed rep ranges):\n• Lat Pulldown (Wide Grip): 8 reps @ 45kg (2-3min rest)\n• DB Chest Press: 8 reps @ 24kg DBs (2min rest)\n• Chest-Supported Row Machine: 12 reps @ 45kg (90sec rest)\n• Machine Shoulder Press: 10 reps @ 25kg (90sec rest)\n\nSuperset Accessory (3 sets):\nA1: Cable Bicep Curls: 12 reps @ 20kg\nA2: Overhead Tricep Extension: 12 reps @ 15kg\nB1: Cable Lateral Raises: 15 reps @ 10kg\nB2: Cable Reverse Flyes: 15 reps @ 10kg\n\nCarry Challenge (1 round for distance):\n• Max distance Farmer Carry @ 2x28kg\n• Rest 3min\n• Max distance Overhead Carry @ 12kg (alternating arms every 25m)'},
-    {day:'Friday Nov 14',type:'Running',focus:'Progressive Long',detail:'12km negative split',specifics:'Progressive structure (finish faster than you start):\n• 3km @ 4:50/km (12.4 kph | 7.7 mph) - Zone 2 (70-75% max HR)\n• 4km @ 4:35/km (13.1 kph | 8.1 mph) - Zone 3 (75-82% max HR)\n• 3km @ 4:20/km (13.8 kph | 8.6 mph) - Zone 3-4 (82-88% max HR)\n• 2km @ 4:10/km (14.4 kph | 8.9 mph) - Zone 4 (88-92% max HR)\n\nTotal: 12km\nFocus: Negative split practice, mental toughness\nHeart rate should gradually climb throughout'},
-    {day:'Saturday Nov 15',type:'Rest',focus:'Active Recovery',detail:'Full rest',specifics:'Complete rest day\nRecovery: 8-9 hours sleep\nLight activity or complete rest\nRecovery protocols (30min)'},
-    {day:'Sunday Nov 16',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Women\'s + 30% Chipper',specifics:'Warm-up: 10min easy + dynamics\n\nChipper Format (complete all in order, for time):\n• 1500m SkiErg\n• 100m Sled Push @ 125kg (4x25m)\n• 1500m Row\n• 100m Sled Pull @ 100kg (4x25m)\n• 120 Burpee Broad Jumps\n• 400m Farmers Carry @ 2x22kg (2x200m)\n• 150 Wall Balls @ 6kg\n• 200m Sandbag Lunges @ 16kg (2x100m)\n\nTarget: 40-50min\nFocus: Mental toughness, pacing strategy'}
+    {day:'Monday Dec 30',type:'Strength',focus:'Lower Body Consolidation',detail:'Same weight, quality focus',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 80kg (focus quality), 3min rest\n• Romanian Deadlift: 3x8 @ 67.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 20kg DBs, 90s rest\n• Nordic Curls: 3x8 or reduce band, 2min rest\n• Hollow Hold: 3x45s\n• Arch Hold: 3x45s\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Dec 31',type:'Run + Stations',focus:'Aerobic + stations',detail:'5km + station work',specifics:'Warm-up: 10min + drills\n\n• Easy Run: 5km @ 6:30/km\n\nThen 3 rounds:\n• SkiErg: 500m\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest\n\nCool-down: 5min'},
+    {day:'Wednesday Jan 1',type:'Tempo Run',focus:'Threshold',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo: 4km @ 5:45/km\n\nCool-down: 1.5km easy\nTotal: 7km'},
+    {day:'Thursday Jan 2',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 40kg, 3min rest\n• Weighted Pull-ups: 4x7 @ +6.25kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 14kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min + stretching'},
+    {day:'Friday Jan 3',type:'Recovery Run',focus:'Easy run',detail:'5km easy',specifics:'Easy jog: 5km @ 7:00/km\nHR <140bpm'},
+    {day:'Saturday Jan 4',type:'Long Run',focus:'Base consolidation',detail:'14km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 14km @ 6:20/km (slightly faster)\n  Fuel at 7km\n\n• Strides: 3x100m\n\nCool-down: 10min walk + stretching'},
+    {day:'Sunday Jan 5',type:'Active Recovery',focus:'Rest',detail:'Recovery day',specifics:'Complete rest or light activity optional'}
   ],
   5: [
-    {day:'Monday Nov 17',type:'Strength',focus:'Leg Peak Load',detail:'Peak intensity',specifics:'Warm-up: 10min bike/row + leg swings\n\nMain Strength (3 sets each - peak intensity, lower volume):\n• Back Squats: 3 reps @ 65-70kg (3-4min rest)\n• Trap Bar Deadlifts: 3 reps @ 95-105kg (3-4min rest)\n• Front Rack Reverse Lunges: 5/leg @ 35kg (2min rest)\n\nExplosive Power (4 sets):\n• Broad Jumps: 5 reps (max distance)\n• Banded Squat Jumps: 8 reps\n• Single-Leg Hops: 5/leg\n• Lateral Bounds: 5/side\n\nFinisher - Time Trial:\n• 100 Walking Lunges @ 20kg DBs (for time)\n\nCore: 3x(60sec Plank, 20 V-Ups, 15 Windshield Wipers)'},
-    {day:'Tuesday Nov 18',type:'Running',focus:'Hill Sprints',detail:'8x60sec uphill',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set - Hill Repeats:\n• 8x60sec uphill sprint @ max effort\n• Heart Rate Zone: Zone 5 (95%+ max HR | 190+ bpm)\n• Walk down recovery (2-3min) - allow HR to drop to Zone 2\n• Focus on power and form\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~6-7km including warm-up/cool-down\nNEW STIMULUS - Power development'},
-    {day:'Wednesday Nov 19',type:'Rest',focus:'Complete Rest',detail:'Recovery priority',specifics:'Complete rest day\nHydration (3L+), sleep (8-9 hours)\nLight walk optional (20-30min)\nRecovery work: foam rolling, stretching (30min)'},
-    {day:'Thursday Nov 20',type:'Strength',focus:'Upper Peak',detail:'Peak strength',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (3 sets each - peak strength):\n• Lat Pulldown: 5 reps @ 50kg (3min rest)\n• Barbell Bench Press: 5 reps @ 35kg (3min rest)\n• Seated Cable Row: 5 reps @ 55kg (2min rest)\n• DB Shoulder Press: 5 reps @ 16kg DBs (2min rest)\n\nMetabolic Finisher (2 rounds for time):\n• 20 Lat Pulldown @ 30kg\n• 30 Push-Ups (scale to knees if needed)\n• 40 KB Swings @ 24kg\n• 50 Wall Balls @ 9kg\n• Rest 3min between rounds\n\nCarry: 3x100m Farmers Carry @ 2x30kg (heavy)'},
-    {day:'Friday Nov 21',type:'Running',focus:'Tempo Long',detail:'12km with tempo',specifics:'Structure:\n• 2km easy (5:00/km | 12.0 kph | 7.5 mph) - Zone 2 (70-75% max HR)\n• 8km @ 4:25/km (13.6 kph | 8.4 mph) - Zone 3 (75-82% max HR)\n• 2km easy (5:00/km | 12.0 kph | 7.5 mph) - Zone 2 (70-75% max HR)\n\nTotal: 12km\nFocus: Aerobic capacity at faster pace, maintain steady HR in Zone 3'},
-    {day:'Saturday Nov 22',type:'Rest',focus:'Active Recovery',detail:'Mental prep',specifics:'Complete rest day\nRecovery priority: 8-9 hours sleep\nLight walk or complete rest\nVisualization and mental preparation\nRecovery protocols (30min)'},
-    {day:'Sunday Nov 23',type:'Hybrid',focus:'RACE SIMULATION',detail:'Mixed Doubles weights',specifics:'Warm-up: 10min easy + dynamics + practice transitions\n\nFull Race Simulation - Split Station Format:\n• 1km run @ race effort\n• 500m SkiErg (then partner does 500m)\n• 1km run @ race effort\n• 25m Sled Push @ 152kg (then partner does 25m)\n• 1km run @ race effort\n• 25m Sled Pull @ 117kg (then partner does 25m)\n• 1km run @ race effort\n• 40 Burpee Broad Jumps (then partner does 40)\n• 1km run @ race effort\n• 500m Row (then partner does 500m)\n• 1km run @ race effort\n• 100m Farmers Carry @ 2x24kg (then partner does 100m)\n• 1km run @ race effort\n• 50m Sandbag Lunges @ 20kg (then partner does 50m)\n• 1km run @ race effort\n• 50 Wall Balls @ 9kg (then partner does 50)\n\nTarget: Sub-40min (your portion)\nFocus: RACE DAY DRESS REHEARSAL - practice splitting EVERY station\nPractice: Smooth handoffs, communication, pacing'}
+    {day:'Monday Jan 6',type:'Strength',focus:'Lower Body - Intensity Up',detail:'Reduced reps, increased weight',specifics:'Warm-up: 5min bike + box step-ups 2x10\n\nMain Lifts:\n• Barbell Back Squat: 4x5 @ 85kg (85% 1RM), 3min rest - HEAVY\n• Romanian Deadlift: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x8 @ 40cm, 2min rest - NEW explosive work\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest - NEW Hyrox specific\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Jan 7',type:'Intervals + Stations',focus:'Speed endurance',detail:'6x800m + stations',specifics:'Warm-up: 2km easy jog + 4x100m strides\n\nMain Set:\n• 6x800m @ 5:20/km pace (4:16 per rep), 2min jog recovery\n  Focus: Consistent splits, HR Zone 4-5 (180-190bpm)\n\nThen 2 rounds:\n• SkiErg: 1000m moderate-hard\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m moderate\n3min rest between rounds\n\nCool-down: 1km easy'},
+    {day:'Wednesday Jan 8',type:'Tempo Run',focus:'Extended threshold',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo Run: 6km @ 5:50/km (2km increase)\n  HR Zone 3 (~160-170bpm)\n\nCool-down: 1.5km easy\nTotal: 9km'},
+    {day:'Thursday Jan 9',type:'Strength',focus:'Upper Body + Power',detail:'Heavy + carries',specifics:'Warm-up: 5min row + band work\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg (85% 1RM), 3min rest - HEAVY\n• Weighted Pull-ups: 4x6 @ +7.5kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs (+2kg), 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 22.5kg each (+2.5kg), 2min rest\n• Wall Balls: 4x20 @ 6kg (add 1 set), 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest - NEW Hyrox\n\nCool-down: 5min + stretching'},
+    {day:'Friday Jan 10',type:'Recovery Run',focus:'Easy recovery',detail:'5km easy',specifics:'Easy jog: 5km @ 7:00/km\nHR <140bpm'},
+    {day:'Saturday Jan 11',type:'Long Run',focus:'Volume increase',detail:'16km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 16km @ 6:20/km\n  Fuel at 8km and 12km\n\n• Strides: 4x100m\n\nCool-down: 10min walk + 15min stretching'},
+    {day:'Sunday Jan 12',type:'Active Recovery',focus:'Rest or cross-training',detail:'Recovery',specifics:'Options:\n• Complete rest\n• 40min easy bike/swim\n• Mobility work'}
   ],
   6: [
-    {day:'Monday Nov 24',type:'Strength',focus:'Leg Reduced',detail:'85% intensity taper',specifics:'Warm-up: 10min bike easy + dynamic stretches\n\nMain Strength (3 sets only, 85% intensity):\n• Back Squats: 6 reps @ 50kg (2min rest)\n• Romanian Deadlifts: 8 reps @ 35kg (90sec rest)\n• Bulgarian Split Squats: 8/leg @ 16kg DBs (90sec rest)\n• Walking Lunges: 20 total @ 15kg DBs (60sec rest)\n\nPower (2 sets):\n• Box Jumps: 8 reps @ 60cm\n• Broad Jumps: 8 reps\n\nCore: 3x(30sec Plank, 15 V-Ups, 20 Russian Twists)'},
-    {day:'Tuesday Nov 25',type:'Running',focus:'Threshold Short',detail:'6x400m reduced volume',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 6x400m @ 3:30/km pace (17.1 kph | 10.6 mph), 90sec rest\nHeart Rate Zone: Zone 4-5 (90-95% max HR | 180-190 bpm)\nFocus: Sharp and controlled, not max effort\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~6km'},
-    {day:'Wednesday Nov 26',type:'Rest',focus:'Complete Rest',detail:'Recovery',specifics:'Complete rest day\nHydration (3L), sleep (8+ hours)\nLight walk (20min) optional\nFoam rolling/stretching (20-30min)'},
-    {day:'Thursday Nov 27',type:'Strength',focus:'Upper Light',detail:'70% intensity',specifics:'Warm-up: 10min row easy + mobility\n\nMain Compound (3 sets, 70% intensity):\n• Lat Pulldown: 8 reps @ 30kg\n• Push-Ups: 12 reps (on knees if needed)\n• Cable Row: 10 reps @ 30kg\n• DB Shoulder Press: 8 @ 10kg DBs\n\nAccessory (2 sets):\n• Farmer Carry: 100m @ 2x24kg\n• Face Pulls: 15 reps @ 12kg\n• KB Swings: 15 reps @ 18kg\n\nCore: 2x(30sec Plank, 15 Leg Raises)'},
-    {day:'Friday Nov 28',type:'Running',focus:'Easy Run',detail:'8km conversational',specifics:'8km @ 4:50-5:00/km pace (12.0-12.4 kph | 7.5-7.7 mph)\nHeart Rate Zone: Zone 2 (65-75% max HR | 130-150 bpm)\nFocus: Easy, feel fresh, fully conversational\nTotal: 40-42min'},
-    {day:'Saturday Nov 29',type:'Rest',focus:'Active Recovery',detail:'Equipment check',specifics:'Complete rest day\n8-9 hours sleep\nVery light activity or complete rest\nMental preparation\nEquipment check'},
-    {day:'Sunday Nov 30',type:'Hybrid',focus:'Light Tech Work',detail:'Mixed Doubles - technique',specifics:'Warm-up: 10min easy + dynamics\n\n2 Rounds For Technique (NOT timed):\n• 500m SkiErg (70% effort)\n• 25m Sled Push @ 152kg (mixed doubles weight)\n• 25m Sled Pull @ 117kg (mixed doubles weight)\n• 40 Burpee Broad Jumps\n• 500m Row (70% effort)\n• 100m Farmers Carry @ 2x24kg (mixed doubles weight)\n• 50m Sandbag Lunges @ 20kg (mixed doubles weight)\n• 50 Wall Balls @ 9kg (mixed doubles weight)\n\nTarget: 30-35min - FEEL FRESH\nFocus: Perfect technique on ALL stations, smooth transitions'}
+    {day:'Monday Jan 13',type:'Strength',focus:'Lower Body Volume',detail:'Maintain high intensity',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Back Squat: 4x5 @ 85kg, 3min rest\n• RDL: 3x8 @ 72.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x8 @ 40cm, 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Jan 14',type:'Intervals + Stations',focus:'Speed work',detail:'6x800m + stations',specifics:'Warm-up: 2km easy + strides\n\n• 6x800m @ 5:20/km, 2min jog recovery\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy'},
+    {day:'Wednesday Jan 15',type:'Tempo Run',focus:'Threshold endurance',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo: 6km @ 5:50/km\n\nCool-down: 1.5km easy\nTotal: 9km'},
+    {day:'Thursday Jan 16',type:'Strength',focus:'Upper Body Volume',detail:'Maintain intensity',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +7.5kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 22.5kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Friday Jan 17',type:'Recovery Run',focus:'Easy run',detail:'5km easy',specifics:'Easy jog: 5km @ 7:00/km\nHR <140bpm'},
+    {day:'Saturday Jan 18',type:'Long Run',focus:'Sustained aerobic',detail:'16km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 16km @ 6:15/km (5s/km faster)\n  Fuel at 8km and 12km\n\n• Strides: 4x100m\n\nCool-down: 10min + stretching'},
+    {day:'Sunday Jan 19',type:'Active Recovery',focus:'Rest',detail:'Recovery day',specifics:'Complete rest or 40min easy activity'}
   ],
   7: [
-    {day:'Monday Dec 1',type:'Strength',focus:'Activation',detail:'Light 60%',specifics:'Warm-up: 10min bike easy + dynamic stretches\n\nLight Activation (2 sets, 60% intensity):\n• Squats: 8 reps @ 40kg\n• RDLs: 8 reps @ 30kg\n• Walking Lunges: 16 total @ 12kg DBs\n• Box Jumps: 6 @ 50cm\n\nCore (2 rounds): 30sec Plank, 15 Leg Raises\nTotal: 30min max'},
-    {day:'Tuesday Dec 2',type:'Running',focus:'Sharpening',detail:'5x400m quality',specifics:'Warm-up: 2km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\n\nMain Set: 5x400m @ 3:40/km pace (16.4 kph | 10.2 mph), 2min rest\nHeart Rate Zone: Zone 4 (88-92% max HR | 175-185 bpm)\nFocus: Feel sharp, not tired - quality over fatigue\n\nCool-down: 1km easy (6:00-6:15/km | 6.0-6.2 mph) - Zone 2\nTotal: ~5km\nFeel sharp, not tired'},
-    {day:'Wednesday Dec 3',type:'Rest',focus:'Complete Rest',detail:'Pre-race rest',specifics:'Complete rest or 15-20min walk only\nHydration: 3L water\nSleep: 8+ hours\nLight stretching (10-15min)'},
-    {day:'Thursday Dec 4',type:'Strength',focus:'Activation',detail:'Very light 50%',specifics:'Very Light (2 sets, 50% intensity):\n• Lat Pulldown: 8 reps @ 25kg\n• Push-Ups: 10 reps (on knees if needed)\n• Cable Row: 8 reps @ 20kg\n• DB Shoulder Press: 6 @ 8kg DBs\n\nStation Touch (technique only):\n• 250m SkiErg (easy)\n• 250m Row (easy)\n• 20 Wall Balls @ 6kg\n• 50m Farmers Carry @ 2x20kg\n\nTotal: 25min max'},
-    {day:'Friday Dec 5',type:'Running',focus:'Race Activation',detail:'Strides + movements',specifics:'Warm-up: 15min easy jog (5:50-6:00/km | 6.2-6.4 mph)\n\nStrides: 4x100m @ 90% (14-15 kph | 8.7-9.3 mph) - smooth, not all-out\n\nQuick movements (feel fresh):\n• 10 Burpee Broad Jumps\n• 10 Wall Balls @ 6kg\n• 10 Box Jumps @ 50cm\n\nCool-down: 5min walk\nTotal: 30min, feel PRIMED'},
-    {day:'Saturday Dec 6',type:'Hybrid',focus:'RACE DAY 🔥',detail:'Mixed Doubles',specifics:'RACE DAY STRATEGY:\n\nStation Splits: You and partner split EVERY station\n• SkiErg: Each does 500m of 1000m\n• Row: Each does 500m of 1000m\n• Sled Push: Each does 25m of 50m @ 152kg\n• Sled Pull: Each does 25m of 50m @ 117kg\n• Burpee Broad Jumps: Each does 40 of 80\n• Farmers Carry: Each does 100m of 200m @ 2x24kg\n• Sandbag Lunges: Each does 50m of 100m @ 20kg\n• Wall Balls: Each does 50 of 100 @ 9kg\n\nTransitions: <10 seconds for handoffs\nPacing: Start controlled, finish strong\nAll-rounder approach: Trust your preparation\n\n🏆 RACE TIME! 🏆'},
-    {day:'Sunday Dec 7',type:'Rest',focus:'Recovery',detail:'Post-race',specifics:'Complete rest or very light 20min walk\nHydration focus\nCelebrate your race! 🎉'}
-  ]
-};
-
-const mixedProg={
-  1:{focus:'Foundation Phase',intensity:'Low-Moderate',notes:'Women\'s weights (103kg push / 78kg pull). Building aerobic base + technique.',startDate:'2025-10-20'},
-  2:{focus:'Foundation Phase',intensity:'Moderate',notes:'Women\'s + 10% (110kg push / 85kg pull). Volume increase.',startDate:'2025-10-27'},
-  3:{focus:'Build Phase',intensity:'Moderate-High',notes:'Women\'s + 20% (118kg push / 92kg pull). Plyometrics added.',startDate:'2025-11-03'},
-  4:{focus:'Build Phase',intensity:'High',notes:'Women\'s + 30% (125kg push / 100kg pull). Peak volume week.',startDate:'2025-11-10'},
-  5:{focus:'Peak Phase',intensity:'Very High',notes:'Mixed Doubles weights (152kg push / 117kg pull). Race simulation!',startDate:'2025-11-17'},
-  6:{focus:'Taper Week 1',intensity:'Moderate',notes:'Reduced volume, maintain intensity. Mixed Doubles weights.',startDate:'2025-11-24'},
-  7:{focus:'Taper Week 2 - RACE',intensity:'Low',notes:'Light activation only. RACE DAY: Saturday 6 December 🔥',startDate:'2025-12-01'}
-};
-
-const tonyWeeklyPlans = {
-  1: [
-    {day:'Monday Oct 20',type:'Strength',focus:'Leg Functional',detail:'Sled overload + power',specifics:'Warm-up: 5min rowing + leg mobility\n\nA1. Sled Push: 5 × 50m @ 160kg (353 lbs) - focus on drive and speed\nA2. Bulgarian split squats: 3 × 8 each leg (20kg dumbbell each hand)\n\nB1. Sled Pull: 6 × 50m @ 110kg (243 lbs) - powerful hip extension\nB2. Single-leg RDLs: 3 × 8 each leg (16kg dumbbell each hand)\n\nC. Jump squats or box jumps: 3 × 6 (bodyweight or light resistance)\nD. Farmer carries: 3 × 50m @ 24kg each hand\n\nCool-down: 5min walk/stretch'},
-    {day:'Tuesday Oct 21',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Oct 22',type:'Running',focus:'Long Run',detail:'14km steady',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n10km steady state (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\nConversational but purposeful\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 14km - building aerobic base'},
-    {day:'Thursday Oct 23',type:'Strength',focus:'Upper Functional',detail:'Row/Pull/Push power',specifics:'Warm-up: 500m row + arm mobility + shoulder prep\n\nA1. Bent-over barbell rows: 4 × 6 (100-120kg / 220-265 lbs)\nA2. Push press or bench press: 3 × 6 (80-100kg / 176-220 lbs)\n\nB1. SkiErg: 6 × 250m (45sec hard / 15sec rest)\nB2. Weighted pull-ups or lat pulldowns: 3 × 8 (add weight or 60-80kg)\n\nC. Farmer carries: 3 × 40m @ 24kg each hand\nD. Pallof press or landmine rotations: 3 × 8 each side (20kg)\n\nCool-down: 3min easy rowing'},
-    {day:'Friday Oct 24',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Oct 25',type:'Running',focus:'Tempo/Threshold',detail:'4x1km threshold',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n4 × 1km at threshold (10.5 km/h / 6.53 mph - 5:43/km) - Z3 (140-160 bpm)\n90sec jog recovery (9.5 km/h / 5.9 mph) - Z2 (120-140 bpm)\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: ~11km in 30min - race pace threshold work'},
-    {day:'Sunday Oct 26',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Multi-station work',specifics:'Warm-up: 2km easy run (10.0 km/h / 6.21 mph) + dynamic prep\n\nFull Circuit (2 rounds, 2min rest between rounds):\n• 50m sled push @ 160kg (353 lbs)\n• 80m burpee broad jumps (focus on power and distance)\n• 100m sandbag lunges @ 18kg (40 lbs) - controlled pace\n• 200m farmers carry @ 20kg each hand (44 lbs)\n• 15 × wall balls @ 12kg (26 lbs) - heavy ball for power\n• 4 × 2min moderate-hard rowing (build Roxzone capacity)\n\nCool-down: 5min walk/stretch\nTotal: ~75min including warm-up, work, rest, cool-down'}
+    {day:'Monday Jan 20',type:'Strength',focus:'Lower Body Peak',detail:'Further intensity increase',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 5x5 @ 85kg (add 1 set), 3min rest\n• RDL: 3x8 @ 75kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 24kg DBs (+2kg), 90s rest\n• Box Jumps: 3x8 @ 45cm (+5cm), 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Jan 21',type:'Intervals + Stations',focus:'VO2 max work',detail:'8x800m + stations',specifics:'Warm-up: 2km easy + strides\n\n• 8x800m @ 5:15/km (faster pace), 90sec jog recovery\n  HR Zone 4-5\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy'},
+    {day:'Wednesday Jan 22',type:'Tempo Run',focus:'Extended tempo',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo: 6km @ 5:45/km (5s/km faster)\n\nCool-down: 1.5km easy\nTotal: 9km'},
+    {day:'Thursday Jan 23',type:'Strength',focus:'Upper Body Peak',detail:'Peak intensity',specifics:'Warm-up: 5min row + prep\n\nMain Lifts:\n• Bench Press: 5x5 @ 42.5kg (add 1 set), 3min rest\n• Weighted Pull-ups: 4x6 @ +8.75kg (+1.25kg), 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 22kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 24kg each (+1.5kg), 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Friday Jan 24',type:'Recovery Run',focus:'Easy run',detail:'5km easy',specifics:'Easy jog: 5km @ 7:00/km\nHR <140bpm'},
+    {day:'Saturday Jan 25',type:'Long Run',focus:'Peak volume',detail:'18km steady + strides',specifics:'Warm-up: 10min easy\n\n• Long Run: 18km @ 6:15/km\n  Fuel at 6km, 12km\n\n• Strides: 4x100m\n\nCool-down: 10min + 15min stretching\n\n**PEAK BASE VOLUME WEEK**'},
+    {day:'Sunday Jan 26',type:'Active Recovery',focus:'Rest',detail:'Recovery',specifics:'Complete rest or 40min easy activity'}
   ],
-  2: [
-    {day:'Monday Oct 27',type:'Strength',focus:'Leg Progression',detail:'Increased load & volume',specifics:'Warm-up: 5min rowing + leg mobility\n\nA1. Sled Push: 5 × 50m @ 170kg (375 lbs) - building overload base\nA2. Pistol squat progression or assisted pistols: 3 × 5 each leg\n\nB1. Sled Pull: 8 × 50m @ 120kg (265 lbs) - volume increase on weak station\nB2. Deficit RDLs: 3 × 6 (18kg dumbbell each hand)\n\nC. Jump squats with band: 3 × 6 (light band resistance)\nD. Loaded carries (mixed): 3 × 40m each (farmer, waiter walk, suitcase) @ 20kg\n\nCool-down: 5min walk/stretch'},
-    {day:'Tuesday Oct 28',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Oct 29',type:'Running',focus:'Long Run',detail:'15km steady',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n11km steady (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 15km - building sustained aerobic pace'},
-    {day:'Thursday Oct 30',type:'Strength',focus:'Upper Progression',detail:'Heavy pull/push',specifics:'Warm-up: 500m row + mobility\n\nA1. Deadlifts or trap bar deadlifts: 4 × 5 (140-160kg / 308-352 lbs)\nA2. Incline press or dips: 3 × 6 (90-110kg / 198-242 lbs)\n\nB1. SkiErg: 8 × 250m (50sec hard / 10sec rest) - increased volume\nB2. Chest-supported rows: 3 × 8 (110-130kg / 242-286 lbs)\n\nC. Weighted pull-ups or assisted pull-ups: 4 × 6 (add weight or 50kg assistance)\nD. Suitcase carries: 3 × 40m each side @ 22kg\n\nCool-down: 3min rowing'},
-    {day:'Friday Oct 31',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Nov 1',type:'Running',focus:'Tempo/Threshold',detail:'5x1km progression',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n5 × 1km at threshold (10.5 km/h / 6.53 mph - 5:43/km) - Z3 (140-160 bpm)\n75sec jog recovery (9.8 km/h / 6.09 mph - 6:10/km) - Z2 (120-140 bpm)\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: ~11.5km in 30min'},
-    {day:'Sunday Nov 2',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Volume increase',specifics:'Warm-up: 2km easy run + dynamic prep\n\nFull Circuit (2 rounds, 2min rest between rounds):\n• 50m sled push @ 170kg (375 lbs) - maintaining heavy overload\n• 80m burpee broad jumps - aggressive pace, 1.5m+ per rep\n• 100m sandbag lunges @ 20kg (44 lbs) - increase speed focus\n• 200m farmers carry @ 22kg each hand (49 lbs)\n• 20 × wall balls @ 12kg (26 lbs) - increased reps, focus on rhythm\n• 5 × 90sec moderate-hard rowing (building Roxzone power)\n\nCool-down: 5min\nTotal: ~80min'}
+  8: [
+    {day:'Monday Jan 27',type:'Strength',focus:'Lower Body Consolidation',detail:'Hold intensity, perfect form',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Back Squat: 4x5 @ 85kg, 3min rest\n• RDL: 3x8 @ 75kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 24kg DBs, 90s rest\n• Box Jumps: 3x8 @ 45cm, 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Jan 28',type:'Intervals + Stations',focus:'Speed endurance',detail:'6x800m + stations',specifics:'Warm-up: 2km easy + strides\n\n• 6x800m @ 5:15/km, 2min jog recovery\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy'},
+    {day:'Wednesday Jan 29',type:'Tempo Run',focus:'Threshold work',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n\n• Tempo: 6km @ 5:45/km\n\nCool-down: 1.5km easy\nTotal: 9km'},
+    {day:'Thursday Jan 30',type:'Strength',focus:'Upper Body Consolidation',detail:'Maintain peak strength',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +8.75kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 22kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 24kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Friday Jan 31',type:'Recovery Run',focus:'Easy run',detail:'5km easy',specifics:'Easy jog: 5km @ 7:00/km\nHR <140bpm'},
+    {day:'Saturday Feb 1',type:'Long Run',focus:'Reduce volume',detail:'14km steady',specifics:'Warm-up: 10min easy\n\n• Long Run: 14km @ 6:15/km\n  Fuel at 7km\n\n• Strides: 3x100m\n\nCool-down: 10min + stretching\n\n**Reduced from 18km - beginning taper into Half Marathon phase**'},
+    {day:'Sunday Feb 2',type:'Active Recovery',focus:'Rest',detail:'Recovery',specifics:'Complete rest or light activity\n\n**BASE PHASE COMPLETE - Starting Half Marathon Specific next week**'}
   ],
-  3: [
-    {day:'Monday Nov 3',type:'Strength',focus:'Power Focus',detail:'Explosive + heavy sleds',specifics:'Warm-up: 5min rowing + leg mobility\n\nA1. Sled Push: 6 × 50m @ 170kg (375 lbs) - explosive drive\nA2. Box jumps or jump squats: 4 × 5 (20cm+ box height)\n\nB1. Sled Pull: 10 × 50m @ 120kg (265 lbs) - volume and power on weak station\nB2. Single-leg squats or Bulgarian split squats: 3 × 8 each @ 22kg each hand\n\nC. Trap bar deadlifts or hex bar deadlifts: 3 × 5 (160-180kg / 352-396 lbs)\nD. Heavy suitcase carries: 3 × 50m @ 26kg each side\n\nCool-down: 5min'},
-    {day:'Tuesday Nov 4',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Nov 5',type:'Running',focus:'Long Run',detail:'16km steady',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n12km steady (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 16km - sustained race-pace running'},
-    {day:'Thursday Nov 6',type:'Strength',focus:'Power & Endurance',detail:'Explosive + metabolic',specifics:'Warm-up: 500m row + mobility\n\nA1. Power cleans or hang cleans: 5 × 3 (100-120kg / 220-265 lbs)\nA2. Push press: 4 × 5 (100-120kg / 220-265 lbs)\n\nB1. SkiErg: 4 × 500m (strong effort, 2min recovery) - target 1:50-2:00/500m\nB2. Rows: 4 × 6 (150-170kg / 330-375 lbs)\n\nC. Weighted pull-ups: 4 × 5 (add 15-20kg / 33-44 lbs)\nD. Farmer carries (high frequency): 5 × 30m @ 28kg each hand\n\nCool-down: 3min rowing'},
-    {day:'Friday Nov 7',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Nov 8',type:'Running',focus:'VO2Max Intervals',detail:'8x600m hard',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n8 × 600m hard (11.0 km/h / 6.84 mph - 5:27/km - VO2MAX PACE) - Z4 (160-180 bpm)\n90sec recovery jog (9.5 km/h / 5.9 mph) - Z2 (120-140 bpm)\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: ~10km in 28min - building running power'},
-    {day:'Sunday Nov 9',type:'Hybrid',focus:'Hyrox Conditioning',detail:'Intensity increase',specifics:'Warm-up: 2km easy run + dynamic prep\n\nFull Circuit (3 rounds, 2min rest between):\n• 50m sled push @ 170kg (375 lbs) - explosive push\n• 80m burpee broad jumps - aggressive, powerful\n• 100m sandbag lunges @ 20kg (44 lbs) - target 5:50/100m pace\n• 200m farmers carry @ 24kg each hand (53 lbs)\n• 25 × wall balls @ 12kg (26 lbs) - FOCUS STATION, volume building\n• 3 × 3min moderate-hard rowing (building capacity)\n\nCool-down: 5min\nTotal: ~85min'}
+  9: [
+    {day:'Monday Feb 3',type:'Strength',focus:'Maintenance - Lower Body',detail:'Reduced volume, maintain strength',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts (reduced to 3 sets):\n• Back Squat: 3x5 @ 82.5kg, 3min rest\n• RDL: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x6 (reduce reps), 2min rest\n\nCool-down: 5min + stretching\n\n**Half Marathon Phase - reduce strength volume**'},
+    {day:'Tuesday Feb 4',type:'Speed Work',focus:'400m intervals',detail:'8x400m',specifics:'Warm-up: 2km easy + 6x100m strides\n\nMain Set:\n• 8x400m @ 5:00/km pace (2:00 per rep), 90s rest\n  HR Zone 4-5 (180-190bpm)\n  Focus: Speed development\n\nCool-down: 1km easy\nTotal: ~7km'},
+    {day:'Wednesday Feb 5',type:'Easy Run + Drills',focus:'Recovery + technique',detail:'6km easy + drills',specifics:'Warm-up: 1km easy\n\n• Easy Run: 6km @ 6:45/km\n\nRunning drills: High knees, butt kicks, A-skips - 2x20m each\n\n• Strides: 6x100m\n\nCool-down: 1km easy\nTotal: 7km'},
+    {day:'Thursday Feb 6',type:'Threshold Run',focus:'Half marathon pace',detail:'9km with 5km tempo',specifics:'Warm-up: 2km easy\n\n• Threshold: 5km @ 5:40/km (HALF MARATHON GOAL PACE)\n  HR Zone 3-4 (165-180bpm)\n\nCool-down: 2km easy\nTotal: 9km'},
+    {day:'Friday Feb 7',type:'Rest',focus:'Complete rest',detail:'Rest day',specifics:'Complete rest or 3km easy shakeout if needed\nFocus on recovery and nutrition'},
+    {day:'Saturday Feb 8',type:'Long Run',focus:'Half marathon prep',detail:'19km with progression',specifics:'Warm-up: 1km easy\n\n• Long Run: 19km @ 6:15-6:30/km\n  Last 3km @ 6:00/km (faster finish)\n  Fuel at 6km, 12km\n\nCool-down: Walk 10min\n\n**Longest run of program**'},
+    {day:'Sunday Feb 9',type:'Recovery',focus:'Easy recovery',detail:'5km easy or rest',specifics:'Options:\n• Easy 5km @ 7:00/km\n• Complete rest\n• Easy cross-training 30min'}
   ],
-  4: [
-    {day:'Monday Nov 10',type:'Strength',focus:'Hypertrophy + Overload',detail:'Volume work',specifics:'Warm-up: 5min rowing + mobility\n\nA1. Sled Push: 4 × 50m @ 170kg (375 lbs) - overload work\nA2. Front squats or goblet squats: 3 × 6 (120kg / 265 lbs or 30kg dumbbell)\n\nB1. Sled Pull: 12 × 50m @ 120kg (265 lbs) - VOLUME on weak station, alternating fast/controlled\nB2. Bulgarian split squats: 3 × 8 each @ 20kg each hand\n\nC. Landmine rotations: 3 × 8 each side (22kg)\nD. Explosive carries: 3 × 50m @ 22kg each hand at fast pace\n\nCool-down: 5min'},
-    {day:'Tuesday Nov 11',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Nov 12',type:'Running',focus:'Long Run',detail:'17km steady',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n13km steady (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 17km - race-pace long distance'},
-    {day:'Thursday Nov 13',type:'Strength',focus:'Row Focus',detail:'Heavy pulling + Roxzone',specifics:'Warm-up: 500m row + mobility\n\nA1. Barbell rows (or seal rows): 5 × 5 (160-180kg / 352-396 lbs)\nA2. Incline press: 3 × 6 (100-120kg / 220-265 lbs)\n\nB1. SkiErg: 4 × 500m (strong effort, 2min recovery) - targeting 1:50/500m\nB2. T-bar rows or machine rows: 3 × 8 (140-160kg / 308-352 lbs)\n\nC. Weighted pull-ups: 4 × 5 (add 20kg / 44 lbs)\nD. Plate pinch carries: 3 × 40m @ 25kg plate each hand\n\nCool-down: 3min rowing'},
-    {day:'Friday Nov 14',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Nov 15',type:'Running',focus:'Lactate Threshold',detail:'5x1km race effort',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n5 × 1km hard (10.8 km/h / 6.71 mph - 5:33/km - RACE EFFORT) - Z3-Z4 (140-180 bpm)\n60sec walk/jog recovery (9.0 km/h / 5.59 mph) - Z1-Z2 (100-140 bpm)\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: ~10km in 28min - building threshold capacity'},
-    {day:'Sunday Nov 16',type:'Hybrid',focus:'Full Course Simulation',detail:'Race intensity',specifics:'Warm-up: 2km easy run + dynamic prep\n\nFull Circuit (2 rounds, 3min rest between):\n• 50m sled push @ 170kg (375 lbs)\n• 1000m moderate run (10.2 km/h / 6.34 mph - 5:52/km)\n• 50m sled pull @ 120kg (265 lbs) - HARD effort\n• 1000m run (10.5 km/h / 6.53 mph - 5:43/km)\n• 80m burpee broad jumps - aggressive\n• 100m sandbag lunges @ 20kg (44 lbs)\n• 200m farmers carry @ 24kg each hand (53 lbs)\n• 30 × wall balls @ 12kg (26 lbs) - sustained effort\n\nCool-down: 5min\nTotal: ~90min'}
+  10: [
+    {day:'Monday Feb 10',type:'Strength',focus:'Maintenance - Lower',detail:'Light strength maintenance',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 3x5 @ 80kg, 3min rest\n• RDL: 3x8 @ 67.5kg, 2min rest\n• Walking Lunges: 3x20 total @ 16kg DBs, 90s rest\n• Box Jumps: 3x6, 2min rest\n\nCool-down: 5min + stretching'},
+    {day:'Tuesday Feb 11',type:'Speed Work',focus:'1km intervals',detail:'6x1km',specifics:'Warm-up: 2km easy + strides\n\nMain Set:\n• 6x1km @ 5:20/km pace, 2min jog recovery\n  HR Zone 4 (175-185bpm)\n\nCool-down: 1km easy\nTotal: ~10km'},
+    {day:'Wednesday Feb 12',type:'Easy Run',focus:'Recovery run',detail:'6km easy',specifics:'Easy Run: 6km @ 6:45/km\nHR Zone 2 (<150bpm)\n\nOptional: 6x100m strides at end'},
+    {day:'Thursday Feb 13',type:'Threshold Run',focus:'Race pace work',detail:'10km with 6km tempo',specifics:'Warm-up: 2km easy\n\n• Threshold: 6km @ 5:40/km (HM goal pace)\n  Focus: Comfortable at race pace\n\nCool-down: 2km easy\nTotal: 10km'},
+    {day:'Friday Feb 14',type:'Rest',focus:'Complete rest',detail:'Rest day',specifics:'Complete rest\nHydration focus'},
+    {day:'Saturday Feb 15',type:'Long Run',focus:'Endurance maintenance',detail:'21km steady',specifics:'Warm-up: 1km easy\n\n• Long Run: 21km @ 6:15-6:30/km\n  Last 3km @ 6:00/km\n  Fuel at 7km, 14km\n\nCool-down: Walk 10min\n\n**LONGEST RUN - peak distance**'},
+    {day:'Sunday Feb 16',type:'Recovery',focus:'Easy recovery',detail:'5km easy',specifics:'Easy 5km @ 7:00/km or complete rest'}
   ],
-  5: [
-    {day:'Monday Nov 17',type:'Strength',focus:'Peak Overload',detail:'Maximum intensity',specifics:'Warm-up: 5min rowing + mobility\n\nA1. Sled Push Max Effort: 1 × 50m sprint @ 175kg (386 lbs) - all out\nA2. Sled Push: 4 × 50m @ 170kg (375 lbs) at max effort\n\nB1. Jump squats or box jumps: 4 × 5 (explosive focus)\nB2. Sled Pull Maximum Overload: 12 × 50m @ 125kg (276 lbs) - PEAK OVERLOAD SESSION\n\nC. Single-leg pistol squats or assisted: 3 × 5 each\nD. Heavy explosive carries: 3 × 50m @ 28kg each hand at fast pace\n\nCool-down: 5min'},
-    {day:'Tuesday Nov 18',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Nov 19',type:'Running',focus:'Long Run',detail:'18km steady',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n14km steady (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 18km - building aerobic capacity'},
-    {day:'Thursday Nov 20',type:'Strength',focus:'Power & Strength',detail:'Maximum effort',specifics:'Warm-up: 500m row + mobility\n\nA1. Power cleans: 5 × 3 (120-140kg / 265-308 lbs)\nA2. Push press (heavy): 4 × 3 (120-140kg / 265-308 lbs)\n\nB1. 1000m row test effort - all out, targeting ~3:30\nB2. Rows: 4 × 5 @ 170kg (375 lbs)\n\nC. Weighted dips: 3 × 5 (add 20-30kg / 44-66 lbs)\nD. Farmer carries (heavy): 4 × 50m @ 30kg each hand\n\nCool-down: 3min rowing'},
-    {day:'Friday Nov 21',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Nov 22',type:'Running',focus:'Threshold Endurance',detail:'8km sustained',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n8km at threshold (10.5 km/h / 6.53 mph - 5:43/km) - Z3 (140-160 bpm)\nSustained race pace\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 11km in 29min - race-pace endurance'},
-    {day:'Sunday Nov 23',type:'Hybrid',focus:'Peak Conditioning',detail:'Maximum overload',specifics:'Warm-up: 2km easy run + dynamic prep\n\nFull Circuit (2 rounds, 3min rest between):\n• 50m sled push @ 175kg (386 lbs) - peak overload power\n• 1000m moderate run (10.2 km/h / 6.34 mph - 5:52/km)\n• 50m sled pull @ 125kg (276 lbs) - MAXIMUM OVERLOAD\n• 1000m fast run (10.5 km/h / 6.53 mph - 5:43/km)\n• 80m burpee broad jumps - explosive\n• 100m sandbag lunges @ 20kg (44 lbs)\n• 200m farmers carry @ 24kg each hand (53 lbs)\n• 35 × wall balls @ 12kg (26 lbs) - extended volume for weak station\n\nCool-down: 5min\nTotal: ~90min'}
+  11: [
+    {day:'Monday Feb 17',type:'Strength',focus:'Maintenance - Light',detail:'Reduce intensity',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 3x5 @ 77.5kg, 3min rest\n• RDL: 3x8 @ 65kg, 2min rest\n• Step-ups: 3x12 each @ 16kg DBs, 90s rest\n\nCool-down: 5min + stretching\n\n**Begin taper intensity**'},
+    {day:'Tuesday Feb 18',type:'Speed Work',focus:'1200m intervals',detail:'5x1200m',specifics:'Warm-up: 2km easy + strides\n\nMain Set:\n• 5x1200m @ 5:25/km pace, 2.5min jog recovery\n  HR Zone 4 (175-185bpm)\n\nCool-down: 1km easy\nTotal: ~9km'},
+    {day:'Wednesday Feb 19',type:'Easy Run',focus:'Recovery',detail:'6km easy + strides',specifics:'Easy Run: 6km @ 6:45/km\n\n• Strides: 6x100m\n\nTotal: 7km'},
+    {day:'Thursday Feb 20',type:'Threshold Run',focus:'Race pace confidence',detail:'8km with 5km tempo',specifics:'Warm-up: 2km easy\n\n• Threshold: 5km @ 5:40/km\n  Should feel controlled and strong\n\nCool-down: 2km easy\nTotal: 9km'},
+    {day:'Friday Feb 21',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nPrep nutrition for long run'},
+    {day:'Saturday Feb 22',type:'Long Run',focus:'Final long run',detail:'16km steady',specifics:'Warm-up: 1km easy\n\n• Long Run: 16km @ 6:00-6:15/km\n  Last 2km @ 5:50/km\n  Fuel at 8km\n\nCool-down: Walk 10min\n\n**Final long run before Half Marathon taper**'},
+    {day:'Sunday Feb 23',type:'Recovery',focus:'Easy recovery',detail:'5km easy',specifics:'Easy 5km @ 7:00/km or complete rest'}
   ],
-  6: [
-    {day:'Monday Nov 24',type:'Strength',focus:'Race Rehearsal',detail:'Lower volume, high quality',specifics:'Warm-up: 5min rowing + mobility\n\nA1. Sled Push: 3 × 50m @ 170kg (375 lbs) - overload-trained power\nA2. Bulgarian split squats: 2 × 8 each @ 20kg each hand\n\nB1. Sled Pull: 8 × 50m @ 120kg (265 lbs) - overload-trained, strong pace\nB2. Single-leg RDLs: 2 × 8 each @ 16kg each hand\n\nC. Explosive carries: 2 × 50m @ 26kg each hand\nD. Core: 2 × 30sec planks\n\nCool-down: 5min'},
-    {day:'Tuesday Nov 25',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Nov 26',type:'Running',focus:'Long Run',detail:'15km maintenance',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n11km steady (10.2 km/h / 6.34 mph - 5:52/km) - Z2 (120-140 bpm)\n\n2km easy cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 15km - maintaining aerobic capacity'},
-    {day:'Thursday Nov 27',type:'Strength',focus:'High Quality Reduced',detail:'Race-pace simulation',specifics:'Warm-up: 500m row + mobility\n\nA1. Barbell rows: 3 × 5 @ 160kg (352 lbs)\nA2. Push press: 3 × 5 @ 110kg (242 lbs)\n\nB1. SkiErg race pace: 4 × 250m targeting ~1:50/500m (4:10 pace)\nB2. Chest-supported rows: 3 × 6 @ 130kg (286 lbs)\n\nC. Weighted pull-ups: 3 × 5 (add 15kg / 33 lbs)\nD. Farmer carries: 2 × 40m @ 24kg each hand\n\nCool-down: 3min rowing'},
-    {day:'Friday Nov 28',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility work'},
-    {day:'Saturday Nov 29',type:'Running',focus:'Threshold Endurance',detail:'7km sustained',specifics:'2km easy warm-up (10.0 km/h / 6.21 mph - 6:00/km) - Z1-Z2 (100-140 bpm)\n\n7km at threshold (10.5 km/h / 6.53 mph - 5:43/km) - Z3 (140-160 bpm)\nSustained race intensity\n\n1km cool-down (10.0 km/h / 6.21 mph - 6:00/km) - Z1 (100-120 bpm)\n\nTotal: 10km in 28min - maintaining race-pace fitness'},
-    {day:'Sunday Nov 30',type:'Hybrid',focus:'Modified Full Course',detail:'Target race pace',specifics:'Warm-up: 2km easy run + dynamic prep\n\nFull Circuit (simplified, 1-2 rounds as feels good):\n• 50m sled push @ 160kg (353 lbs) - overload-trained, 152kg will feel fast\n• 50m sled pull @ 110kg (243 lbs) - overload-trained, 102kg will feel light\n• 80m burpee broad jumps - target race pace\n• 100m sandbag lunges @ 20kg (44 lbs) - target 5:50/100m\n• 200m farmers carry @ 22kg each hand (49 lbs)\n• 25-30 × wall balls @ 12kg (26 lbs) - target 8:00-8:30\n• 4 × 2min moderate-hard rowing (Roxzone simulation)\n\nCool-down: 5min\nTotal: ~75-80min'}
+  12: [
+    {day:'Monday Feb 24',type:'Strength',focus:'Light activation',detail:'Very light',specifics:'Warm-up: 5min bike + mobility\n\nLight Work:\n• Bodyweight Squats: 3x10\n• Walking Lunges: 3x16 total @ 12kg DBs\n• Core work: 3x30s planks\n\nCool-down: 5min + stretching\n\n**HALF MARATHON WEEK - minimal strength**'},
+    {day:'Tuesday Feb 25',type:'Easy Run',focus:'Shakeout + pace',detail:'5km with race pace segments',specifics:'Warm-up: 2km easy @ 6:30/km\n\n• 3x1km @ 5:40/km (goal pace), 2min easy jog between\n\nCool-down: Walk\nTotal: 5km\n\n**Race pace confidence builder**'},
+    {day:'Wednesday Feb 26',type:'Easy Run',focus:'Shakeout',detail:'3km easy',specifics:'Easy shakeout: 3km @ 6:45/km\nVery easy, just movement\nHR <140bpm'},
+    {day:'Thursday Feb 27',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest or 20min walk\nHydration focus\nCheck race kit'},
+    {day:'Friday Feb 28',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Easy jog: 2km @ 6:30/km\n\n• Strides: 4x100m @ race pace feel\n\nCool-down: Walk 5min\n\n**Last run before race**'},
+    {day:'Saturday Mar 1',type:'Rest',focus:'Race prep',detail:'Rest & prepare',specifics:'Complete rest\nPrepare race kit\nCarb load dinner\nEarly to bed\n\n**RACE TOMORROW**'},
+    {day:'Sunday Mar 2',type:'RACE',focus:'🏃‍♀️ HALF MARATHON 🏃‍♀️',detail:'Target: Sub 2:00:00',specifics:'RACE DAY STRATEGY:\n\nTarget Pace: 5:40/km average\n\nPacing Plan:\n• Km 1-5: 5:45/km (settle in)\n• Km 6-15: 5:40/km (cruise)\n• Km 16-21: 5:35/km (push)\n\nFueling:\n• Gel at 30min (5km)\n• Gel at 60min (10km)\n• Gel at 90min (16km)\n\nMental cues:\n• First 5k: "Patience"\n• Middle 10k: "Rhythm & relax"\n• Final 6k: "Strong & controlled"\n\n🎯 TARGET: 1:59:30 🎯'}
   ],
-  7: [
-    {day:'Monday Dec 1',type:'Strength',focus:'Activation Only',detail:'Light touch',specifics:'Warm-up: 5min rowing + leg mobility\n\nA1. Sled Push: 2 × 50m @ 152kg (335 lbs) - RACE WEIGHT! Easy-moderate pace\nA2. Light leg work: 2 × 8 bodyweight squats or lunges\n\nB1. Sled Pull: 3 × 50m @ 102kg (225 lbs) - RACE WEIGHT! Easy-moderate pace\nC. Light carries: 2 × 30m @ 16kg each hand\n\nCool-down: 5min walk'},
-    {day:'Tuesday Dec 2',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or light mobility/stretching'},
-    {day:'Wednesday Dec 3',type:'Running',focus:'Recovery Run',detail:'9km easy',specifics:'2km easy warm-up (9.8 km/h / 6.09 mph - 6:10/km) - Z1 (100-120 bpm)\n\n6km very easy (9.8 km/h / 6.09 mph - 6:10/km) - Z1-Z2 (100-140 bpm)\nConversational pace, recovery\n\n1km cool-down (9.5 km/h / 5.9 mph - 6:19/km) - Z1 (100-120 bpm)\n\nTotal: 9km - easy activation, keep legs fresh'},
-    {day:'Thursday Dec 4',type:'Strength',focus:'Light Activation',detail:'Movement quality',specifics:'Warm-up: 500m row + mobility\n\nA1. Light rows: 2 × 6 @ 100kg (220 lbs) - very controlled\nA2. Light press: 2 × 6 @ 70kg (154 lbs)\n\nB1. SkiErg easy: 3 × 250m @ easy pace (just movement, 2:10+/500m)\nC. Light carries: 2 × 30m @ 16kg each hand\n\nCool-down: 3min row'},
-    {day:'Friday Dec 5',type:'Rest',focus:'Complete Rest',detail:'Pre-race rest',specifics:'Complete rest - conserve all energy for race day'},
-    {day:'Saturday Dec 6',type:'Hybrid',focus:'RACE DAY 🔥',detail:'Sub 1:30 Goal',specifics:'RACE DAY STRATEGY:\n\nPre-Race (90min before):\n• Light warm-up, dynamic stretches\n• Practice sled @ reduced weights (120kg/80kg)\n• Wall ball practice: 5-10 reps @ 9kg race weight\n• Light rowing: 3 × 500m easy\n\nTarget Times (After Overload Training):\n• Sled Push: <3:00 (152kg feels light after 175kg training)\n• Sled Pull: 4:45-5:00 (major gain from overload)\n• SkiErg: 4:10-4:15\n• Burpee Broad Jumps: 5:45-6:00\n• Sandbag Lunges: 5:50-6:00\n• Wall Balls: 7:15-7:30 (volume work pays off)\n• Farmers Carry: 2:15-2:30\n• Roxzone: 8:15-8:30\n• Running Total: 47:15-48:00\n\nPacing:\nStations 1-4: Controlled aggression (19-20min)\nStations 5-6: Push moderate-hard (8-9min)\nStations 7-8: All-in effort (12-13min)\nRoxzone: Give everything (8:15-8:30)\n\n🎯 TARGET: SUB 1:30:00 🎯'},
-    {day:'Sunday Dec 7',type:'Rest',focus:'Recovery',detail:'Post-race celebration',specifics:'Complete rest or very light 20min walk\nHydration focus\nCelebrate your race! 🎉'}
-  ]
-};
-
-const mensProg={
-  1:{focus:'Build Phase',intensity:'Moderate',notes:'Sled overload begins: Push 160kg / Pull 110kg (+8kg above race). Building functional strength.',startDate:'2025-10-20'},
-  2:{focus:'Build Phase',intensity:'Moderate-High',notes:'Sled overload: Push 170kg / Pull 120kg (+18kg above race). Volume increase.',startDate:'2025-10-27'},
-  3:{focus:'Intensity Ramp',intensity:'High',notes:'Sled overload: Push 170kg / Pull 120kg. Power focus, plyometrics added.',startDate:'2025-11-03'},
-  4:{focus:'Race Simulation',intensity:'High',notes:'Peak volume: Push 170kg / Pull 120kg. Full course simulations begin.',startDate:'2025-11-10'},
-  5:{focus:'Peak Intensity',intensity:'Very High',notes:'MAXIMUM overload: Push 175kg / Pull 125kg (+23kg above race). Peak week!',startDate:'2025-11-17'},
-  6:{focus:'Race Rehearsal',intensity:'Moderate',notes:'Reduced volume, maintain quality. Push 170kg / Pull 120kg.',startDate:'2025-11-24'},
-  7:{focus:'Taper - RACE WEEK',intensity:'Low',notes:'Light activation only. RACE WEIGHTS: 152kg/102kg. RACE: Saturday 6 Dec. Target: SUB 1:30! 🔥',startDate:'2025-12-01'}
-};
-
-const plan=currentUser.plan;
-const currentPlan=plan==='mixed'?jadeWeeklyPlans[week]:tonyWeeklyPlans[week]||[];
-const currentProgram=plan==='mixed'?mixedProg:mensProg;
-
-const toggleComp=(w,i)=>{
-  const k=`${userEmail}-${plan}-${w}-${i}`;
-  setComp(p=>{
-    const newComp={...p,[k]:!p[k]};
-    // Force re-render by updating state
-    return newComp;
-  });
-};
-
-const isComp=(w,i)=>comp[`${userEmail}-${plan}-${w}-${i}`]||false;
-
-const getCompletion=(w)=>{
-  const t=plan==='mixed'?jadeWeeklyPlans[w]:tonyWeeklyPlans[w];
-  if(!t)return{completed:0,total:0,percentage:0};
-  let c=0;
-  t.forEach((_,i)=>{if(isComp(w,i))c++;});
-  return{completed:c,total:t.length,percentage:Math.round((c/t.length)*100)};
-};
-
-const getUserWorkouts=()=>workouts[userEmail]||[];
-
-const getStats=()=>{
-  // Get workouts completed this week from workout log
-  const wa=new Date();
-  wa.setDate(wa.getDate()-7);
-  const ww=getUserWorkouts().filter(w=>new Date(w.date)>=wa);
-  
-  // Get completion stats from checkboxes for current week
-  const currentPlanData=plan==='mixed'?jadeWeeklyPlans[week]:tonyWeeklyPlans[week];
-  if(!currentPlanData)return{total:0,running:0,strength:0,hybrid:0};
-  
-  let runningCount=0;
-  let strengthCount=0;
-  let hybridCount=0;
-  let totalCount=0;
-  
-  currentPlanData.forEach((day,i)=>{
-    if(isComp(week,i)){
-      totalCount++;
-      if(day.type==='Running')runningCount++;
-      if(day.type==='Strength')strengthCount++;
-      if(day.type==='Hybrid')hybridCount++;
-    }
-  });
-  
-  return{
-    total:totalCount,
-    running:runningCount,
-    strength:strengthCount,
-    hybrid:hybridCount
-  };
-};
-
-const logWorkout=()=>{
-  if(!currentWorkout.type)return;
-  const newWorkout={...currentWorkout,id:Date.now()};
-  setWorkouts(prev=>({
-    ...prev,
-    [userEmail]:[newWorkout,...(prev[userEmail]||[])]
-  }));
-  setCurrentWorkout({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
-  setShowLogForm(false);
-};
-
-return <div className="min-h-screen bg-black text-white p-4">
-  <div className="max-w-6xl mx-auto pb-20">
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Flame s={40} style={{color:'#FF4500'}}/>
-          <div>
-            <h1 className="text-3xl font-bold">HYROX Training</h1>
-            <p className="text-gray-400 text-sm">Welcome back, {currentUser.name}</p>
-          </div>
-        </div>
-        <button onClick={handleLogout} className="flex items-center gap-2 px-4 py-2 bg-gray-800 hover:bg-gray-700 rounded-lg transition">
-          <User s={18}/>
-          <span className="text-sm">Switch User</span>
-        </button>
-      </div>
-      <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-        <div className="flex items-center gap-3">
-          <User s={24} style={{color:'#FF4500'}}/>
-          <div>
-            <div className="font-bold text-black">{currentUser.name}</div>
-            <div className="text-sm text-gray-600">{currentUser.category}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {(()=>{
-        const s=getStats();
-        return(<>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-            <div className="text-gray-600 text-sm">This Week</div>
-            <div className="text-3xl font-bold" style={{color:'#FF4500'}}>{s.total}</div>
-            <div className="text-gray-600 text-xs">Completed</div>
-          </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-            <div className="text-gray-600 text-sm">Running</div>
-            <div className="text-3xl font-bold text-black">{s.running}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-            <div className="text-gray-600 text-sm">Strength</div>
-            <div className="text-3xl font-bold text-black">{s.strength}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-          <div className="bg-white border-2 border-gray-200 rounded-lg p-4">
-            <div className="text-gray-600 text-sm">Hybrid</div>
-            <div className="text-3xl font-bold text-black">{s.hybrid}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-        </>);
-      })()}
-    </div>
-
-    <div className="flex gap-2 mb-6 border-b-2 border-gray-200 overflow-x-auto">
-      {['plan','log','history'].map(t=>{
-        const icons={plan:Calendar,log:Plus,history:TrendingUp};
-        const I=icons[t];
-        const labels={plan:'Plan',log:'Log',history:'History'};
-        return <button key={t} onClick={()=>setTab(t)} className={`px-6 py-3 font-semibold whitespace-nowrap ${tab===t?'border-b-2':'text-gray-500'}`} style={tab===t?{borderBottomColor:'#FF4500',color:'#FF4500'}:{}}><I s={18} className="inline mr-2"/>{labels[t]}</button>
-      })}
-    </div>
-
-    <div className="bg-white border-2 border-gray-200 rounded-lg p-6 text-black">
-      {tab==='plan'&&<div>
-        <h3 className="text-xl font-bold mb-4">{currentUser.category} - 7 Week Program (Race: 6th December)</h3>
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={()=>setWeek(Math.max(1,week-1))} disabled={week===1} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black">←</button>
-          <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
-            {[...Array(7)].map((_,i)=>{
-              const w=i+1;
-              const c=getCompletion(w);
-              const info=currentProgram[w];
-              const d=new Date(info.startDate);
-              return <button key={w} onClick={()=>setWeek(w)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${week===w?'text-white shadow-lg':'bg-white text-black hover:bg-gray-50 border-gray-200'}`} style={week===w?{backgroundColor:'#FF4500',borderColor:'#FF4500'}:{}}><div className="text-sm">Week {w}</div><div className="text-xs opacity-75">{d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>{c.completed>0&&<div className="text-xs mt-1">{c.percentage}%</div>}</button>
-            })}
-          </div>
-          <button onClick={()=>setWeek(Math.min(7,week+1))} disabled={week===7} className="px-4 py-2 bg-white border-2 border-gray-200 rounded hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed text-black">→</button>
-        </div>
-
-        <div className="bg-white border-2 border-gray-200 rounded-lg p-5 mb-6">
-          <div className="flex justify-between items-start mb-3">
-            <div>
-              <h4 className="text-2xl font-bold text-black">Week {week}</h4>
-              <div className="text-sm text-gray-600 mt-1">Starting: {new Date(currentProgram[week].startDate).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long',year:'numeric'})}</div>
-            </div>
-            {week===7&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF4500'}}>🏆 RACE WEEK</div>}
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold text-black">{currentProgram[week].focus}</div></div>
-            <div><div className="text-sm text-gray-600">Intensity</div><div className="text-lg font-semibold text-black">{currentProgram[week].intensity}</div></div>
-            <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getCompletion(week).completed}/{getCompletion(week).total} sessions</div></div>
-          </div>
-          <div className="mt-3 text-sm text-gray-700 italic">{currentProgram[week].notes}</div>
-        </div>
-
-        <div className="space-y-3">
-          {currentPlan&&currentPlan.length>0?currentPlan.map((day,i)=><WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
-        </div>
-      </div>}
-
-      {tab==='log'&&<div>
-        {!showLogForm?<button onClick={()=>setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg" style={{borderColor:'#FF4500',backgroundColor:'#FFF'}}><Plus s={32} style={{color:'#FF4500'}}/><div className="text-xl font-semibold" style={{color:'#FF4500'}}>Log Workout</div></button>:<div className="space-y-4">
-          <h3 className="text-xl font-bold text-black">Log Workout</h3>
-          <div><label className="block text-sm font-medium mb-2 text-black">Date</label><input type="date" value={currentWorkout.date} onChange={e=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Type</label><select value={currentWorkout.type} onChange={e=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"><option value="">Select...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest</option></select></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Duration (min)</label><input type="number" value={currentWorkout.duration} onChange={e=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2 border-gray-200"/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Notes</label><textarea value={currentWorkout.notes} onChange={e=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel?" className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2 border-gray-200"/></div>
-          <div className="flex gap-3"><button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor:'#FF4500'}}>Save</button><button onClick={()=>setShowLogForm(false)} className="px-6 py-3 bg-white border-2 border-gray-300 rounded-lg font-semibold text-black">Cancel</button></div>
-        </div>}
-      </div>}
-
-      {tab==='history'&&<div>
-        <h3 className="text-xl font-bold mb-4 text-black">History</h3>
-        {getUserWorkouts().length===0?<div className="text-center py-12 text-gray-400"><Clock s={48} className="mx-auto mb-4 opacity-50"/><p>No workouts logged</p></div>:<div className="space-y-3">{getUserWorkouts().map(w=><div key={w.id} className="bg-white border-2 rounded-lg p-4"><div className="flex justify-between mb-2"><div><div className="font-bold text-black">{w.type}</div><div className="text-sm text-gray-600">{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-sm font-semibold text-black">{w.duration} min</div></div>{w.notes&&<div className="text-sm text-gray-700 mt-2 pt-2 border-t border-gray-300">{w.notes}</div>}</div>)}</div>}
-      </div>}
-    </div>
-  </div>
-</div>
-}
-
-ReactDOM.render(<App/>,document.getElementById('root'));
-</script>
-</body>
-</html>
+  13: [
+    {day:'Monday Mar 3',type:'Rest',focus:'Post-race recovery',detail:'Complete rest',specifics:'Complete rest\nHydration focus\nLight walking okay (20min max)\n\n**Recovery week after Half Marathon**'},
+    {day:'Tuesday Mar 4',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light walk\nFoam rolling, stretching\nFocus on nutrition'},
+    {day:'Wednesday Mar 5',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or 20min easy walk\nMobility work'},
+    {day:'Thursday Mar 6',type:'Easy Run',focus:'Return to running',detail:'3km easy',specifics:'Very easy jog: 3km @ 7:00/km\nHR <140bpm\nStop if any discomfort'},
+    {day:'Friday Mar 7',type:'Strength',focus:'Light return',detail:'Light strength',specifics:'Warm-up: 10min bike easy\n\nLight Work (50% normal loads):\n• Bodyweight Squats: 3x10\n• Push-ups: 3x10\n• DB Rows: 3x10 @ 12kg DBs\n• Walking Lunges: 3x12 total bodyweight\n\nCool-down: 5min + stretching'},
+    {day:'Saturday Mar 8',type:'Easy Run',focus:'Recovery run',detail:'5km easy',specifics:'Easy jog: 5km @ 6:45/km\nHR Zone 2\nShould feel refreshed'},
+    {day:'Sunday Mar 9',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nPrepare for Hyrox peak phase starting Monday'}
+  ],
+  14: [
+    {day:'Monday Mar 10',type:'Hyrox Simulation',focus:'Full 8-station practice',detail:'Race rehearsal',specifics:'Warm-up: 10min easy jog + dynamic prep\n\n8x1km runs with 3min station breaks:\n• Run 1km @ 5:30/km, then:\n  Station 1: SkiErg 1000m\n• Run 1km, then:\n  Station 2: Sled Push 50m x2 @ 102kg\n• Run 1km, then:\n  Station 3: Sled Pull 50m x2 @ 78kg\n• Run 1km, then:\n  Station 4: Burpee Broad Jumps x15\n• Run 1km, then:\n  Station 5: Rowing 1000m\n• Run 1km, then:\n  Station 6: Farmers Carry 2x50m @ 16kg each\n• Run 1km, then:\n  Station 7: Sandbag Lunges 100m @ 10kg\n• Run 1km, then:\n  Station 8: Wall Balls x75 @ 6kg\n\nCool-down: 10min walk\nTotal: ~90-100min\n\n**FULL HYROX SIMULATION**'},
+    {day:'Tuesday Mar 11',type:'Recovery Run',focus:'Easy recovery',detail:'4-5km easy',specifics:'Very easy jog: 4-5km @ 7:00/km\nHR <140bpm\nActive recovery from simulation'},
+    {day:'Wednesday Mar 12',type:'Station Power',focus:'Station speed work',detail:'Power focus',specifics:'Warm-up: 10min easy movement\n\n3 rounds (fresh, with full recovery):\n• SkiErg: 500m FAST (target <2:00)\n  3min rest\n• Sled Push: 50m FAST @ 102kg\n  3min rest\n• Burpee Broad Jumps: 12 reps FAST\n  3min rest\n\nCool-down: 5min walk\n\n**Focus: Maximum power on key stations**'},
+    {day:'Thursday Mar 13',type:'Threshold Run',focus:'Race pace',detail:'9km tempo',specifics:'Warm-up: 2km easy\n\n• Tempo Run: 5km @ 5:30/km (Hyrox run pace)\n  HR Zone 3-4\n\nCool-down: 2km easy\nTotal: 9km'},
+    {day:'Friday Mar 14',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nFoam rolling, stretching\nHydration focus'},
+    {day:'Saturday Mar 15',type:'Race Pace Practice',focus:'Hyrox run pace',detail:'6x1km intervals',specifics:'Warm-up: 2km easy\n\nMain Set:\n• 6x1km @ 5:15/km (Hyrox race pace), 2min recovery jog\n  HR Zone 4 (175-185bpm)\n  Target: Run pace between stations\n\nCool-down: 1km easy\nTotal: ~10km'},
+    {day:'Sunday Mar 16',type:'Active Recovery',focus:'Easy movement',detail:'30min bike or swim',specifics:'Options:\n• 30min easy bike\n• 30min easy swim\n• Rest\n\nKeep it very easy'}
+  ],
+  15: [
+    {day:'Monday Mar 17',type:'Hyrox Simulation',focus:'Full course - race effort',detail:'Near-race intensity',specifics:'Warm-up: 10min easy + dynamic prep\n\n8x1km runs @ 5:20/km with stations:\n• Station 1: SkiErg 1000m (race pace)\n• Station 2: Sled Push 50m x2 @ 102kg\n• Station 3: Sled Pull 50m x2 @ 78kg\n• Station 4: Burpee Broad Jumps x15\n• Station 5: Rowing 1000m (race pace)\n• Station 6: Farmers Carry 2x50m @ 16kg each\n• Station 7: Sandbag Lunges 100m @ 10kg\n• Station 8: Wall Balls x75 @ 6kg\n\n3min recovery between each segment\n\nCool-down: 10min walk\n\n**Near-race effort - build confidence**'},
+    {day:'Tuesday Mar 18',type:'Recovery Run',focus:'Easy recovery',detail:'4km easy',specifics:'Very easy: 4km @ 7:00/km\nHR <140bpm'},
+    {day:'Wednesday Mar 19',type:'Station Power',focus:'Explosive work',detail:'Fast stations',specifics:'Warm-up: 10min\n\n3 rounds (full recovery):\n• SkiErg: 500m FAST\n  3min rest\n• Sled Push: 50m FAST @ 102kg\n  3min rest\n• Burpee Broad Jumps: 12 reps FAST\n  3min rest\n\nCool-down: 5min'},
+    {day:'Thursday Mar 20',type:'Threshold Run',focus:'Race pace confidence',detail:'9km tempo',specifics:'Warm-up: 2km easy\n\n• Tempo: 5km @ 5:30/km\n\nCool-down: 2km easy\nTotal: 9km'},
+    {day:'Friday Mar 21',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nPrep for weekend work'},
+    {day:'Saturday Mar 22',type:'Race Pace Practice',focus:'Final speed work',detail:'6x1km',specifics:'Warm-up: 2km easy\n\n• 6x1km @ 5:15/km, 2min jog recovery\n  Feel strong and controlled\n\nCool-down: 1km easy\nTotal: ~10km\n\n**Final hard run session before taper**'},
+    {day:'Sunday Mar 23',type:'Active Recovery',focus:'Easy recovery',detail:'Rest or light movement',specifics:'Complete rest or 30min easy bike/swim'}
+  ],
+  16: [
+    {day:'Monday Mar 24',type:'Light Stations',focus:'Technique only',detail:'Light station work',specifics:'Warm-up: 10min easy + dynamics\n\n2 rounds (NOT timed, technique focus):\n• SkiErg: 500m @ 70% effort\n• Sled Push: 25m @ 102kg\n• Wall Balls: 20 reps @ 6kg\n\nCool-down: 5min walk\n\n**TAPER WEEK - technique only, stay fresh**'},
+    {day:'Tuesday Mar 25',type:'Easy Run + Strides',focus:'Sharpness maintenance',detail:'4km + strides',specifics:'Warm-up: 1km easy\n\n• Easy Run: 3km @ 6:30/km\n\n• Strides: 4x100m @ race pace feel\n\nCool-down: Walk 5min\nTotal: 4km'},
+    {day:'Wednesday Mar 26',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest or 20min walk\nHydration focus (3L water)\nLight stretching only'},
+    {day:'Thursday Mar 27',type:'Easy Run + Race Pace',focus:'Final tune-up',detail:'3km with pace check',specifics:'Warm-up: 1km easy\n\n• 2x500m @ 5:15/km (race pace), 2min easy jog between\n  Should feel smooth and controlled\n\nCool-down: Walk\nTotal: 3km'},
+    {day:'Friday Mar 28',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nCarb loading begins\nHydration: 3-4L water\nEarly to bed'},
+    {day:'Saturday Mar 29',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Morning shakeout:\n• 2km easy jog @ 6:30/km\n• 3x100m strides\n\nTotal: 15min max\n\nCheck kit, prepare race nutrition\nEarly to bed\n\n**RACE TOMORROW**'},
+    {day:'Sunday Mar 30',type:'RACE',focus:'🔥 SOLO HYROX 🔥',detail:'Target: Sub 1:25:00',specifics:'RACE DAY STRATEGY:\n\nTarget Times:\n• Run 1: 5:15/km (4:12)\n• SkiErg: 4:10-4:20\n• Run 2: 5:15/km (4:12)\n• Sled Push: <3:30\n• Run 3: 5:15/km (4:12)\n• Sled Pull: <4:30\n• Run 4: 5:15/km (4:12)\n• Burpee Broad Jumps: 5:45-6:00\n• Run 5: 5:15/km (4:12)\n• Rowing: 4:00-4:10\n• Run 6: 5:15/km (4:12)\n• Farmers Carry: 2:15-2:30\n• Run 7: 5:15/km (4:12)\n• Sandbag Lunges: 5:50-6:00\n• Run 8: 5:10/km (4:08) - PUSH\n• Wall Balls: 7:30-8:00\n\nPacing:\n• Runs 1-4: Controlled, establish rhythm\n• Runs 5-6: Maintain, push moderate\n• Runs 7-8: Give everything\n\nStations:\n• First 4: Controlled power\n• Last 4: Empty the tank\n\n🎯 TARGET: SUB 1:25:00 🎯\n\n**THIS IS YOUR DAY!**'}
+  ],
+  17: [
+    {day:'Monday Mar 31',type:'Rest',focus:'Post-Hyrox recovery',detail:'Complete rest',specifics:'Complete rest\nCelebrate your Hyrox! 🎉\nHydration, nutrition, sleep\n\n**Recovery week after Hyrox**'},
+    {day:'Tuesday Apr 1',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light 20min walk\nFoam rolling, stretching\nKeep moving gently'},
+    {day:'Wednesday Apr 2',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest\nLight mobility work optional\nHydration focus'},
+    {day:'Thursday Apr 3',type:'Easy Run',focus:'Return to running',detail:'3km very easy',specifics:'Very easy jog: 3km @ 7:00/km\nHR <140bpm\nStop if any discomfort\n\n**First run back**'},
+    {day:'Friday Apr 4',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Complete rest\nContinue recovery protocols'},
+    {day:'Saturday Apr 5',type:'Easy Run',focus:'Easy run',detail:'8km easy',specifics:'Easy run: 8km @ 6:30/km\nHR Zone 2 (<150bpm)\nShould feel comfortable'},
+    {day:'Sunday Apr 6',type:'Rest',focus:'Rest or light movement',detail:'Recovery',specifics:'Complete rest or 3km walk\nPrepare for race week'}
+  ],
+  18: [
+    {day:'Monday Apr 7',type:'Easy Run',focus:'Shakeout',detail:'6km easy',specifics:'Easy run: 6km @ 6:30/km\nHR Zone 2\nFeel fresh and relaxed\n\n**MARATHON RACE WEEK**'},
+    {day:'Tuesday Apr 8',type:'Easy Run + Pace',focus:'Marathon pace check',detail:'5km with pace segments',specifics:'Warm-up: 2km easy @ 6:45/km\n\n• 3x1km @ 6:00/km (marathon goal pace), 2min easy jog between\n  Should feel controlled and sustainable\n\nCool-down: Walk\nTotal: 5km'},
+    {day:'Wednesday Apr 9',type:'Easy Run + Strides',focus:'Shakeout',detail:'4km + strides',specifics:'Easy run: 3km @ 6:45/km\n\n• Strides: 6x100m smooth and controlled\n\nCool-down: Walk\nTotal: 4km'},
+    {day:'Thursday Apr 10',type:'Shakeout',focus:'Light movement',detail:'3km easy',specifics:'Very easy jog: 3km @ 6:45/km\nJust movement\nHR <140bpm'},
+    {day:'Friday Apr 11',type:'Rest',focus:'Complete rest',detail:'Pre-race rest',specifics:'Complete rest\nCarb loading\nHydration: 3-4L water\nPrepare race kit\nEarly to bed\n\n**RACE TOMORROW**'},
+    {day:'Saturday Apr 12',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Morning shakeout:\n• 2km easy jog @ 6:45/km\n• 4x100m strides\n\nTotal: 15min max\n\nFinal kit check\nHydrate, fuel\n\n**RACE DAY**'},
+    {day:'Sunday Apr 13',type:'RACE',focus:'🏃‍♀️ FULL MARATHON 🏃‍♀️',detail:'Completion Goal',specifics:'MARATHON STRATEGY:\n\n**Important Context:**\nThis marathon comes just 2 weeks after Solo Hyrox\nTreat this as completion/experience race, not time trial\n\nSuggested Pacing:\n• Km 1-10: 6:15/km (settle in comfortably)\n• Km 11-30: 6:00-6:15/km (maintain)\n• Km 31-42: Hold what you can\n\nFueling Strategy:\n• Gel every 5km starting at km 5\n• Water at every station\n• Electrolytes every other station\n\nMental Approach:\n• This is about the experience\
