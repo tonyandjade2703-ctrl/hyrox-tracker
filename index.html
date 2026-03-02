@@ -1,538 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Jade Training">
-  <title>Jade's Training Logger</title>
+  <title>Jade's Training</title>
   <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      -webkit-touch-callout: none;
-    }
-    body {
-      overscroll-behavior: none;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-    }
+    * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
+    body { overscroll-behavior: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #fff0f7; }
   </style>
 </head>
-<body style="margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI','Roboto',sans-serif;background:linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)">
+<body>
 <div id="root"></div>
 <script type="text/babel">
-const {useState,useEffect}=React;
-const Icon=({d,s=24})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{__html:d}}/>;
-const Calendar=({s=24})=><Icon d='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>' s={s}/>;
-const Plus=({s=24})=><Icon d='<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>' s={s}/>;
-const User=({s=24})=><Icon d='<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>' s={s}/>;
-const CheckCircle=({s=24})=><Icon d='<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>' s={s}/>;
-const Flame=({s=24})=><Icon d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>' s={s}/>;
-const TrendingUp=({s=24})=><Icon d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>' s={s}/>;
-const Clock=({s=24})=><Icon d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>' s={s}/>;
+const {useState, useEffect} = React;
+const P = '#FF69B4';
+const PL = '#FFE4F0';
+const PD = '#C56A9E';
 
-const USER = {
-  name: 'Jade',
-  category: 'Hybrid Athlete | Half Marathon + Hyrox + Full Marathon'
+const Icon = ({d,s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{__html:d}}/>;
+const CalIcon  = ({s=24}) => <Icon s={s} d='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'/>;
+const PlusIcon = ({s=24}) => <Icon s={s} d='<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'/>;
+const TrendIcon= ({s=24}) => <Icon s={s} d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'/>;
+const ClockIcon= ({s=24}) => <Icon s={s} d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'/>;
+const FlameIcon= ({s=24}) => <Icon s={s} d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'/>;
+const InfoIcon = ({s=24}) => <Icon s={s} d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'/>;
+
+// ── KNEE PROTOCOL ─────────────────────────────────────────────────
+// Suspected right meniscus tear throughout ALL phases:
+// • No deep squats past 90° under load
+// • No high-impact plyometrics (box jumps removed)
+// • No kneeling under heavy load
+// • Avoid pivot/twist movements
+// • Eccentric quad strengthening preferred (VMO focus)
+// • Ice knee 10min post every session
+// • Compression sleeve recommended for all running
+// • Elevate leg post session
+
+// ── STRETCHES BY SESSION TYPE ────────────────────────────────────
+const KNEE_CARE = '\n\n🦵 KNEE CARE (after EVERY session):\n• Seated Quad Stretch: 60s/leg (gentle, no forcing)\n• Supine Hamstring Stretch: 60s/leg\n• Calf Stretch (wall, straight knee): 45s/leg\n• Figure-4 Glute Stretch: 60s/side\n• Ice right knee: 10min\n• Elevate right leg: 10min\n• Compression sleeve recommended for all running';
+
+const RUN_STRETCH = '\n\n🧘 POST-RUN STRETCHES:\n• Standing Hip Flexor Lunge Stretch: 60s/side\n• Seated Hamstring Stretch: 60s/leg\n• Calf Stretch (wall, straight + bent knee): 45s each/leg\n• IT Band Cross Stretch (standing): 45s/side\n• Pigeon Pose: 90s/side (key for knee health)\n• Quad Stretch (lying, gentle): 45s/leg — do NOT force right knee\n• Ankle Circles: 30s each direction\n• Foam roll quads and IT band: 2min/leg';
+
+const STRENGTH_LOWER_STRETCH = '\n\n🧘 POST LOWER STRENGTH STRETCHES:\n• Pigeon Pose: 90s/side\n• Hip 90/90 Stretch: 90s/side\n• Couch Stretch (hip flexor): 60s/side — keep right knee padded\n• Supine Hamstring Stretch: 60s/leg\n• Adductor Stretch (butterfly): 60s\n• Glute Bridge Hold (decompression): 3x30s\n• Foam roll quads, glutes, IT band: 2min/side\n• Legs Up The Wall: 5min';
+
+const STRENGTH_UPPER_STRETCH = '\n\n🧘 POST UPPER STRENGTH STRETCHES:\n• Thread the Needle: 10 reps/side\n• Doorway Pec Stretch: 60s/arm\n• Wall Slide + Overhead Reach: 3x10\n• Lat Stretch (band or bar hang): 30s x3\n• Upper Trap + Neck Stretch: 45s/side\n• Wrist Flexor/Extensor Stretch: 60s total\n• Child\'s Pose with arm reach: 60s\n• Seated Spinal Twist: 45s/side';
+
+const HYROX_STRETCH = '\n\n🧘 POST HYROX/STATION STRETCHES:\n• Pigeon Pose: 90s/side (priority — hip flexors take a beating)\n• Hip 90/90: 90s/side\n• Supine Hamstring Stretch: 60s/leg\n• Calf Stretch (straight + bent): 45s each/leg\n• Thoracic Rotation (lying): 10/side\n• Doorway Pec Stretch: 60s/arm (for SkiErg/Row)\n• Lat Stretch: 30s x3\n• Foam roll quads, glutes, upper back: 2min each\n• Legs Up The Wall: 8min';
+
+const REST_MOBILITY = '\n\n🧘 REST DAY MOBILITY (20 min):\n• Gentle Knee Circles (seated): 10 each direction\n• Supine Hamstring Stretch: 60s/leg\n• Figure-4 Glute Stretch: 90s/side\n• Hip 90/90: 60s/side\n• Calf + Ankle Mobility: 60s/leg\n• Cat-Cow: 15 reps\n• Child\'s Pose: 60s\n• Ice right knee if any discomfort from previous day';
+
+// ── PROGRAM PHASES ────────────────────────────────────────────────
+// Block starts: ~Mar 2 (post half marathon)
+// W1: Mar 2-8    Post-race recovery + return
+// W2: Mar 9-15   Hyrox peak #1
+// W3: Mar 16-22  Hyrox peak #2
+// W4: Mar 23-29  🏆 Hyrox Taper + Race (Mar 29)
+// W5: Mar 30-Apr 5  Post-Hyrox recovery + marathon build
+// W6: Apr 6 - May 2 🏆 Marathon (Apr 5 — NOTE: marathon is Apr 5 not Apr 12 per brief)
+//     Wait — brief says Full Marathon Apr 5, Doubles May 2
+// W6: Apr 6-12 was old. New dates: Marathon Apr 5 = race week starts ~Mar 30
+// Recalculating: Hyrox Mar 29 → 1 week recovery → Marathon Apr 5 (7 days gap — very tight)
+// Marathon race week: Mar 30-Apr 5
+// Then recovery + Jade Doubles with Tony: May 2
+// W1: Mar 2-8 | W2: Mar 9-15 | W3: Mar 16-22 | W4: Mar 23-29 (Hyrox race)
+// W5: Mar 30-Apr 5 (Marathon race — only 7 days post Hyrox, completion focus)
+// W6: Apr 6-12 recovery
+// W7: Apr 13-19 | W8: Apr 20-26 | W9: Apr 27-May 2 (Doubles race)
+
+const phases = {
+  1:{phase:'Post Half Marathon — Recovery + Return',dates:'Mon Mar 2 – Sun Mar 8',focus:'Recover, ease back in, protect knee',intensity:'Very Low → Low',
+     notes:'Half marathon done! Mon-Thu full rest, gentle return Fri onwards. Knee management is priority this entire block. All sessions adapted for suspected meniscus tear.'},
+  2:{phase:'Hyrox Peak #1 — Full Simulations',dates:'Mon Mar 9 – Sun Mar 15',focus:'Full 8-station sim + race pace running',intensity:'High',
+     notes:'3 weeks to Hyrox. Full simulation sessions Tue and Sun. Station power work Fri. All knee-adapted — no deep loaded squats, no plyometrics.'},
+  3:{phase:'Hyrox Peak #2 — Final Prep',dates:'Mon Mar 16 – Sun Mar 22',focus:'Race pace confidence, taper begins',intensity:'High → Moderate',
+     notes:'2 weeks out. Near-race effort simulation early in week, then begin reducing volume Fri onwards. Knee compression sleeve for all runs.'},
+  4:{phase:'🏆 Hyrox Taper + Race Week',dates:'Mon Mar 23 – Sun Mar 29',focus:'Race Day Sun Mar 29 — Sub 1:25:00',intensity:'Taper → Race',
+     notes:'Light technique work only Mon-Sat. Race Sunday. Knee: ice daily, elevation every evening, compression sleeve race day.'},
+  5:{phase:'Post-Hyrox Recovery + Marathon Build',dates:'Mon Mar 30 – Sun Apr 5',focus:'Recover from Hyrox, stay loose for marathon',intensity:'Very Low → Low',
+     notes:'2 weeks post-Hyrox before marathon on Apr 12. More time to recover properly. Light movement Mon-Wed, gentle return Thu-Sun. Knee monitoring priority.'},
+  6:{phase:'🏆 Marathon Race Week',dates:'Mon Apr 6 – Sun Apr 12',focus:'Race Day Sun Apr 12 — Completion',intensity:'Taper → Race',
+     notes:'14 days post-Hyrox — much better recovery window. Light shakeouts Mon-Sat, race Sunday. Knee should be well settled by now.'},
+  7:{phase:'Post-Marathon Recovery + Doubles Build',dates:'Mon Apr 13 – Sun Apr 19',focus:'Recover, then begin Doubles prep',intensity:'Very Low → Moderate',
+     notes:'Mon-Wed full recovery post-marathon. Thu onwards begin rebuilding for Doubles with Tony on May 2. 3 weeks out.'},
+  8:{phase:'Jade + Tony Doubles — Peak + Sim',dates:'Sun Apr 20 – Sat Apr 26',focus:'Full doubles sim with Tony (Sat Apr 25)',intensity:'High',
+     notes:'2 weeks out. Full mixed doubles simulation Saturday. Jade leads strategy — 60% station work. Knee: full protocol every session.'},
+  9:{phase:'🏆 Doubles Race Week',dates:'Sun Apr 27 – Fri May 2',focus:'Race Day Fri May 2 — Sub 1:15:00',intensity:'Taper → Race',
+     notes:'Final taper. Light activation only. Race Friday with Tony. Knee: ice daily, compression race day.'}
 };
-  function WorkoutCard({day,isComplete,onToggle,onDragStart,onDragOver,onDrop,isDragging}){
-  const[showDetails,setShowDetails]=useState(false);
-  
-  if(!day){
-    return <div 
-      className="border-2 border-dashed rounded-lg p-4 text-center"
-      style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1',color:'#FF69B4'}}
-      onDragOver={onDragOver}
-      onDrop={onDrop}
-    >
-      Drop workout here to reschedule
-    </div>;
-  }
-  
-  return <div 
-    className={`bg-white border-2 rounded-lg p-4 transition cursor-move ${isComplete?'shadow-lg':''} ${isDragging?'opacity-50':''}`} 
-    style={isComplete?{borderColor:'#FF69B4'}:{borderColor:'#FFE4F0'}}
-    draggable="true"
-    onDragStart={onDragStart}
-    onDragOver={onDragOver}
-    onDrop={onDrop}
-  >
-    <div className="flex items-start gap-4">
-      <button onClick={onToggle} className={`flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center transition text-white ${isComplete?'border-transparent':''}`} style={isComplete?{backgroundColor:'#FF69B4',borderColor:'#FF69B4'}:{borderColor:'#FFB6C1'}}>{isComplete&&<CheckCircle s={20}/>}</button>
-      <div className="flex-1">
-        <div className="flex items-start justify-between mb-2">
-          <div><div className="font-bold text-lg text-black">{day.day}</div><div className="text-sm text-gray-600">{day.type} - {day.focus}</div></div>
-          <div className="px-3 py-1 rounded-full text-xs font-semibold text-white" style={{backgroundColor:day.type.includes('Rest')?'#E6B8E6':day.type.includes('Strength')?'#FF69B4':'#FFB6C1'}}>{day.type}</div>
-        </div>
-        <div className="text-sm text-gray-700 mb-2">{day.detail}</div>
-        <button onClick={()=>setShowDetails(!showDetails)} className="text-xs font-semibold" style={{color:'#FF69B4'}}>{showDetails?'▼ Hide Details':'▶ Show Full Workout'}</button>
-        {showDetails&&<div className="mt-3 p-3 rounded text-sm text-black whitespace-pre-line border" style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1'}}>{day.specifics}</div>}
-      </div>
-    </div>
-  </div>
-}
-  function App(){
-const[tab,setTab]=useState('plan');
-const[workouts,setWorkouts]=useState([]);
-const[comp,setComp]=useState({});
-const[week,setWeek]=useState(1);
-const[showLogForm,setShowLogForm]=useState(false);
-const[currentWorkout,setCurrentWorkout]=useState({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
-const[weekSchedule,setWeekSchedule]=useState({});
-const[draggedWorkout,setDraggedWorkout]=useState(null);
 
-useEffect(()=>{
-  try{
-    const savedWorkouts=JSON.parse(localStorage.getItem('jade_workouts')||'[]');
-    const savedComp=JSON.parse(localStorage.getItem('jade_comp')||'{}');
-    const savedSchedule=JSON.parse(localStorage.getItem('jade_schedule')||'{}');
-    setWorkouts(savedWorkouts);
-    setComp(savedComp);
-    setWeekSchedule(savedSchedule);
-  }catch(e){}
-},[]);
+const plans = {
 
-useEffect(()=>{localStorage.setItem('jade_workouts',JSON.stringify(workouts))},[workouts]);
-useEffect(()=>{localStorage.setItem('jade_comp',JSON.stringify(comp))},[comp]);
-useEffect(()=>{localStorage.setItem('jade_schedule',JSON.stringify(weekSchedule))},[weekSchedule]);
-    const jadeWeeklyPlans = {
-  1: [
-    {day:'Monday Dec 8',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)\n\n**Program starts this week!**'},
-    {day:'Tuesday Dec 9',type:'Strength',focus:'Lower Body Foundation',detail:'Back Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike/row easy + dynamic leg swings + glute bridges 2x15\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 75kg (75% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 60kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 16kg DBs, 90s rest\n• Nordic Curls: 3x5 with band assist, 2min rest\n• Hollow Hold: 3x30s\n• Arch Hold: 3x30s\n\nCool-down: 5min walk + stretching'},
-    {day:'Wednesday Dec 10',type:'Run + Stations',focus:'Easy aerobic + station work',detail:'5km easy + SkiErg/Sled/Burpees',specifics:'Warm-up: 10min walk/jog + dynamic drills (high knees, butt kicks, A-skips)\n\n• Easy Run: 5km @ 6:45/km pace\n  Target HR: 140-150 bpm (Zone 2 - 70-75% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n  Should be conversational\n\nThen 3 rounds:\n• SkiErg: 500m moderate effort\n• Sled Push: 50m @ 102kg (race weight)\n• Burpee Broad Jump: 10 reps\n3min rest between rounds\n\nCool-down: 5min walk'},
-    {day:'Thursday Dec 11',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Dec 12',type:'Tempo Run',focus:'Threshold development',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + 4x100m strides\n  HR: 130-145 bpm (Zone 2)\n\n• Tempo Run: 4km @ 5:50/km\n  Target HR: 165-175 bpm (Zone 3-4 - 83-88% max HR)\n  Pace: 10.3 km/h | 6.4 mph\n  "Comfortably hard" - controlled breathless\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 7km'},
-    {day:'Saturday Dec 13',type:'Strength',focus:'Upper Body & Core',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + band pull-aparts 2x15\n\nMain Lifts:\n• Barbell Bench Press: 4x6 @ 37.5kg (75% 1RM), 3min rest\n• Weighted Pull-ups: 4x5 @ +5kg (or band assisted), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 16kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 20kg each hand, 2min rest\n• Wall Balls: 3x20 @ 6kg ball to 9ft target, 90s rest\n\nCool-down: 5min walk + stretching'},
-    {day:'Sunday Dec 14',type:'Long Run',focus:'Aerobic base building',detail:'12km easy + strides',specifics:'Warm-up: 10min easy jog\n  HR: 125-140 bpm\n\n• Long Run: 12km @ 6:30/km pace\n  Target HR: 140-155 bpm (Zone 2 - 70-78% max HR)\n  Pace: 9.2 km/h | 5.7 mph\n  Fuel at 6km with gel/snack\n  Should be able to hold full conversation\n\n• Strides: 3x100m fast but controlled\n  HR will spike to 170-180 bpm\n  90s walk recovery (HR drops to <130)\n\nCool-down: 10min walk + 15min stretching'}
+  // ── WEEK 1: Mar 2-8 — Post half recovery ─────────────────────────
+  1:[
+    {day:'Mon Mar 2',  sessionType:'REST — Post Half Marathon',intensity:'None',
+     notes:'FULL REST. You just ran a half marathon!\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs for recovery.\n\nCelebrate your achievement 🏅\n\n🦵 KNEE: Ice right knee 10min. Elevation. Compression sleeve or bandage if any swelling.' + REST_MOBILITY},
+    {day:'Tue Mar 3',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest or 15min gentle walk.\n\nFoam roll lightly — quads, glutes, calves. Avoid rolling directly over the knee joint.\n\n🦵 KNEE: Monitor swelling. If right knee is more swollen or painful than left after the race, see a physio before resuming running.' + REST_MOBILITY},
+    {day:'Wed Mar 4',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest. Light mobility only (see below).\n\nHydration + nutrition focus.' + REST_MOBILITY},
+    {day:'Thu Mar 5',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest. How is the knee feeling today?\n\nIf pain-free or mild discomfort: light return tomorrow.\nIf swollen or sharp: additional rest day and physio consult.' + REST_MOBILITY},
+    {day:'Fri Mar 6',  sessionType:'Easy Return Run',duration:'20 mins',intensity:'Very Low — Zone 1-2',
+     notes:'First post-race run. Very easy. 20min @ 6:45-7:00/km, HR under 130.\n\n~3km. Stop immediately if knee is painful. Compression sleeve on right knee.\n\nThis is blood flow only — not fitness.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sat Mar 7',  sessionType:'Light Strength — Upper Only',duration:'35 mins',intensity:'Low',
+     notes:'Upper body only this week — protect knee from any loading.\n\nWarm-up: 5min row (light)\n\n• Pull-ups: 3x6 bodyweight\n• DB Row: 3x10 @ 14kg\n• Push-ups: 3x12\n• Farmers Carry: 3x30m @ 16kg/hand (short, less knee demand)\n• Wall Balls: SKIP this week\n\nCore (lying only — no knee loading):\n• Dead Bugs: 3x16\n• Hollow Hold: 3x25s\n• Side Plank: 2x30s/side' + STRENGTH_UPPER_STRETCH + KNEE_CARE},
+    {day:'Sun Mar 8',  sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
+     notes:'Gentle progressive return. 30min @ 6:30-6:45/km, HR 120-135.\n\n~4.5km. Compression sleeve. If knee flares, stop and walk.\n\n4 weeks to Hyrox. This week is about arriving healthy, not fit.' + RUN_STRETCH + KNEE_CARE}
   ],
-2: [
-    {day:'Monday Dec 15',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Dec 16',type:'Strength',focus:'Lower Body Progression',detail:'Squat, RDL, Split Squats, Core',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 77.5kg (+2.5kg), 3min rest\n• Romanian Deadlift: 3x8 @ 62.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 18kg DBs (+2kg), 90s rest\n• Nordic Curls: 3x6 with band, 2min rest\n• Hollow Hold: 3x35s (+5s)\n• Arch Hold: 3x35s (+5s)\n\nCool-down: 5min walk + stretching'},
-    {day:'Wednesday Dec 17',type:'Run + Stations',focus:'Easy run + stations',detail:'5km easy + station work',specifics:'Warm-up: 10min easy + drills\n  HR: 125-140 bpm\n\n• Easy Run: 5km @ 6:40/km (slightly faster)\n  Target HR: 140-150 bpm (Zone 2 - 75-80% max HR)\n  Pace: 9.0 km/h | 5.6 mph\n  Conversational pace\n\nThen 3 rounds:\n• SkiErg: 500m (aim for consistent splits)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest between\n\nCool-down: 5min walk'},
-    {day:'Thursday Dec 18',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Dec 19',type:'Tempo Run',focus:'Threshold work',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + 4x100m strides\n  HR: 130-145 bpm\n\n• Tempo: 4km @ 5:50/km\n  Target HR: 165-175 bpm (Zone 3-4 - 88-93% max HR)\n  Pace: 10.3 km/h | 6.4 mph\n  Should feel easier than Week 1 at same pace\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 7km + 10min stretching'},
-    {day:'Saturday Dec 20',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows, Carries',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x6 @ 38.75kg (+1.25kg), 3min rest\n• Weighted Pull-ups: 4x6 @ +5kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 12kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 18kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min walk + stretching'},
-    {day:'Sunday Dec 21',type:'Long Run',focus:'Aerobic development',detail:'12km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 12km @ 6:25/km (5s/km faster)\n  Target HR: 145-158 bpm (Zone 2-3 - 78-84% max HR)\n  Pace: 9.4 km/h | 5.8 mph\n  Fuel at 6km\n  Slightly elevated from Week 1\n\n• Strides: 3x100m\n  HR spike: 170-180 bpm\n  90s walk recovery (HR drops to <130)\n\nCool-down: 10min walk + 15min stretching'}
+
+  // ── WEEK 2: Mar 9-15 — Hyrox Peak #1 ────────────────────────────
+  2:[
+    {day:'Mon Mar 9',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 3 weeks to Hyrox.\n\nMobility and knee care only.' + REST_MOBILITY},
+    {day:'Tue Mar 10', sessionType:'Full Hyrox Simulation',duration:'90-100 mins',intensity:'High',
+     notes:'FULL 8-STATION SIMULATION @ 80-85% effort.\n\nWarm-up: 10min easy jog + full dynamic prep, HR 125-140\n\n🦵 KNEE ADAPTATIONS FOR SIM:\n• Sled Push: stay low but do NOT let right knee go past toes significantly — short powerful steps\n• Sled Pull: hand-over-hand seated pull preferred, reduce weight if knee presses on floor\n• Sandbag Lunges: alternate lead leg, stop if right knee sharp\n• Wall Balls: reduce depth — squat to just above 90°, no deeper\n• Burpee BJ: step back instead of jump back for burpee portion\n\n8 runs x 1km @ 5:30/km between stations, HR 158-168 bpm\n\nStations (knee-adapted):\n• SkiErg 1000m\n• Sled Push 50m @ 102kg — short steps, upright-ish\n• Sled Pull 50m @ 78kg\n• Burpee Broad Jumps — step back variation\n• Rowing 1000m\n• Farmers Carry 2x50m @ 16kg each\n• Sandbag Lunges 100m @ 10kg — alternate legs carefully\n• Wall Balls 75 @ 6kg — 90° depth max\n\nCool-down: 10min walk' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Wed Mar 11', sessionType:'Easy Recovery Run',duration:'25 mins',intensity:'Very Low — Zone 1-2',
+     notes:'Very easy jog only. 25min @ 7:00/km, HR under 135. Active recovery from yesterday sim.\n\nCompression sleeve. If knee is flared from sim, replace with 25min walk.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Thu Mar 12', sessionType:'REST',intensity:'None',
+     notes:'Complete rest. How did the sim feel on the knee?\n\nIf knee swollen or sharper than usual: see physio before Sunday sim.' + REST_MOBILITY},
+    {day:'Fri Mar 13', sessionType:'Station Power',duration:'40 mins',intensity:'Moderate-High',
+     notes:'Station speed work — knee adapted.\n\nWarm-up: 10min easy movement\n\n3 rounds (full recovery between):\n• SkiErg: 500m FAST (target <2:00) — 3min rest\n• Rowing: 500m FAST (target <2:00) — 3min rest\n• Farmers Carry: 100m FAST @ 16kg — 3min rest\n• Wall Balls: 20 FAST @ 6kg (90° depth) — 3min rest\n\n⚠️ Sled and lunges removed from power work — knee protection. These are covered in full sim.\n\nCool-down: 5min walk' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Sat Mar 14', sessionType:'Threshold Run',duration:'45 mins',intensity:'High — Zone 3-4',
+     notes:'Warm-up: 2km easy\nMain: 5km @ 5:30/km (Hyrox run pace), HR 160-172\nCool-down: 2km easy\n\nTotal: 9km. This is your race run pace. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sun Mar 15', sessionType:'Race Pace Intervals',duration:'50 mins',intensity:'High — Zone 4',
+     notes:'Warm-up: 2km easy + strides\nMain: 6x1km @ 5:15/km (HR 168-180)\nRecovery: 2min jog between reps\nCool-down: 1km easy\n\nTotal: ~10km. Compression sleeve throughout.' + RUN_STRETCH + KNEE_CARE}
   ],
-  3: [
-    {day:'Monday Dec 22',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Dec 23',type:'Strength',focus:'Lower Body',detail:'Increased intensity',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 80kg (80% 1RM), 3min rest\n• Romanian Deadlift: 3x8 @ 65kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 20kg DBs, 90s rest\n• Nordic Curls: 3x7 with light band, 2min rest\n• Hollow Hold: 3x40s\n• Arch Hold: 3x40s\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Dec 24',type:'Run + Stations',focus:'Easy run + stations',detail:'5km + station work',specifics:'Warm-up: 10min + drills\n  HR: 125-140 bpm\n\n• Easy Run: 5km @ 6:35/km\n  Target HR: 142-152 bpm (Zone 2 - 76-81% max HR)\n  Pace: 9.1 km/h | 5.7 mph\n  Comfortable, conversational\n\nThen 3 rounds:\n• SkiErg: 500m (consistent times)\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest\n\nCool-down: 5min'},
-    {day:'Thursday Dec 25',type:'Rest',focus:'Complete rest',detail:'Recovery day - Christmas',specifics:'Complete rest day - CHRISTMAS\nEnjoy the holiday!\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)'},
-    {day:'Friday Dec 26',type:'Tempo Run',focus:'Threshold progression',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo: 4km @ 5:45/km (5s/km faster)\n  Target HR: 168-178 bpm (Zone 4 - 90-95% max HR)\n  Pace: 10.4 km/h | 6.5 mph\n  Harder effort - short phrases only\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 7km'},
-    {day:'Saturday Dec 27',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows',specifics:'Warm-up: 5min row + prep\n\nMain Lifts:\n• Bench Press: 4x6 @ 40kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +6.25kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 14kg DBs (+2kg), 2min rest\n• DB Bent Over Row: 3x10 @ 18kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Dec 28',type:'Long Run',focus:'Volume increase',detail:'14km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 14km @ 6:25/km\n  Target HR: 145-158 bpm (Zone 2-3 - 78-84% max HR)\n  Pace: 9.4 km/h | 5.8 mph\n  Fuel at 7km\n  Steady aerobic effort\n\n• Strides: 3x100m\n  HR spike: 170-180 bpm\n\nCool-down: 10min walk + stretching'}
+
+  // ── WEEK 3: Mar 16-22 — Hyrox Peak #2 ───────────────────────────
+  3:[
+    {day:'Mon Mar 16', sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 2 weeks to Hyrox. Knee care priority today.' + REST_MOBILITY},
+    {day:'Tue Mar 17', sessionType:'Full Hyrox Simulation — Near Race Effort',duration:'90-100 mins',intensity:'High',
+     notes:'FULL 8-STATION SIM @ 90% race effort.\n\nWarm-up: 10min + full dynamic + 6x100m strides, HR 125-140\n\n🦵 SAME KNEE ADAPTATIONS as Week 2:\n• Step-back burpees\n• Wall balls to 90° max\n• Sled push short powerful steps\n• Sandbag lunges alternate legs — stop if sharp pain\n\n8 runs x 1km @ 5:20/km, HR 165-175\n\nAll 8 stations at near-race effort.\n\nCool-down: 10min walk\n\nThis is your confidence-builder. You know this course.' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Wed Mar 18', sessionType:'Easy Recovery Run',duration:'20 mins',intensity:'Very Low',
+     notes:'20min @ 7:00/km, HR under 130. Or 20min walk if knee is sore from yesterday.\n\nActive recovery only.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Thu Mar 19', sessionType:'REST',intensity:'None',
+     notes:'Complete rest. Taper begins from today.\n\nKnee: ice, elevation, compression.' + REST_MOBILITY},
+    {day:'Fri Mar 20', sessionType:'Light Station Touch',duration:'25 mins',intensity:'Low',
+     notes:'2 rounds @ 65% effort — technique only, NOT timed:\n• SkiErg: 400m easy\n• Rowing: 400m easy\n• Farmers Carry: 50m @ 14kg\n• Wall Balls: 15 @ 6kg (90° depth)\n\n10min mobility afterwards.' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Sat Mar 21', sessionType:'Easy Run + Strides',duration:'25 mins',intensity:'Low',
+     notes:'20min @ 6:30/km easy + 4x100m strides building to race pace feel.\n\nLegs should feel light and quick. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sun Mar 22', sessionType:'Active Recovery + Mobility',duration:'20 mins',intensity:'Very Low',
+     notes:'Walk 15min or light bike.\n\n⚡ ONE WEEK TO HYROX.\n\nFull mobility routine below. Ice knee afterwards.' + REST_MOBILITY + KNEE_CARE}
   ],
-  4: [
-    {day:'Monday Dec 29',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Dec 30',type:'Strength',focus:'Lower Body Consolidation',detail:'Same weight, quality focus',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Barbell Back Squat: 4x6 @ 80kg (focus quality), 3min rest\n• Romanian Deadlift: 3x8 @ 67.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 20kg DBs, 90s rest\n• Nordic Curls: 3x8 or reduce band, 2min rest\n• Hollow Hold: 3x45s\n• Arch Hold: 3x45s\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Dec 31',type:'Run + Stations',focus:'Aerobic + stations',detail:'5km + station work',specifics:'Warm-up: 10min + drills\n  HR: 125-140 bpm\n\n• Easy Run: 5km @ 6:30/km\n  Target HR: 145-155 bpm (Zone 2-3 - 78-83% max HR)\n  Pace: 9.2 km/h | 5.7 mph\n  Comfortable aerobic\n\nThen 3 rounds:\n• SkiErg: 500m\n• Sled Push: 50m @ 102kg\n• Burpee Broad Jump: 10 reps\n3min rest\n\nCool-down: 5min\n\n**New Years Eve - finish strong!**'},
-    {day:'Thursday Jan 1',type:'Rest',focus:'Complete rest',detail:'Recovery day - New Years',specifics:'Complete rest day - NEW YEARS DAY\nHappy New Year! 🎉\nHydration (especially if celebrating!)\nSleep: 8+ hours\nOptional: Light stretching'},
-    {day:'Friday Jan 2',type:'Tempo Run',focus:'Threshold',detail:'7km with 4km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo: 4km @ 5:45/km\n  Target HR: 168-178 bpm (Zone 4 - 90-95% max HR)\n  Pace: 10.4 km/h | 6.5 mph\n  Hard but controlled\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 7km'},
-    {day:'Saturday Jan 3',type:'Strength',focus:'Upper Body',detail:'Bench, Pull-ups, Rows',specifics:'Warm-up: 5min row\n\nMain Lifts:\n• Bench Press: 4x6 @ 40kg, 3min rest\n• Weighted Pull-ups: 4x7 @ +6.25kg (+1 rep), 2.5min rest\n• DB Shoulder Press: 3x8 @ 14kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 20kg each, 2min rest\n• Wall Balls: 3x20 @ 6kg, 90s rest\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Jan 4',type:'Long Run',focus:'Base consolidation',detail:'14km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 14km @ 6:20/km (slightly faster)\n  Target HR: 148-160 bpm (Zone 2-3 - 79-86% max HR)\n  Pace: 9.5 km/h | 5.9 mph\n  Fuel at 7km\n  Sustainable aerobic pace\n\n• Strides: 3x100m\n  HR spike: 170-180 bpm\n\nCool-down: 10min walk + stretching'}
+
+  // ── WEEK 4: Mar 23-29 — Hyrox Race Week ─────────────────────────
+  4:[
+    {day:'Mon Mar 23', sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
+     notes:'Light touch on stations only — 65% effort, NOT timed:\n• SkiErg: 2x250m (technique)\n• Rowing: 2x250m (technique)\n• Wall Balls: 2x12 @ 6kg (90° depth)\n\nThen 10min full body mobility.\n\nMental note: visualise smooth station transitions and your run splits.' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Tue Mar 24', sessionType:'Easy Jog',duration:'15 mins',intensity:'Very Low',
+     notes:'15min @ 6:45/km, HR under 120. Blood flow only. Compression sleeve.\n\nAdd 3x80m strides at end.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Wed Mar 25', sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest from training.\n\nMobility only (20 min). Knee: ice, elevation.\n\nHydration 3-4L. Carb-rich meals begin today.' + REST_MOBILITY},
+    {day:'Thu Mar 26', sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
+     notes:'Jog 10min @ 6:45/km + 3x80m strides.\n\nLegs should feel like springs. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Fri Mar 27', sessionType:'REST — Carb Load',intensity:'None',
+     notes:'COMPLETE REST. Walk 10min max.\n\nCarb load: pasta/rice with protein. Hydrate 4L.\n\nLay out race kit:\n• Bib, shoes, socks, shorts, shirt\n• Watch charged, gels ready\n• Compression sleeve for knee\n\n🦵 KNEE: Elevate right leg this afternoon/evening.'},
+    {day:'Sat Mar 28', sessionType:'REST — Race Eve',intensity:'None',
+     notes:'ZERO activity. Final carb load dinner (6pm). Early bed by 9pm.\n\nVisualise every station. Gentle calf + quad stretch before bed — no aggressive work on knee.\n\nYOU ARE READY. 💪'},
+    {day:'Sun Mar 29', sessionType:'🏆 RACE DAY — Solo Hyrox',duration:'Target: Sub 1:25:00',intensity:'RACE EFFORT',
+     notes:'THIS IS IT. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• Arrive venue 90min early\n• Compression sleeve on right knee before warm-up\n• Warm-up: 10min progressive jog, full dynamic, 4x100m strides, light station touches\n• Gel 15min before start\n\n🦵 KNEE RACE PLAN:\n• Burpee BJs: step-back variation throughout — do not sacrifice pace for a heroic jump-back\n• Sled Push: short powerful steps, do not over-extend right knee\n• Lunges: alternate legs, steady rhythm — if sharp pain, switch to slow walk lunges\n• Wall Balls: 90° depth max — hit target height, don\'t sacrifice depth for speed\n• If right knee becomes sharp/locking at any point: stop station, walk, reassess\n\nRACE STRATEGY:\n• Runs 1-4: 5:20-5:30/km, HR 162-172 — controlled\n• Runs 5-8: 5:15-5:25/km, HR 170-182 — push\n• Stations: controlled power, rhythm over raw speed\n• Stations 5-8: everything you have\n\n🎯 TARGET: SUB 1:25:00\n\nYou ran a half marathon last month. You\'ve put the work in. Leave nothing on the floor. 💪🔥\n\nPOST RACE: Ice knee immediately. Elevation. Compression. Before celebrating!'}
   ],
-    5: [
-    {day:'Monday Jan 5',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Starting intervals this week!**'},
-    {day:'Tuesday Jan 6',type:'Strength',focus:'Lower Body - Intensity Up',detail:'Reduced reps, increased weight',specifics:'Warm-up: 5min bike + box step-ups 2x10\n\nMain Lifts:\n• Barbell Back Squat: 4x5 @ 85kg (85% 1RM), 3min rest - HEAVY\n• Romanian Deadlift: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x8 @ 40cm, 2min rest - NEW explosive work\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest - NEW Hyrox specific\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Jan 7',type:'Intervals + Stations',focus:'Speed endurance',detail:'6x800m + stations',specifics:'Warm-up: 2km easy jog + 4x100m strides\n  HR: 130-145 bpm\n\n• 6x800m @ 5:20/km pace (4:16 per rep)\n  Target HR: 175-185 bpm (Zone 4-5 - 93-99% max HR)\n  Pace: 11.3 km/h | 7.0 mph\n  Hard effort - focus on consistent splits\n  2min jog recovery (HR drops to 140-150)\n\nThen 2 rounds:\n• SkiErg: 1000m moderate-hard\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m moderate\n3min rest between rounds\n\nCool-down: 1km easy\n  HR: <135 bpm'},
-    {day:'Thursday Jan 8',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Jan 9',type:'Tempo Run',focus:'Extended threshold',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo Run: 6km @ 5:50/km (2km increase)\n  Target HR: 160-172 bpm (Zone 3 - 86-92% max HR)\n  Pace: 10.3 km/h | 6.4 mph\n  Comfortably hard - sustained effort\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Jan 10',type:'Strength',focus:'Upper Body + Power',detail:'Heavy + carries',specifics:'Warm-up: 5min row + band work\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg (85% 1RM), 3min rest - HEAVY\n• Weighted Pull-ups: 4x6 @ +7.5kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs (+2kg), 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 22.5kg each (+2.5kg), 2min rest\n• Wall Balls: 4x20 @ 6kg (add 1 set), 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest - NEW Hyrox\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Jan 11',type:'Long Run',focus:'Volume increase',detail:'16km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 16km @ 6:20/km\n  Target HR: 148-160 bpm (Zone 2-3 - 79-86% max HR)\n  Pace: 9.5 km/h | 5.9 mph\n  Fuel at 8km and 12km\n  Steady aerobic pace\n\n• Strides: 4x100m\n  HR spike: 172-182 bpm\n\nCool-down: 10min walk + 15min stretching'}
+
+  // ── WEEK 5: Mar 30-Apr 5 — MARATHON RACE WEEK ────────────────────
+  5:[
+    {day:'Mon Mar 30', sessionType:'REST — Post Hyrox',intensity:'None',
+     notes:'FULL REST. You just raced Hyrox.\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs.\n\n🦵 KNEE: Ice immediately and again this evening. Monitor closely — you\'ve just done a full Hyrox. If right knee is significantly more swollen than left, physio before the marathon.\n\nMarathon is Saturday Apr 5 — only 6 days away. This is a completion race.' + REST_MOBILITY},
+    {day:'Tue Apr 1',  sessionType:'REST or Gentle Walk',duration:'20 mins',intensity:'Very Low',
+     notes:'20min gentle walk maximum. HR under 115.\n\nHow does the body feel? How is the knee?\n\nIf knee feels good: light jog tomorrow.\nIf knee swollen/painful: rest tomorrow too and keep marathon as walk/run.' + REST_MOBILITY + KNEE_CARE},
+    {day:'Wed Apr 2',  sessionType:'Easy Shakeout',duration:'20 mins',intensity:'Low — Zone 1-2',
+     notes:'20min easy jog @ 6:45/km, HR under 130. Compression sleeve.\n\nIf knee is sore from Hyrox, replace with 20min walk. Do NOT run through knee pain 4 days before a marathon.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Thu Apr 3',  sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest. 2 days to marathon.\n\nMobility only — full routine below.\n\nCarb loading begins today. Hydrate 4L.\n\n🦵 KNEE: Ice, elevation, compression.' + REST_MOBILITY},
+    {day:'Fri Apr 4',  sessionType:'REST — Race Eve',intensity:'None',
+     notes:'ZERO activity. Walk 10min max.\n\nFinal carb load dinner (6pm). Lay out race kit. Set 3 alarms. Bed by 9pm.\n\n🦵 KNEE: Compression sleeve for the marathon. Plan a walk/run strategy if knee is not 100% — this is a completion race.\n\nYou\'ve done Hyrox AND a half marathon in the last 5 weeks. Finishing a marathon on top of that is a massive achievement regardless of time.'},
+    {day:'Sat Apr 5',  sessionType:'🏆 RACE DAY — Full Marathon',duration:'Completion Goal',intensity:'RACE EFFORT',
+     notes:'MARATHON DAY. 🏃‍♀️\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + honey + coffee\n• Compression sleeve on right knee\n• Arrive 90min early\n• Warm-up: 10min easy walk/jog + gentle dynamic only\n• Gel 15min before start\n\n🦵 KNEE RACE STRATEGY:\n• If knee feels good at 10km: maintain pace\n• If knee aches at 10km: adopt walk/run (run 8min/walk 2min)\n• If sharp knee pain at any point: walk it in — no medal is worth a full tear\n• Compression sleeve stays on throughout\n\nRACE STRATEGY (standard):\n• Km 1-10: 6:15/km easy, HR 148-158 — settle in, don\'t go out fast\n• Km 11-30: 6:00-6:15/km, HR 155-168 — find rhythm\n• Km 31-42: whatever you can sustain — you\'re a finisher\n\nFUELING:\n• Gel every 5km from km 5\n• Water at every station\n• Electrolytes every other station\n\n⚠️ IMPORTANT: This comes 6 days after Solo Hyrox. Your legs will be tired. Your knee will be under stress. Completion is the goal — not time.\n\n🎯 GOAL: MARATHON FINISHER 🏅\n\nYOU\'VE GOT THIS. 💪🔥\n\nPOST RACE: Ice knee immediately. Elevation. Rest.'},
+    {day:'Sun Apr 6',  sessionType:'REST — Celebrate',intensity:'None',
+     notes:'MARATHON DONE. 🎉\n\nFull rest. Hydrate. Eat. Sleep.\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 5)\n\n🦵 KNEE: Ice twice today. Elevation. Compression. If significantly worse after marathon, see physio before resuming any training.'}
   ],
-  6: [
-    {day:'Monday Jan 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Jan 13',type:'Strength',focus:'Lower Body Volume',detail:'Maintain high intensity',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Back Squat: 4x5 @ 85kg, 3min rest\n• RDL: 3x8 @ 72.5kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x8 @ 40cm, 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Jan 14',type:'Intervals + Stations',focus:'Speed work',detail:'6x800m + stations',specifics:'Warm-up: 2km easy + strides\n  HR: 130-145 bpm\n\n• 6x800m @ 5:20/km\n  Target HR: 175-185 bpm (Zone 4-5 - 93-99% max HR)\n  Pace: 11.3 km/h | 7.0 mph\n  Hard intervals\n  2min jog recovery (HR to 140-150)\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy\n  HR: <135 bpm'},
-    {day:'Thursday Jan 15',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Jan 16',type:'Tempo Run',focus:'Threshold endurance',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo: 6km @ 5:50/km\n  Target HR: 160-172 bpm (Zone 3 - 86-92% max HR)\n  Pace: 10.3 km/h | 6.4 mph\n  Sustained threshold\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Jan 17',type:'Strength',focus:'Upper Body Volume',detail:'Maintain intensity',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +7.5kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 20kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 22.5kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Jan 18',type:'Long Run',focus:'Sustained aerobic',detail:'16km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 16km @ 6:15/km (5s/km faster)\n  Target HR: 150-162 bpm (Zone 3 - 80-87% max HR)\n  Pace: 9.6 km/h | 6.0 mph\n  Fuel at 8km and 12km\n  Stronger aerobic pace\n\n• Strides: 4x100m\n  HR spike: 172-182 bpm\n\nCool-down: 10min + stretching'}
+
+  // ── WEEK 6: Apr 6-12 — Full Recovery ────────────────────────────
+  6:[
+    {day:'Mon Apr 7',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest. Three races in 5 weeks.\n\nBody needs full recovery before Doubles build begins.' + REST_MOBILITY},
+    {day:'Tue Apr 8',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest or 20min walk.\n\nFoam roll gently — quads, glutes, calves. Avoid the knee joint.' + REST_MOBILITY + KNEE_CARE},
+    {day:'Wed Apr 9',  sessionType:'REST',intensity:'None',
+     notes:'Complete rest. How is the knee post-marathon?\n\nIf knee is more swollen or painful than expected: physio appointment before returning to training.' + REST_MOBILITY + KNEE_CARE},
+    {day:'Thu Apr 10', sessionType:'Gentle Walk',duration:'20 mins',intensity:'Very Low',
+     notes:'20min gentle walk. HR under 115.\n\nFirst movement since marathon. Listen to your body.' + REST_MOBILITY + KNEE_CARE},
+    {day:'Fri Apr 11', sessionType:'Easy Return Run',duration:'20 mins',intensity:'Low — Zone 1-2',
+     notes:'First post-marathon run. Very easy. 20min @ 7:00/km, HR under 130. ~3km.\n\nCompression sleeve. Stop if knee is painful.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sat Apr 12', sessionType:'Light Upper Strength',duration:'35 mins',intensity:'Low',
+     notes:'Upper body only — do not load the knee this week.\n\n• Pull-ups: 3x6 bodyweight\n• DB Row: 3x10 @ 14kg\n• Push-ups: 3x12\n• Farmers Carry: 3x30m @ 16kg\n\nCore (lying only):\n• Dead Bugs: 3x16\n• Hollow Hold: 3x25s' + STRENGTH_UPPER_STRETCH + KNEE_CARE},
+    {day:'Sun Apr 13', sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
+     notes:'30min @ 6:30-6:45/km, HR 120-135. ~4.5km.\n\nCompression sleeve. Gentle and controlled.\n\n📋 Begin thinking about mixed doubles strategy with Tony. 3 weeks to race.' + RUN_STRETCH + KNEE_CARE}
   ],
-7: [
-    {day:'Monday Jan 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Peak base volume week!**'},
-    {day:'Tuesday Jan 20',type:'Strength',focus:'Lower Body Peak',detail:'Further intensity increase',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 5x5 @ 85kg (add 1 set), 3min rest\n• RDL: 3x8 @ 75kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 24kg DBs (+2kg), 90s rest\n• Box Jumps: 3x8 @ 45cm (+5cm), 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Jan 21',type:'Intervals + Stations',focus:'VO2 max work',detail:'8x800m + stations',specifics:'Warm-up: 2km easy + strides\n  HR: 130-145 bpm\n\n• 8x800m @ 5:15/km (faster pace)\n  Target HR: 178-187 bpm (Zone 5 - 95-100% max HR)\n  Pace: 11.4 km/h | 7.1 mph\n  Very hard - VO2 max effort\n  90sec jog recovery (HR to 145-155)\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy\n  HR: <135 bpm'},
-    {day:'Thursday Jan 22',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Jan 23',type:'Tempo Run',focus:'Extended tempo',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo: 6km @ 5:45/km (5s/km faster)\n  Target HR: 168-178 bpm (Zone 4 - 90-95% max HR)\n  Pace: 10.4 km/h | 6.5 mph\n  Hard sustained effort\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Jan 24',type:'Strength',focus:'Upper Body Peak',detail:'Peak intensity',specifics:'Warm-up: 5min row + prep\n\nMain Lifts:\n• Bench Press: 5x5 @ 42.5kg (add 1 set), 3min rest\n• Weighted Pull-ups: 4x6 @ +8.75kg (+1.25kg), 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 22kg DBs (+2kg), 90s rest\n• Farmers Carry: 3x50m @ 24kg each (+1.5kg), 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Jan 25',type:'Long Run',focus:'Peak volume',detail:'18km steady + strides',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 18km @ 6:15/km\n  Target HR: 150-162 bpm (Zone 3 - 80-87% max HR)\n  Pace: 9.6 km/h | 6.0 mph\n  Fuel at 6km, 12km\n  **PEAK BASE VOLUME WEEK**\n\n• Strides: 4x100m\n  HR spike: 172-182 bpm\n\nCool-down: 10min + 15min stretching'}
+
+  // ── WEEK 7: Apr 13-19 — Doubles Build ───────────────────────────
+  7:[
+    {day:'Mon Apr 14', sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 3 weeks to Doubles with Tony.' + REST_MOBILITY},
+    {day:'Tue Apr 15', sessionType:'Station Endurance',duration:'55 mins',intensity:'Moderate',
+     notes:'Return to full station work — knee adapted.\n\nWarm-up: 10min easy movement\n\n3 rounds @ 75% effort:\n• SkiErg: 500m\n• Rowing: 500m\n• Farmers Carry: 100m @ 16kg/hand\n• Wall Balls: 25 @ 6kg (90° max)\n• Sandbag Lunges: 40m @ 10kg (alternate legs, controlled)\n• Rest 3min between rounds\n\n🦵 No sled this session — knee loading caution after marathon.' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Wed Apr 16', sessionType:'Zone 2 Run',duration:'40 mins',intensity:'Low — Zone 2',
+     notes:'40min @ 6:00-6:15/km, HR 109-130. ~6.5km.\n\nCompression sleeve. Building back run endurance for Doubles.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Thu Apr 17', sessionType:'Lower Body Strength — Knee Adapted',duration:'55 mins',intensity:'Moderate',
+     notes:'Warm-up: 5min bike + leg swings 2x15/side\n\n🦵 ALL EXERCISES KNEE-ADAPTED:\n• Goblet Squat: 4x10 @ 24kg KB (to 90° only, no deeper)\n• Romanian Deadlift: 4x10 @ 65kg (hinge focus, not squat)\n• Step-ups (box): 3x12/leg @ 14kg DBs (controlled, right knee)\n• Sled Push: 4x25m @ 90kg (lighter, protect knee)\n• Seated Leg Press: 3x12 @ moderate (60-90° range only)\n• Eccentric Single Leg Press: 3x10/leg (VMO strengthening — key for meniscus support)\n• Side-lying Hip Abduction: 3x15/side (glute med — reduces knee valgus)\n\nCore:\n• Dead Bugs: 3x20\n• Side Plank: 3x30s/side\n• Pallof Press: 3x12/side' + STRENGTH_LOWER_STRETCH + KNEE_CARE},
+    {day:'Fri Apr 18', sessionType:'Easy Run',duration:'35 mins',intensity:'Low — Zone 2',
+     notes:'35min @ 6:10/km, HR 109-127. ~5.5km. Easy and controlled. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sat Apr 19', sessionType:'Run Club / Tempo Run',duration:'30 mins max',intensity:'Moderate — Zone 3',
+     notes:'Run club or solo tempo — 30min max.\n\nAim for Zone 3 effort (HR 130-145), comfortable-hard. ~5km @ 5:40-5:50/km.\n\nCompression sleeve throughout.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Sun Apr 20', sessionType:'Active Recovery',duration:'25 mins',intensity:'Very Low',
+     notes:'Walk or light bike 20min.\n\nConnect with Tony this week to confirm doubles strategy and station splits.' + REST_MOBILITY + KNEE_CARE}
   ],
-  8: [
-    {day:'Monday Jan 26',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Jan 27',type:'Strength',focus:'Lower Body Consolidation',detail:'Hold intensity, perfect form',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts:\n• Back Squat: 4x5 @ 85kg, 3min rest\n• RDL: 3x8 @ 75kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 24kg DBs, 90s rest\n• Box Jumps: 3x8 @ 45cm, 2min rest\n• Nordic Curls: 3x8, 2min rest\n• Sled Pull: 4x25m @ 102kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Jan 28',type:'Intervals + Stations',focus:'Speed endurance',detail:'6x800m + stations',specifics:'Warm-up: 2km easy + strides\n  HR: 130-145 bpm\n\n• 6x800m @ 5:15/km\n  Target HR: 178-187 bpm (Zone 5 - 95-100% max HR)\n  Pace: 11.4 km/h | 7.1 mph\n  Very hard intervals\n  2min jog recovery (HR to 140-150)\n\nThen 2 rounds:\n• SkiErg: 1000m\n• Sled Push: 2x50m @ 102kg\n• Rowing: 1000m\n3min rest\n\nCool-down: 1km easy\n  HR: <135 bpm'},
-    {day:'Thursday Jan 29',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Jan 30',type:'Tempo Run',focus:'Threshold work',detail:'9km with 6km tempo',specifics:'Warm-up: 1.5km easy + strides\n  HR: 130-145 bpm\n\n• Tempo: 6km @ 5:45/km\n  Target HR: 168-178 bpm (Zone 4 - 90-95% max HR)\n  Pace: 10.4 km/h | 6.5 mph\n  Hard sustained\n\nCool-down: 1.5km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Jan 31',type:'Strength',focus:'Upper Body Consolidation',detail:'Maintain peak strength',specifics:'Warm-up: 5min row + mobility\n\nMain Lifts:\n• Bench Press: 4x5 @ 42.5kg, 3min rest\n• Weighted Pull-ups: 4x6 @ +8.75kg, 2.5min rest\n• DB Shoulder Press: 3x8 @ 16kg DBs, 2min rest\n• DB Bent Over Row: 3x10 @ 22kg DBs, 90s rest\n• Farmers Carry: 3x50m @ 24kg each, 2min rest\n• Wall Balls: 4x20 @ 6kg, 90s rest\n• Sandbag Lunges: 3x40m @ 20kg, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Feb 1',type:'Long Run',focus:'Reduce volume',detail:'14km steady',specifics:'Warm-up: 10min easy\n  HR: 125-140 bpm\n\n• Long Run: 14km @ 6:15/km\n  Target HR: 150-162 bpm (Zone 3 - 80-87% max HR)\n  Pace: 9.6 km/h | 6.0 mph\n  Fuel at 7km\n  Reduced from 18km - beginning taper\n\n• Strides: 3x100m\n  HR spike: 170-180 bpm\n\nCool-down: 10min + stretching'}
+
+  // ── WEEK 8: Apr 20-26 — Doubles Peak + Sim ───────────────────────
+  8:[
+    {day:'Mon Apr 21', sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 2 weeks to Doubles. Knee care priority.' + REST_MOBILITY},
+    {day:'Tue Apr 22', sessionType:'Station Endurance + Running',duration:'60 mins',intensity:'Moderate-High',
+     notes:'Warm-up: 10min jog + dynamic\n\n3 rounds @ 80-85% effort:\n• SkiErg: 600m\n• Run 600m @ 5:30/km\n• Rowing: 500m\n• Run 600m @ 5:30/km\n• Wall Balls: 25 @ 6kg\n• Rest 3min\n\n🦵 Knee-adapted: no sled, no lunges in this session. These are covered in Saturday sim.\n\nCool-down: 10min walk' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Wed Apr 23', sessionType:'Zone 2 Run',duration:'35 mins',intensity:'Low — Zone 2',
+     notes:'35min @ 6:05-6:15/km, HR 109-127. ~5.5km. Easy. Freshen legs for Saturday sim.\n\nCompression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Thu Apr 24', sessionType:'Lower Body — Light + Mobility',duration:'45 mins',intensity:'Low-Moderate',
+     notes:'Reduced volume — save legs for sim.\n\n🦵 Knee adapted:\n• Goblet Squat: 3x8 @ 20kg KB (90° only)\n• Romanian Deadlift: 3x10 @ 60kg\n• Side-lying Hip Abduction: 3x15/side\n• Eccentric Single Leg Press: 3x8/leg\n• Sled Push: 3x25m @ 90kg (light)\n\nCore: 2 rounds — Dead Bugs 18, Side Plank 30s, Pallof 12/side' + STRENGTH_LOWER_STRETCH + KNEE_CARE},
+    {day:'Fri Apr 25', sessionType:'REST — Pre-Sim',intensity:'None',
+     notes:'Complete rest. Sim tomorrow.\n\nMobility only. Ice knee. Elevation. Confirm meet time and plan with Tony.' + REST_MOBILITY},
+    {day:'Sat Apr 26', sessionType:'🔥 DOUBLES SIM WITH TONY',duration:'90-120 mins',intensity:'90-95% Race Effort',
+     notes:'FULL MIXED DOUBLES SIMULATION WITH TONY @ 90-95% effort.\n\nWarm-up: 15min together + full dynamic + 4x100m strides\n\n⚡ MIXED DOUBLES: Jade completes 60% of station work, Tony 40%.\nJade leads the strategy — you have the doubles experience.\n\n🦵 KNEE SIM PROTOCOL:\n• Burpee BJs: step-back variation throughout\n• Sled Push: short powerful steps, controlled right knee\n• Sandbag Lunges: alternate legs, steady rhythm\n• Wall Balls: 90° depth max\n• If sharp knee pain at any station: pass to Tony, rest, reassess\n\nFull 8-station run-through at agreed splits.\nRun pace: Both @ 5:25-5:30/km.\n\n30min debrief:\n• Record all station times and run splits\n• Transitions smooth?\n• How did the knee hold up?\n• Any adjustments for race day?' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Sun Apr 27', sessionType:'REST + Full Mobility',intensity:'None',
+     notes:'Full rest. Last hard effort done. Taper begins.\n\nFull mobility flow (30 min):\n• Full upper routine\n• Full lower routine\n• Legs Up The Wall: 8min\n\n🦵 KNEE: Ice twice today. Monitor carefully after the sim.' + REST_MOBILITY + KNEE_CARE}
   ],
-9: [
-    {day:'Monday Feb 2',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**BASE PHASE COMPLETE - Starting Half Marathon Specific**'},
-    {day:'Tuesday Feb 3',type:'Strength',focus:'Maintenance - Lower Body',detail:'Reduced volume, maintain strength',specifics:'Warm-up: 5min bike + dynamic prep\n\nMain Lifts (reduced to 3 sets):\n• Back Squat: 3x5 @ 82.5kg, 3min rest\n• RDL: 3x8 @ 70kg, 2min rest\n• Bulgarian Split Squat: 3x8 each @ 22kg DBs, 90s rest\n• Box Jumps: 3x6 (reduce reps), 2min rest\n\nCool-down: 5min + stretching\n\n**Half Marathon Phase - reduce strength volume**'},
-    {day:'Wednesday Feb 4',type:'Speed Work',focus:'400m intervals',detail:'8x400m',specifics:'Warm-up: 2km easy + 6x100m strides\n  HR: 130-145 bpm\n\n• 8x400m @ 5:00/km pace (2:00 per rep)\n  Target HR: 180-187 bpm (Zone 5 - 96-100% max HR)\n  Pace: 12.0 km/h | 7.5 mph\n  Very hard - speed development\n  90s rest (HR to 145-155)\n\nCool-down: 1km easy\n  HR: <135 bpm\nTotal: ~7km'},
-    {day:'Thursday Feb 5',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Feb 6',type:'Threshold Run',focus:'Half marathon pace',detail:'9km with 5km tempo',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• Threshold: 5km @ 5:40/km (HALF MARATHON GOAL PACE)\n  Target HR: 165-180 bpm (Zone 3-4 - 88-96% max HR)\n  Pace: 10.6 km/h | 6.6 mph\n  Race pace - feel confident here\n\nCool-down: 2km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Feb 7',type:'Easy Run + Drills',focus:'Recovery + technique',detail:'6km easy + drills',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• Easy Run: 6km @ 6:45/km\n  Target HR: 138-148 bpm (Zone 2 - 74-79% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n  Easy recovery\n\nRunning drills: High knees, butt kicks, A-skips - 2x20m each\n\n• Strides: 6x100m\n  HR spike: 165-175 bpm\n\nCool-down: 1km easy\nTotal: 7km'},
-    {day:'Sunday Feb 8',type:'Long Run',focus:'Half marathon prep',detail:'19km with progression',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• Long Run: 19km @ 6:15-6:30/km\n  Start HR: 145-155 bpm (Zone 2)\n  Build to: 158-168 bpm (Zone 3)\n  Last 3km @ 6:00/km\n  Finish HR: 165-175 bpm (Zone 3-4)\n  Pace range: 9.2-9.6 km/h | 5.7-6.0 mph\n  Fuel at 6km, 12km\n\n**Longest run of program**\n\nCool-down: Walk 10min'}
-  ],
-10: [
-    {day:'Monday Feb 9',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Feb 10',type:'Strength',focus:'Maintenance - Lower',detail:'Light strength maintenance',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 3x5 @ 80kg, 3min rest\n• RDL: 3x8 @ 67.5kg, 2min rest\n• Walking Lunges: 3x20 total @ 16kg DBs, 90s rest\n• Box Jumps: 3x6, 2min rest\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Feb 11',type:'Speed Work',focus:'1km intervals',detail:'6x1km',specifics:'Warm-up: 2km easy + strides\n  HR: 130-145 bpm\n\n• 6x1km @ 5:20/km pace\n  Target HR: 175-185 bpm (Zone 4-5 - 93-99% max HR)\n  Pace: 11.3 km/h | 7.0 mph\n  Hard intervals\n  2min jog recovery (HR to 140-150)\n\nCool-down: 1km easy\n  HR: <135 bpm\nTotal: ~10km'},
-    {day:'Thursday Feb 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Feb 13',type:'Threshold Run',focus:'Race pace work',detail:'10km with 6km tempo',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• Threshold: 6km @ 5:40/km (HM goal pace)\n  Target HR: 165-178 bpm (Zone 3-4 - 88-95% max HR)\n  Pace: 10.6 km/h | 6.6 mph\n  Comfortable at race pace\n\nCool-down: 2km easy\n  HR: <140 bpm\nTotal: 10km'},
-    {day:'Saturday Feb 14',type:'Easy Run',focus:'Recovery run',detail:'6km easy',specifics:'Easy Run: 6km @ 6:45/km\n  Target HR: 135-148 bpm (Zone 2 - 72-79% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n  Very easy recovery\n\nOptional: 6x100m strides at end\n  HR spike: 165-175 bpm'},
-    {day:'Sunday Feb 15',type:'Long Run',focus:'Endurance maintenance',detail:'21km steady',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• Long Run: 21km @ 6:15-6:30/km\n  Start HR: 148-158 bpm (Zone 2-3)\n  Build to: 160-170 bpm (Zone 3)\n  Last 3km @ 6:00/km\n  Finish HR: 168-178 bpm (Zone 4)\n  Pace range: 9.2-9.6 km/h | 5.7-6.0 mph\n  Fuel at 7km, 14km\n\n**LONGEST RUN - peak distance**\n\nCool-down: Walk 10min'}
-  ],
-  11: [
-    {day:'Monday Feb 16',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Begin taper intensity**'},
-    {day:'Tuesday Feb 17',type:'Strength',focus:'Maintenance - Light',detail:'Reduce intensity',specifics:'Warm-up: 5min bike + mobility\n\nMain Lifts:\n• Back Squat: 3x5 @ 77.5kg, 3min rest\n• RDL: 3x8 @ 65kg, 2min rest\n• Step-ups: 3x12 each @ 16kg DBs, 90s rest\n\nCool-down: 5min + stretching'},
-    {day:'Wednesday Feb 18',type:'Speed Work',focus:'1200m intervals',detail:'5x1200m',specifics:'Warm-up: 2km easy + strides\n  HR: 130-145 bpm\n\n• 5x1200m @ 5:25/km pace\n  Target HR: 175-185 bpm (Zone 4-5 - 93-99% max HR)\n  Pace: 11.1 km/h | 6.9 mph\n  Hard intervals\n  2.5min jog recovery (HR to 138-148)\n\nCool-down: 1km easy\n  HR: <135 bpm\nTotal: ~9km'},
-    {day:'Thursday Feb 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Feb 20',type:'Threshold Run',focus:'Race pace confidence',detail:'8km with 5km tempo',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• Threshold: 5km @ 5:40/km\n  Target HR: 165-178 bpm (Zone 3-4 - 88-95% max HR)\n  Pace: 10.6 km/h | 6.6 mph\n  Should feel controlled and strong\n\nCool-down: 2km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Saturday Feb 21',type:'Easy Run',focus:'Recovery',detail:'6km easy + strides',specifics:'Easy Run: 6km @ 6:45/km\n  Target HR: 135-148 bpm (Zone 2 - 72-79% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n\n• Strides: 6x100m\n  HR spike: 165-175 bpm\n\nTotal: 7km'},
-    {day:'Sunday Feb 22',type:'Long Run',focus:'Final long run',detail:'16km steady',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• Long Run: 16km @ 6:00-6:15/km\n  Target HR: 155-168 bpm (Zone 3 - 83-90% max HR)\n  Last 2km @ 5:50/km\n  Finish HR: 170-180 bpm (Zone 4)\n  Pace: 9.6-10.0 km/h | 6.0-6.2 mph\n  Fuel at 8km\n\n**Final long run before Half Marathon taper**\n\nCool-down: Walk 10min'}
-  ],
-12: [
-    {day:'Monday Feb 23',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**HALF MARATHON RACE WEEK**'},
-    {day:'Tuesday Feb 24',type:'Strength',focus:'Light activation',detail:'Very light',specifics:'Warm-up: 5min bike + mobility\n\nLight Work:\n• Bodyweight Squats: 3x10\n• Walking Lunges: 3x16 total @ 12kg DBs\n• Core work: 3x30s planks\n\nCool-down: 5min + stretching\n\n**HALF MARATHON WEEK - minimal strength**'},
-    {day:'Wednesday Feb 25',type:'Easy Run',focus:'Shakeout + pace',detail:'5km with race pace segments',specifics:'Warm-up: 2km easy @ 6:30/km\n  HR: 130-145 bpm\n\n• 3x1km @ 5:40/km (goal pace)\n  Target HR: 165-175 bpm (Zone 3-4)\n  2min easy jog between (HR to 140-150)\n\nCool-down: Walk\nTotal: 5km\n\n**Race pace confidence builder**'},
-    {day:'Thursday Feb 26',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest or 20min walk\nHydration focus\nCheck race kit'},
-    {day:'Friday Feb 27',type:'Easy Run',focus:'Shakeout',detail:'3km easy',specifics:'Easy shakeout: 3km @ 6:45/km\n  Target HR: 130-142 bpm (Zone 2 - 69-76% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n  Very easy, just movement'},
-    {day:'Saturday Feb 28',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Easy jog: 2km @ 6:30/km\n  HR: 128-140 bpm\n\n• Strides: 4x100m @ race pace feel\n  HR spike: 160-170 bpm\n\nCool-down: Walk 5min\n\n**Last run before race**'},
-    {day:'Sunday Mar 1',type:'RACE',focus:'🏃‍♀️ HALF MARATHON 🏃‍♀️',detail:'Target: Sub 2:00:00',specifics:'RACE DAY STRATEGY:\n\nTarget Pace: 5:40/km average\n\nPacing Plan with HR Targets:\n• Km 1-5: 5:45/km\n  HR: Start 155-165, settle to 160-170 bpm (Zone 3)\n• Km 6-15: 5:40/km (cruise)\n  HR: 165-175 bpm (Zone 3-4 - steady)\n• Km 16-21: 5:35/km (push)\n  HR: 175-185 bpm (Zone 4-5 - give it everything)\n\nFueling:\n• Gel at 30min (5km)\n• Gel at 60min (10km)\n• Gel at 90min (16km)\n\nMental cues:\n• First 5k: "Patience" - don\'t go out too fast on HR\n• Middle 10k: "Rhythm & relax" - hold steady HR\n• Final 6k: "Strong & controlled" - HR will climb, embrace it\n\n🎯 TARGET: 1:59:30 🎯'}
-  ],
-13: [
-    {day:'Monday Mar 2',type:'Rest',focus:'Post-race recovery',detail:'Complete rest',specifics:'Complete rest\nHydration focus\nLight walking okay (20min max)\n\n**Recovery week after Half Marathon**'},
-    {day:'Tuesday Mar 3',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light walk\nFoam rolling, stretching\nFocus on nutrition'},
-    {day:'Wednesday Mar 4',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or 20min easy walk\nMobility work'},
-    {day:'Thursday Mar 5',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Mar 6',type:'Easy Run',focus:'Return to running',detail:'3km easy',specifics:'Very easy jog: 3km @ 7:00/km\n  Target HR: 125-138 bpm (Zone 1-2 - 67-74% max HR)\n  Pace: 8.6 km/h | 5.3 mph\n  Stop if any discomfort\n  HR should stay very low\n\n**First run back**'},
-    {day:'Saturday Mar 7',type:'Strength',focus:'Light return',detail:'Light strength',specifics:'Warm-up: 10min bike easy\n\nLight Work (50% normal loads):\n• Bodyweight Squats: 3x10\n• Push-ups: 3x10\n• DB Rows: 3x10 @ 12kg DBs\n• Walking Lunges: 3x12 total bodyweight\n\nCool-down: 5min + stretching'},
-    {day:'Sunday Mar 8',type:'Easy Run',focus:'Recovery run',detail:'5km easy',specifics:'Easy jog: 5km @ 6:45/km\n  Target HR: 138-150 bpm (Zone 2 - 74-80% max HR)\n  Pace: 8.9 km/h | 5.5 mph\n  Should feel refreshed\n\n**Prepare for Hyrox peak phase starting next week**'}
-  ],
-14: [
-    {day:'Monday Mar 9',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**Starting Hyrox Peak Phase**'},
-    {day:'Tuesday Mar 10',type:'Hyrox Simulation',focus:'Full 8-station practice',detail:'Race rehearsal',specifics:'Warm-up: 10min easy jog + dynamic prep\n  HR: 125-140 bpm\n\n8x1km runs with 3min station breaks:\n• Run 1km @ 5:30/km\n  Target HR: 158-168 bpm (Zone 3 - 84-90% max HR)\n  Pace: 10.9 km/h | 6.8 mph\n  Then: Station 1: SkiErg 1000m\n• Repeat pattern through all 8 stations\n  Run HR: Maintain 158-168 bpm each km\n  Station HR: Will vary 140-180 bpm\n\nStations:\nSled Push 50m x2 @ 102kg\nSled Pull 50m x2 @ 78kg\nBurpee Broad Jumps x15\nRowing 1000m\nFarmers Carry 2x50m @ 16kg each\nSandbag Lunges 100m @ 10kg\nWall Balls x75 @ 6kg\n\nCool-down: 10min walk\nTotal: ~90-100min\n\n**FULL HYROX SIMULATION**'},
-    {day:'Wednesday Mar 11',type:'Recovery Run',focus:'Easy recovery',detail:'4-5km easy',specifics:'Very easy jog: 4-5km @ 7:00/km\n  Target HR: 128-140 bpm (Zone 1-2 - 68-75% max HR)\n  Pace: 8.6 km/h | 5.3 mph\n  Active recovery from simulation\n  Keep HR very low'},
-    {day:'Thursday Mar 12',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Mar 13',type:'Station Power',focus:'Station speed work',detail:'Power focus',specifics:'Warm-up: 10min easy movement\n\n3 rounds (fresh, with full recovery):\n• SkiErg: 500m FAST (target <2:00)\n  HR will spike: 170-185 bpm\n  3min rest (HR to <130)\n• Sled Push: 50m FAST @ 102kg\n  HR: 165-180 bpm\n  3min rest\n• Burpee Broad Jumps: 12 reps FAST\n  HR: 170-185 bpm\n  3min rest\n\nCool-down: 5min walk\n\n**Focus: Maximum power on key stations**'},
-    {day:'Saturday Mar 14',type:'Threshold Run',focus:'Race pace',detail:'9km tempo',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• Tempo Run: 5km @ 5:30/km (Hyrox run pace)\n  Target HR: 160-172 bpm (Zone 3 - 86-92% max HR)\n  Pace: 10.9 km/h | 6.8 mph\n  Hyrox race effort\n\nCool-down: 2km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Sunday Mar 15',type:'Race Pace Practice',focus:'Hyrox run pace',detail:'6x1km intervals',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• 6x1km @ 5:15/km (Hyrox race pace)\n  Target HR: 168-180 bpm (Zone 4 - 90-96% max HR)\n  Pace: 11.4 km/h | 7.1 mph\n  Run pace between Hyrox stations\n  2min recovery jog (HR to 140-150)\n\nCool-down: 1km easy\n  HR: <135 bpm\nTotal: ~10km'}
-  ],
-15: [
-    {day:'Monday Mar 16',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus'},
-    {day:'Tuesday Mar 17',type:'Hyrox Simulation',focus:'Full course - race effort',detail:'Near-race intensity',specifics:'Warm-up: 10min easy + dynamic prep\n  HR: 125-140 bpm\n\n8x1km runs @ 5:20/km with stations:\n  Run Target HR: 165-175 bpm (Zone 3-4 - 88-93% max HR)\n  Pace: 11.3 km/h | 7.0 mph\n  RACE PACE effort on runs\n\nAll 8 stations:\n• SkiErg 1000m (race pace) - HR: 168-180\n• Sled Push 50m x2 @ 102kg - HR: 165-178\n• Sled Pull 50m x2 @ 78kg - HR: 165-178\n• Burpee Broad Jumps x15 - HR: 170-185\n• Rowing 1000m (race pace) - HR: 168-180\n• Farmers Carry 2x50m @ 16kg - HR: 155-170\n• Sandbag Lunges 100m @ 10kg - HR: 160-175\n• Wall Balls x75 @ 6kg - HR: 165-180\n\n3min recovery between segments\n\nCool-down: 10min walk\n\n**Near-race effort - build confidence**'},
-    {day:'Wednesday Mar 18',type:'Recovery Run',focus:'Easy recovery',detail:'4km easy',specifics:'Very easy: 4km @ 7:00/km\n  Target HR: 125-138 bpm (Zone 1-2 - 67-74% max HR)\n  Pace: 8.6 km/h | 5.3 mph\n  Recovery only'},
-    {day:'Thursday Mar 19',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Mar 20',type:'Station Power',focus:'Explosive work',detail:'Fast stations',specifics:'Warm-up: 10min\n  HR: 120-135 bpm\n\n3 rounds (full recovery):\n• SkiErg: 500m FAST\n  HR: 175-187 bpm (max effort)\n  3min rest (HR to <130)\n• Sled Push: 50m FAST @ 102kg\n  HR: 170-185 bpm\n  3min rest\n• Burpee Broad Jumps: 12 reps FAST\n  HR: 172-185 bpm\n  3min rest\n\nCool-down: 5min'},
-    {day:'Saturday Mar 21',type:'Threshold Run',focus:'Race pace confidence',detail:'9km tempo',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• Tempo: 5km @ 5:30/km\n  Target HR: 160-172 bpm (Zone 3 - 86-92% max HR)\n  Pace: 10.9 km/h | 6.8 mph\n\nCool-down: 2km easy\n  HR: <140 bpm\nTotal: 9km'},
-    {day:'Sunday Mar 22',type:'Race Pace Practice',focus:'Final speed work',detail:'6x1km',specifics:'Warm-up: 2km easy\n  HR: 130-145 bpm\n\n• 6x1km @ 5:15/km\n  Target HR: 168-180 bpm (Zone 4 - 90-96% max HR)\n  Pace: 11.4 km/h | 7.1 mph\n  Feel strong and controlled\n  2min jog recovery (HR to 140-150)\n\nCool-down: 1km easy\n  HR: <135 bpm\nTotal: ~10km\n\n**Final hard run session before taper**'}
-  ],
-16: [
-    {day:'Monday Mar 23',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**TAPER WEEK - Stay fresh for Hyrox**'},
-    {day:'Tuesday Mar 24',type:'Light Stations',focus:'Technique only',detail:'Light station work',specifics:'Warm-up: 10min easy + dynamics\n  HR: 115-130 bpm\n\n2 rounds (NOT timed, technique focus):\n• SkiErg: 500m @ 70% effort\n  HR: 145-160 bpm (easy)\n• Sled Push: 25m @ 102kg\n  HR: 140-155 bpm\n• Wall Balls: 20 reps @ 6kg\n  HR: 138-150 bpm\n\nCool-down: 5min walk\n\n**TAPER WEEK - technique only, stay fresh**'},
-    {day:'Wednesday Mar 25',type:'Easy Run + Strides',focus:'Sharpness maintenance',detail:'4km + strides',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• Easy Run: 3km @ 6:30/km\n  Target HR: 135-148 bpm (Zone 2 - 72-79% max HR)\n  Pace: 9.2 km/h | 5.7 mph\n\n• Strides: 4x100m @ race pace feel\n  HR spike: 165-175 bpm\n\nCool-down: Walk 5min\nTotal: 4km'},
-    {day:'Thursday Mar 26',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest or 20min walk\nHydration focus (3L water)\nLight stretching only'},
-    {day:'Friday Mar 27',type:'Easy Run + Race Pace',focus:'Final tune-up',detail:'3km with pace check',specifics:'Warm-up: 1km easy\n  HR: 125-138 bpm\n\n• 2x500m @ 5:15/km (race pace)\n  Target HR: 160-170 bpm (Zone 3-4)\n  Should feel smooth and controlled\n  2min easy jog between (HR to 135-145)\n\nCool-down: Walk\nTotal: 3km'},
-    {day:'Saturday Mar 28',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest\nCarb loading begins\nHydration: 3-4L water\nEarly to bed'},
-    {day:'Sunday Mar 29',type:'RACE',focus:'🔥 SOLO HYROX 🔥',detail:'Target: Sub 1:25:00',specifics:'RACE DAY STRATEGY:\n\nHEART RATE STRATEGY:\n• Runs 1-4: 165-175 bpm (Zone 3-4 - controlled)\n• Runs 5-6: 170-180 bpm (Zone 4 - push moderate)\n• Runs 7-8: 180-187 bpm (Zone 5 - ALL IN)\n• Stations: Will vary 150-185 bpm depending on station\n\nTarget Times:\n• Run 1-7: 5:15/km avg (4:12 each)\n• Run 8: 5:10/km (4:08) - PUSH\n• SkiErg: 4:10-4:20 (HR: 168-178)\n• Sled Push: <3:30 (HR: 165-178)\n• Sled Pull: <4:30 (HR: 165-178)\n• Burpee Broad Jumps: 5:45-6:00 (HR: 172-185)\n• Rowing: 4:00-4:10 (HR: 168-180)\n• Farmers Carry: 2:15-2:30 (HR: 155-170)\n• Sandbag Lunges: 5:50-6:00 (HR: 162-175)\n• Wall Balls: 7:30-8:00 (HR: 168-182)\n\nPACING:\n• Runs 1-4: Controlled, establish rhythm\n• Runs 5-6: Maintain, push moderate\n• Runs 7-8: Give everything\n\nSTATIONS:\n• First 4: Controlled power\n• Last 4: Empty the tank\n\n🎯 TARGET: SUB 1:25:00 🎯\n\n**THIS IS YOUR DAY!**'}
-  ],
-  17: [
-    {day:'Monday Mar 30',type:'Rest',focus:'Post-Hyrox recovery',detail:'Complete rest',specifics:'Complete rest\nCelebrate your Hyrox! 🎉\nHydration, nutrition, sleep\n\n**Recovery week after Hyrox**'},
-    {day:'Tuesday Mar 31',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest or very light 20min walk\nFoam rolling, stretching\nKeep moving gently'},
-    {day:'Wednesday Apr 1',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest\nLight mobility work optional\nHydration focus'},
-    {day:'Thursday Apr 2',type:'Rest',focus:'Recovery',detail:'Complete rest',specifics:'Complete rest day\nHydration: 3L water\nSleep: 8+ hours\nOptional: Light stretching (10-15min)\nFoam rolling (15-20min)'},
-    {day:'Friday Apr 3',type:'Easy Run',focus:'Return to running',detail:'3km very easy',specifics:'Very easy jog: 3km @ 7:00/km\nHR <140bpm\nStop if any discomfort\n\n**First run back**'},
-    {day:'Saturday Apr 4',type:'Rest',focus:'Recovery',detail:'Rest',specifics:'Complete rest\nContinue recovery protocols'},
-    {day:'Sunday Apr 5',type:'Easy Run',focus:'Easy run',detail:'8km easy',specifics:'Easy run: 8km @ 6:30/km\nHR Zone 2 (<150bpm)\nShould feel comfortable'}
-  ],
-18: [
-    {day:'Monday Apr 6',type:'Rest',focus:'Complete rest',detail:'Recovery day',specifics:'Complete rest day\nNo training\nOptional: 20-30min easy walk\nFoam rolling/stretching (20min)\nHydration focus\n\n**MARATHON RACE WEEK**'},
-    {day:'Tuesday Apr 7',type:'Easy Run',focus:'Shakeout',detail:'6km easy',specifics:'Easy run: 6km @ 6:30/km\n  Target HR: 138-150 bpm (Zone 2 - 74-80% max HR)\n  Pace: 9.2 km/h | 5.7 mph\n  Feel fresh and relaxed\n\n**MARATHON RACE WEEK**'},
-    {day:'Wednesday Apr 8',type:'Easy Run + Pace',focus:'Marathon pace check',detail:'5km with pace segments',specifics:'Warm-up: 2km easy @ 6:45/km\n  HR: 135-145 bpm\n\n• 3x1km @ 6:00/km (marathon goal pace)\n  Target HR: 155-165 bpm (Zone 3 - 83-88% max HR)\n  Pace: 10.0 km/h | 6.2 mph\n  Should feel controlled and sustainable\n  2min easy jog between (HR to 135-145)\n\nCool-down: Walk\nTotal: 5km'},
-    {day:'Thursday Apr 9',type:'Rest',focus:'Complete rest',detail:'Rest',specifics:'Complete rest or 20min walk\nHydration focus\nCheck race kit'},
-    {day:'Friday Apr 10',type:'Easy Run + Strides',focus:'Shakeout',detail:'4km + strides',specifics:'Easy run: 3km @ 6:45/km\n  HR: 132-145 bpm (Zone 2)\n\n• Strides: 6x100m smooth and controlled\n  HR spike: 160-172 bpm\n\nCool-down: Walk\nTotal: 4km'},
-    {day:'Saturday Apr 11',type:'Shakeout',focus:'Pre-race activation',detail:'2km + strides',specifics:'Morning shakeout:\n• 2km easy jog @ 6:45/km\n  HR: 128-140 bpm\n• 4x100m strides\n  HR spike: 158-168 bpm\n\nTotal: 15min max\n\nFinal kit check\nHydrate, fuel\nCarb load dinner\nEarly to bed\n\n**RACE TOMORROW**'},
-    {day:'Sunday Apr 12',type:'RACE',focus:'🏃‍♀️ FULL MARATHON 🏃‍♀️',detail:'Completion Goal',specifics:'MARATHON STRATEGY:\n\n**Important Context:**\nThis comes 2 weeks after Solo Hyrox\nCompletion/experience race, not time trial\n\nHEART RATE PACING:\n• Km 1-10: HR 150-162 bpm (Zone 2-3 - settle in)\n  Pace: 6:15/km | 9.6 km/h | 6.0 mph\n• Km 11-30: HR 158-170 bpm (Zone 3 - maintain)\n  Pace: 6:00-6:15/km | 9.6-10.0 km/h\n• Km 31-42: HR 165-180+ bpm (Zone 3-4+ - hold on)\n  Pace: Whatever you can sustain\n\nFUELING:\n• Gel every 5km starting at km 5\n• Water at every station\n• Electrolytes every other station\n\nMENTAL:\n• This is about the experience\n• Enjoy the atmosphere\n• Trust your training from Hyrox\n• You are a FINISHER\n\n**Key:** Listen to your body after recent Hyrox\nIf HR is running high early, slow down\nAdjust pace as needed\nFinish strong and healthy\n\n🎯 GOAL: MARATHON FINISHER 🎯\n\n**YOU\'VE GOT THIS!**'}
+
+  // ── WEEK 9: Apr 27-May 2 — Race Week ─────────────────────────────
+  9:[
+    {day:'Mon Apr 28', sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
+     notes:'Light touch only — 60% effort, NOT timed:\n• SkiErg: 2x250m\n• Rowing: 2x250m\n• Wall Balls: 2x12 @ 6kg (90° depth)\n\n10min mobility afterwards. Knee: ice, elevation.' + HYROX_STRETCH + KNEE_CARE},
+    {day:'Tue Apr 29', sessionType:'Easy Shakeout',duration:'15 mins',intensity:'Very Low',
+     notes:'15min jog @ 6:30/km, HR under 125. Add 4x80m strides at end.\n\nCompression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Wed Apr 30', sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest. Carb loading starts today.\n\nFull mobility routine. Knee: ice, elevation, compression.\n\nHydration 3-4L. Sleep 8+ hours.' + REST_MOBILITY},
+    {day:'Thu May 1',  sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
+     notes:'Jog 10min @ 6:30/km + 3x80m strides.\n\nLegs should feel like springs. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
+    {day:'Fri May 2',  sessionType:'🏆 RACE DAY — Tony Mixed Doubles',duration:'Target: Sub 1:15:00',intensity:'RACE EFFORT',
+     notes:'DOUBLES RACE DAY WITH TONY. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• Compression sleeve on right knee before warm-up\n• Arrive venue 90min early\n• Warm-up with Tony: 10min progressive jog, full dynamic, 4x100m strides\n• Gel 15min before start\n\n🦵 KNEE RACE PLAN (same as Hyrox solo):\n• Step-back burpees throughout\n• Sled push: short controlled steps\n• Lunges: alternate legs, walk lunges if needed\n• Wall balls: 90° max depth\n• If sharp pain: communicate to Tony immediately — you have a partner to lean on\n\nRACE:\n• You carry 60% of station work — you know this format\n• Lead the transitions, communicate clearly\n• Run strong between every station: 5:25-5:30/km\n• Trust your training and Tony\n\n🎯 TARGET: SUB 1:15:00\n\nFour races in 9 weeks. You are extraordinary. Leave nothing on the floor. 💪🔥\n\nPOST RACE: Ice knee immediately. You\'ve earned a proper rest. 🏅'},
+    {day:'Sat May 3',  sessionType:'REST — Celebrate',intensity:'None',
+     notes:'FOUR RACES. DONE. 🎉\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 12)\n✅ Mixed Doubles Hyrox with Tony (May 2)\n\nRest. Recover. Celebrate. You\'ve earned every bit of it.\n\n🦵 KNEE: See a physio now the season is over. Get the meniscus properly assessed and treated before your next training block.'}
   ]
 };
-   const programPhases = {
-  1: {phase:'Base Building',dates:'Dec 8-14',focus:'Foundation - aerobic base & strength',intensity:'Low-Moderate',notes:'Building movement patterns, aerobic capacity, strength foundation',startDate:'2025-12-08'},
-  2: {phase:'Base Building',dates:'Dec 15-21',focus:'Foundation - volume increase',intensity:'Low-Moderate',notes:'Progressive overload on strength, maintaining easy aerobic pace',startDate:'2025-12-15'},
-  3: {phase:'Base Building',dates:'Dec 22-28',focus:'Foundation - intensity increase',intensity:'Moderate',notes:'Increased tempo pace, longer runs, heavier weights',startDate:'2025-12-22'},
-  4: {phase:'Base Building',dates:'Dec 29-Jan 4',focus:'Foundation - consolidation',intensity:'Moderate',notes:'Peak base volume, quality over quantity',startDate:'2025-12-29'},
-  5: {phase:'Base Progression',dates:'Jan 5-11',focus:'Intervals introduced + power work',intensity:'Moderate-High',notes:'Adding 800m intervals, box jumps, sled pulls. Building speed',startDate:'2026-01-05'},
-  6: {phase:'Base Progression',dates:'Jan 12-18',focus:'Volume maintenance, intensity up',intensity:'Moderate-High',notes:'Maintaining high intensity, consistent volume',startDate:'2026-01-12'},
-  7: {phase:'Base Peak',dates:'Jan 19-25',focus:'Peak base volume',intensity:'High',notes:'18km long run - peak base distance',startDate:'2026-01-19'},
-  8: {phase:'Base Consolidation',dates:'Jan 26-Feb 1',focus:'Consolidate gains, reduce volume',intensity:'Moderate',notes:'Reduce to 14km, prepare for Half Marathon phase',startDate:'2026-01-26'},
-  9: {phase:'Half Marathon Specific',dates:'Feb 2-8',focus:'Speed work + long runs',intensity:'High',notes:'8x400m speed, 19km long run, strength maintenance only',startDate:'2026-02-02'},
-  10: {phase:'Half Marathon Specific',dates:'Feb 9-15',focus:'Peak distance',intensity:'High',notes:'21km long run - longest of program. 6x1km intervals',startDate:'2026-02-09'},
-  11: {phase:'Half Marathon Specific',dates:'Feb 16-22',focus:'Begin taper',intensity:'Moderate-High',notes:'Reduce volume, maintain intensity. Last long run 16km',startDate:'2026-02-16'},
-  12: {phase:'Half Marathon Race Week',dates:'Feb 23-Mar 1',focus:'🏃‍♀️ HALF MARATHON - Mar 1',intensity:'Low-Taper',notes:'Light activation only. Target: Sub 2:00:00',startDate:'2026-02-23'},
-  13: {phase:'Recovery Week',dates:'Mar 2-8',focus:'Post-Half recovery',intensity:'Very Low',notes:'Complete rest Mon-Thu, light return Fri onwards',startDate:'2026-03-02'},
-  14: {phase:'Hyrox Peak',dates:'Mar 9-15',focus:'Full Hyrox simulations',intensity:'Very High',notes:'8-station practice, power work, race pace runs',startDate:'2026-03-09'},
-  15: {phase:'Hyrox Peak',dates:'Mar 16-22',focus:'Final Hyrox prep',intensity:'Very High',notes:'Near-race effort simulation, station power work',startDate:'2026-03-16'},
-  16: {phase:'Hyrox Taper & Race',dates:'Mar 23-29',focus:'🔥 SOLO HYROX - Mar 29',intensity:'Low-Taper',notes:'Light technique work only. Target: Sub 1:25:00',startDate:'2026-03-23'},
-  17: {phase:'Recovery Week',dates:'Mar 30-Apr 5',focus:'Post-Hyrox recovery',intensity:'Very Low',notes:'Complete rest Mon-Thu, gentle return Fri onwards',startDate:'2026-03-30'},
-  18: {phase:'Marathon Week',dates:'Apr 6-12',focus:'🏃‍♀️ FULL MARATHON - Apr 12',intensity:'Low-Taper',notes:'Light shakeouts only. Completion goal after Hyrox',startDate:'2026-04-06'}
-};
-    const toggleComp=(w,i)=>{
-  const k=`jade-${w}-${i}`;
-  setComp(p=>({...p,[k]:!p[k]}));
-};
 
-const isComp=(w,i)=>comp[`jade-${w}-${i}`]||false;
+const hrZones = [
+  {zone:'Z1', label:'Recovery',    range:'<112 bpm',    color:'#888',    pct:'<60%'},
+  {zone:'Z2', label:'Aerobic Base',range:'112-131 bpm', color:'#4ade80', pct:'60-70%'},
+  {zone:'Z3', label:'Tempo',       range:'131-150 bpm', color:'#facc15', pct:'70-80%'},
+  {zone:'Z4', label:'Threshold',   range:'150-168 bpm', color:'#fb923c', pct:'80-90%'},
+  {zone:'Z5', label:'Race / VO2',  range:'168-187 bpm', color:'#f43f5e', pct:'90-100%'}
+];
+// Max HR ~187 (age 33, female)
 
-const getCompletion=(w)=>{
-  const t=jadeWeeklyPlans[w];
-  if(!t)return{completed:0,total:0,percentage:0};
-  let c=0;
-  t.forEach((_,i)=>{if(isComp(w,i))c++;});
-  return{completed:c,total:t.length,percentage:Math.round((c/t.length)*100)};
-};
+function WorkoutCard({day, isComplete, onToggle}) {
+  const [open, setOpen] = useState(false);
+  if (!day || !day.sessionType) return null;
+  const isRace = day.sessionType.includes('🏆');
+  const isSim  = day.sessionType.includes('🔥');
+  const isRest = day.intensity === 'None';
+  const borderCol = isComplete ? P : isRace ? '#ffd700' : isSim ? PD : '#FFB6C1';
 
-const getStats=()=>{
-  const currentPlanData=jadeWeeklyPlans[week];
-  if(!currentPlanData)return{total:0,running:0,strength:0,hybrid:0};
-  
-  let runningCount=0;
-  let strengthCount=0;
-  let hybridCount=0;
-  let totalCount=0;
-  
-  currentPlanData.forEach((day,i)=>{
-    if(isComp(week,i)){
-      totalCount++;
-      if(day.type.includes('Run')||day.type==='Tempo Run'||day.type==='Recovery Run'||day.type==='Speed Work'||day.type==='Threshold Run'||day.type==='Easy Run'||day.type==='Shakeout')runningCount++;
-      if(day.type==='Strength')strengthCount++;
-      if(day.type==='Hybrid'||day.type==='Run + Stations'||day.type==='Intervals + Stations'||day.type==='Hyrox Simulation'||day.type==='Station Power'||day.type==='Race Pace Practice'||day.type==='Light Stations')hybridCount++;
-    }
-  });
-  
-  return{total:totalCount,running:runningCount,strength:strengthCount,hybrid:hybridCount};
-};
-
-const logWorkout=()=>{
-  if(!currentWorkout.type)return;
-  const newWorkout={...currentWorkout,id:Date.now()};
-  setWorkouts([newWorkout,...workouts]);
-  setCurrentWorkout({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
-  setShowLogForm(false);
-};
-
-const getWorkoutForDay=(weekNum,dayIndex)=>{
-  const scheduleKey=`${weekNum}-${dayIndex}`;
-  if(weekSchedule[scheduleKey]!==undefined){
-    const originalIndex=weekSchedule[scheduleKey];
-    return{workout:jadeWeeklyPlans[weekNum][originalIndex],originalIndex};
-  }
-  const movedTo=Object.keys(weekSchedule).find(key=>weekSchedule[key]===dayIndex&&key.startsWith(`${weekNum}-`));
-  if(movedTo){
-    return{workout:null,originalIndex:dayIndex};
-  }
-  return{workout:jadeWeeklyPlans[weekNum][dayIndex],originalIndex:dayIndex};
-};
-
-const handleDragStart=(weekNum,dayIndex)=>{
-  setDraggedWorkout({week:weekNum,index:dayIndex});
-};
-
-const handleDragOver=(e)=>{
-  e.preventDefault();
-};
-
-const handleDrop=(weekNum,targetDayIndex)=>{
-  if(!draggedWorkout||draggedWorkout.week!==weekNum)return;
-  
-  const sourceIndex=draggedWorkout.index;
-  if(sourceIndex===targetDayIndex)return;
-  
-  setWeekSchedule(prev=>{
-    const newSchedule={...prev};
-    const sourceKey=`${weekNum}-${sourceIndex}`;
-    const targetKey=`${weekNum}-${targetDayIndex}`;
-    
-    const sourceWorkoutIndex=prev[sourceKey]!==undefined?prev[sourceKey]:sourceIndex;
-    const targetWorkoutIndex=prev[targetKey]!==undefined?prev[targetKey]:targetDayIndex;
-    
-    newSchedule[sourceKey]=targetWorkoutIndex;
-    newSchedule[targetKey]=sourceWorkoutIndex;
-    
-    return newSchedule;
-  });
-  
-  setDraggedWorkout(null);
-};
-
-const resetWeekSchedule=(weekNum)=>{
-  setWeekSchedule(prev=>{
-    const newSchedule={...prev};
-    Object.keys(newSchedule).forEach(key=>{
-      if(key.startsWith(`${weekNum}-`)){
-        delete newSchedule[key];
-      }
-    });
-    return newSchedule;
-  });
-};
-
-const currentPlan=jadeWeeklyPlans[week]||[];
-const currentPhase=programPhases[week];
-   return <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)'}}>
-  <div className="max-w-6xl mx-auto pb-20">
-    <div className="mb-8">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
-          <Flame s={40} style={{color:'#FF69B4'}}/>
-          <div>
-            <h1 className="text-3xl font-bold" style={{color:'#FF69B4'}}>Jade's Training Plan</h1>
-            <p className="text-sm" style={{color:'#C56A9E'}}>18-Week Marathon & Hyrox Program</p>
-          </div>
-        </div>
-      </div>
-      <div className="bg-white border-2 rounded-lg p-4 shadow-lg" style={{borderColor:'#FFB6C1'}}>
-        <div className="flex items-center gap-3">
-          <User s={24} style={{color:'#FF69B4'}}/>
-          <div>
-            <div className="font-bold text-black">{USER.name}</div>
-            <div className="text-sm text-gray-600">{USER.category}</div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div className="grid grid-cols-3 gap-4 mb-6">
-      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-        <div className="text-gray-600 text-sm font-semibold">Half Marathon</div>
-        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Mar 1, 2026</div>
-        <div className="text-gray-600 text-xs">Target: Sub 2:00:00</div>
-      </div>
-      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-        <div className="text-gray-600 text-sm font-semibold">Solo Hyrox</div>
-        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Mar 29, 2026</div>
-        <div className="text-gray-600 text-xs">Target: Sub 1:25:00</div>
-      </div>
-      <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-        <div className="text-gray-600 text-sm font-semibold">Full Marathon</div>
-        <div className="text-xl font-bold" style={{color:'#FF69B4'}}>Apr 12, 2026</div>
-        <div className="text-gray-600 text-xs">Completion</div>
-      </div>
-    </div>
-   <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-      {(()=>{
-        const s=getStats();
-        return(<>
-          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-            <div className="text-gray-600 text-sm">This Week</div>
-            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.total}</div>
-            <div className="text-gray-600 text-xs">Completed</div>
-          </div>
-          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-            <div className="text-gray-600 text-sm">Running</div>
-            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.running}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-            <div className="text-gray-600 text-sm">Strength</div>
-            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.strength}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-          <div className="bg-white border-2 rounded-lg p-4 shadow-md" style={{borderColor:'#FFB6C1'}}>
-            <div className="text-gray-600 text-sm">Hybrid</div>
-            <div className="text-3xl font-bold" style={{color:'#FF69B4'}}>{s.hybrid}</div>
-            <div className="text-gray-600 text-xs">Sessions</div>
-          </div>
-        </>);
-      })()}
-    </div>
-   <div className="flex gap-2 mb-6 border-b-2 overflow-x-auto" style={{borderColor:'#FFB6C1'}}>
-      {['plan','log','history'].map(t=>{
-        const icons={plan:Calendar,log:Plus,history:TrendingUp};
-        const I=icons[t];
-        const labels={plan:'Plan',log:'Log',history:'History'};
-        return <button key={t} onClick={()=>setTab(t)} className={`px-6 py-3 font-semibold whitespace-nowrap ${tab===t?'border-b-2':''}`} style={tab===t?{borderBottomColor:'#FF69B4',color:'#FF69B4'}:{color:'#999'}}><I s={18} className="inline mr-2"/>{labels[t]}</button>
-      })}
-    </div>
- <div className="bg-white border-2 rounded-lg p-6 text-black shadow-lg" style={{borderColor:'#FFB6C1'}}>
-      {tab==='plan'&&<div>
-        <h3 className="text-xl font-bold mb-4" style={{color:'#FF69B4'}}>18-Week Training Program</h3>
-        <div className="flex items-center gap-3 mb-6">
-          <button onClick={()=>setWeek(Math.max(1,week-1))} disabled={week===1} className="px-4 py-2 bg-white border-2 rounded disabled:opacity-50 disabled:cursor-not-allowed text-black" style={{borderColor:'#FFB6C1'}}>←</button>
-          <div className="flex-1 flex gap-2 overflow-x-auto pb-2">
-            {[...Array(18)].map((_,i)=>{
-              const w=i+1;
-              const c=getCompletion(w);
-              const info=programPhases[w];
-              const d=new Date(info.startDate);
-              const isRaceWeek=w===12||w===16||w===18;
-              return <button key={w} onClick={()=>setWeek(w)} className={`flex-shrink-0 px-4 py-3 rounded-lg font-semibold transition border-2 ${week===w?'text-white shadow-lg':'bg-white text-black'}`} style={week===w?{backgroundColor:'#FF69B4',borderColor:'#FF69B4'}:{borderColor:'#FFE4F0'}}><div className="text-sm">{isRaceWeek?'🏆 ':''}{w}</div><div className="text-xs opacity-75">{d.toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</div>{c.completed>0&&<div className="text-xs mt-1">{c.percentage}%</div>}</button>
-            })}
-          </div>
-          <button onClick={()=>setWeek(Math.min(18,week+1))} disabled={week===18} className="px-4 py-2 bg-white border-2 rounded disabled:opacity-50 disabled:cursor-not-allowed text-black" style={{borderColor:'#FFB6C1'}}>→</button>
-        </div>
-    {currentPhase&&<div className="bg-white border-2 rounded-lg p-5 mb-6 shadow-md" style={{borderColor:'#FFB6C1'}}>
-          <div className="flex justify-between items-start mb-3">
+  return (
+    <div className="border-2 rounded-lg p-4 transition" style={{backgroundColor:'#fff', borderColor: borderCol}}>
+      <div className="flex items-start gap-3">
+        <button onClick={onToggle} className="flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center"
+          style={isComplete ? {backgroundColor: P, borderColor: P} : {borderColor: P}}>
+          {isComplete && <span style={{color:'#fff', fontSize:'12px'}}>✓</span>}
+        </button>
+        <div className="flex-1">
+          <div className="flex items-start justify-between mb-1">
             <div>
-              <h4 className="text-2xl font-bold" style={{color:'#FF69B4'}}>Week {week}</h4>
-              <div className="text-sm text-gray-600 mt-1">{currentPhase.dates}</div>
+              <div className="font-bold" style={{color:'#222'}}>{day.day}</div>
+              <div className="text-sm" style={{color: isRace ? '#b8860b' : isSim ? PD : '#888'}}>{day.sessionType}</div>
             </div>
-            <div className="flex gap-2 items-center">
-              {(week===12||week===16||week===18)&&<div className="px-4 py-2 rounded-lg font-bold text-sm shadow-lg text-white" style={{backgroundColor:'#FF69B4'}}>🏆 RACE WEEK</div>}
-              <button onClick={()=>resetWeekSchedule(week)} className="px-3 py-2 text-xs font-semibold rounded-lg border-2 hover:bg-pink-50" style={{borderColor:'#FFB6C1',color:'#FF69B4'}}>Reset Schedule</button>
+            {day.duration && <div className="text-xs text-gray-400 ml-2 flex-shrink-0">{day.duration}</div>}
+          </div>
+          {!isRest && (
+            <div className="mt-1 mb-2">
+              <span className="text-xs px-2 py-1 rounded-full" style={{backgroundColor: PL, color: PD}}>{day.intensity}</span>
             </div>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
-            <div><div className="text-sm text-gray-600">Phase</div><div className="text-lg font-semibold" style={{color:'#FF69B4'}}>{currentPhase.phase}</div></div>
-            <div><div className="text-sm text-gray-600">Intensity</div><div className="text-lg font-semibold text-black">{currentPhase.intensity}</div></div>
-            <div><div className="text-sm text-gray-600">Completion</div><div className="text-lg font-semibold text-black">{getCompletion(week).completed}/{getCompletion(week).total} sessions</div></div>
-          </div>
-          <div className="mt-3 text-sm text-gray-700 italic">{currentPhase.notes}</div>
-          <div className="mt-3 text-xs p-2 rounded border" style={{backgroundColor:'#FFE4F0',borderColor:'#FFB6C1',color:'#C56A9E'}}>
-            💡 <strong>Tip:</strong> Drag and drop workouts to reschedule them within the week. Click "Reset Schedule" to restore original plan.
-          </div>
-        </div>}
-        <div className="space-y-3">
-          {currentPlan.length>0?currentPlan.map((day,i)=>{
-            const {workout,originalIndex}=getWorkoutForDay(week,i);
-            return <WorkoutCard 
-              key={`${week}-${i}`} 
-              day={workout} 
-              isComplete={isComp(week,originalIndex)} 
-              onToggle={()=>toggleComp(week,originalIndex)}
-              onDragStart={()=>handleDragStart(week,i)}
-              onDragOver={handleDragOver}
-              onDrop={()=>handleDrop(week,i)}
-              isDragging={draggedWorkout?.week===week&&draggedWorkout?.index===i}
-            />
-          }):<div className="text-center py-8 text-gray-600">No workouts available for this week</div>}
+          )}
+          {day.notes && (
+            <button onClick={() => setOpen(!open)} className="text-xs font-semibold mt-1" style={{color: P}}>
+              {open ? '▼ Hide Details' : '▶ Show Full Workout'}
+            </button>
+          )}
+          {open && day.notes && (
+            <div className="mt-3 p-3 rounded text-sm whitespace-pre-line border max-h-96 overflow-y-auto"
+              style={{backgroundColor: PL, borderColor:'#FFB6C1', color:'#333'}}>
+              {day.notes}
+            </div>
+          )}
         </div>
-      </div>}
-   {tab==='log'&&<div>
-        {!showLogForm?<button onClick={()=>setShowLogForm(true)} className="w-full py-8 border-2 border-dashed rounded-lg" style={{borderColor:'#FF69B4',backgroundColor:'#FFF'}}><Plus s={32} style={{color:'#FF69B4'}}/><div className="text-xl font-semibold" style={{color:'#FF69B4'}}>Log Workout</div></button>:<div className="space-y-4">
-          <h3 className="text-xl font-bold" style={{color:'#FF69B4'}}>Log Workout</h3>
-          <div><label className="block text-sm font-medium mb-2 text-black">Date</label><input type="date" value={currentWorkout.date} onChange={e=>setCurrentWorkout({...currentWorkout,date:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Type</label><select value={currentWorkout.type} onChange={e=>setCurrentWorkout({...currentWorkout,type:e.target.value})} className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}><option value="">Select...</option><option value="Running">Running</option><option value="Strength">Strength</option><option value="Hybrid">Hybrid</option><option value="Rest">Rest</option></select></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Duration (min)</label><input type="number" value={currentWorkout.duration} onChange={e=>setCurrentWorkout({...currentWorkout,duration:e.target.value})} placeholder="60" className="w-full bg-white text-black rounded px-4 py-2 border-2" style={{borderColor:'#FFB6C1'}}/></div>
-          <div><label className="block text-sm font-medium mb-2 text-black">Notes</label><textarea value={currentWorkout.notes} onChange={e=>setCurrentWorkout({...currentWorkout,notes:e.target.value})} placeholder="How did it feel?" className="w-full bg-white text-black rounded px-4 py-2 h-24 border-2" style={{borderColor:'#FFB6C1'}}/></div>
-          <div className="flex gap-3"><button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor:'#FF69B4'}}>Save</button><button onClick={()=>setShowLogForm(false)} className="px-6 py-3 bg-white border-2 rounded-lg font-semibold text-black" style={{borderColor:'#FFB6C1'}}>Cancel</button></div>
-        </div>}
-      </div>}
-   {tab==='history'&&<div>
-        <h3 className="text-xl font-bold mb-4" style={{color:'#FF69B4'}}>History</h3>
-        {workouts.length===0?<div className="text-center py-12" style={{color:'#FFB6C1'}}><Clock s={48} className="mx-auto mb-4 opacity-50"/><p>No workouts logged</p></div>:<div className="space-y-3">{workouts.map(w=><div key={w.id} className="bg-white border-2 rounded-lg p-4 shadow-sm" style={{borderColor:'#FFE4F0'}}><div className="flex justify-between mb-2"><div><div className="font-bold text-black">{w.type}</div><div className="text-sm text-gray-600">{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div></div><div className="text-sm font-semibold" style={{color:'#FF69B4'}}>{w.duration} min</div></div>{w.notes&&<div className="text-sm text-gray-700 mt-2 pt-2 border-t" style={{borderColor:'#FFE4F0'}}>{w.notes}</div>}</div>)}</div>}
-      </div>}
+      </div>
     </div>
-  </div>
-</div>
+  );
 }
 
-ReactDOM.render(<App/>,document.getElementById('root'));
+function HRReference() {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="border-2 rounded-lg mb-4" style={{borderColor:'#FFB6C1', backgroundColor:'#fff'}}>
+      <button onClick={() => setOpen(!open)} className="w-full p-3 flex items-center justify-between text-sm font-semibold"
+        style={{color: PD}}>
+        <span><InfoIcon s={16} style={{display:'inline', marginRight:'6px'}}/>HR Zones — Max 187 bpm (Age 33)</span>
+        <span style={{color: P}}>{open ? '▼' : '▶'}</span>
+      </button>
+      {open && (
+        <div className="px-3 pb-3 space-y-2">
+          {hrZones.map(z => (
+            <div key={z.zone} className="flex items-center gap-3 text-sm">
+              <span className="font-bold w-6" style={{color: z.color}}>{z.zone}</span>
+              <span className="text-gray-500 w-28">{z.label}</span>
+              <span className="font-mono" style={{color:'#333'}}>{z.range}</span>
+              <span className="text-gray-400 text-xs">{z.pct}</span>
+            </div>
+          ))}
+          <div className="mt-2 pt-2 border-t text-xs text-gray-400" style={{borderColor:'#FFB6C1'}}>
+            Solo Hyrox 1:27 | Mixed Doubles PR 1:19 | Hyrox run pace: 5:15-5:30/km
+          </div>
+          <div className="mt-1 text-xs font-semibold" style={{color: PD}}>
+            🦵 Suspected right meniscus tear — compression sleeve all runs, 90° squat depth limit, step-back burpees, ice post every session
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function App() {
+  const [tab, setTab]           = useState('plan');
+  const [week, setWeek]         = useState(1);
+  const [comp, setComp]         = useState({});
+  const [workouts, setWorkouts] = useState([]);
+  const [showLog, setShowLog]   = useState(false);
+  const [logData, setLogData]   = useState({date: new Date().toISOString().split('T')[0], type:'', duration:'', notes:''});
+
+  useEffect(() => {
+    try {
+      setComp(JSON.parse(localStorage.getItem('jade26_comp') || '{}'));
+      setWorkouts(JSON.parse(localStorage.getItem('jade26_workouts') || '[]'));
+    } catch(e) {}
+  }, []);
+  useEffect(() => { localStorage.setItem('jade26_comp', JSON.stringify(comp)); }, [comp]);
+  useEffect(() => { localStorage.setItem('jade26_workouts', JSON.stringify(workouts)); }, [workouts]);
+
+  const toggleComp = (w, i) => setComp(p => ({...p, [`${w}-${i}`]: !p[`${w}-${i}`]}));
+  const isComp     = (w, i) => !!comp[`${w}-${i}`];
+
+  const getCompletion = (w) => {
+    const plan = plans[w]; if (!plan) return {completed:0, total:0, pct:0};
+    const c = plan.filter((_, i) => isComp(w, i)).length;
+    return {completed: c, total: plan.length, pct: plan.length ? Math.round(c/plan.length*100) : 0};
+  };
+
+  const totalDone    = Object.values(comp).filter(Boolean).length;
+  const currentPhase = phases[week];
+  const currentPlan  = plans[week] || [];
+
+  const logWorkout = () => {
+    if (!logData.type) return;
+    setWorkouts([{...logData, id: Date.now()}, ...workouts]);
+    setLogData({date: new Date().toISOString().split('T')[0], type:'', duration:'', notes:''});
+    setShowLog(false);
+  };
+
+  return (
+    <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)'}}>
+      <div className="max-w-2xl mx-auto pb-20">
+
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex items-center gap-3 mb-4">
+            <FlameIcon s={40} style={{color: P}}/>
+            <div>
+              <h1 className="text-3xl font-bold" style={{color: P}}>Jade's Training</h1>
+              <p className="text-sm" style={{color: PD}}>9-Week Hyrox + Marathon + Doubles Block</p>
+            </div>
+          </div>
+
+          {/* Athlete card */}
+          <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+            <div className="grid grid-cols-3 gap-3 text-sm">
+              <div><div className="text-xs" style={{color:'#aaa'}}>Age / Weight</div><div className="font-semibold" style={{color:'#333'}}>33 / 74kg</div></div>
+              <div><div className="text-xs" style={{color:'#aaa'}}>Solo Hyrox PR</div><div className="font-semibold" style={{color: P}}>1:27:00</div></div>
+              <div><div className="text-xs" style={{color:'#aaa'}}>Doubles PR</div><div className="font-semibold" style={{color: P}}>1:19:00</div></div>
+            </div>
+            <div className="mt-3 pt-3 border-t text-xs font-semibold" style={{borderColor:'#FFB6C1', color: PD}}>
+              🦵 Suspected right meniscus tear — all sessions adapted. See notes for knee protocol.
+            </div>
+          </div>
+
+          {/* Race cards */}
+          <div className="grid grid-cols-3 gap-2 mb-4">
+            <div className="rounded-lg p-3 border-2" style={{borderColor: P, backgroundColor:'#fff'}}>
+              <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 1 — Mar 29</div>
+              <div className="font-bold text-sm" style={{color:'#333'}}>Solo Hyrox</div>
+              <div className="font-bold" style={{color: P}}>Sub 1:25</div>
+            </div>
+            <div className="rounded-lg p-3 border-2" style={{borderColor:'#fb923c', backgroundColor:'#fff'}}>
+              <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 2 — Apr 12</div>
+              <div className="font-bold text-sm" style={{color:'#333'}}>Marathon</div>
+              <div className="font-bold" style={{color:'#fb923c'}}>Finisher 🏅</div>
+            </div>
+            <div className="rounded-lg p-3 border-2" style={{borderColor: PD, backgroundColor:'#fff'}}>
+              <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 3 — May 2</div>
+              <div className="font-bold text-sm" style={{color:'#333'}}>Doubles + Tony</div>
+              <div className="font-bold" style={{color: PD}}>Sub 1:15</div>
+            </div>
+          </div>
+
+          {/* Stats */}
+          <div className="grid grid-cols-3 gap-3 mb-4">
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color: P}}>{totalDone}</div>
+              <div className="text-xs" style={{color:'#aaa'}}>Sessions Done</div>
+            </div>
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color: P}}>{getCompletion(week).pct}%</div>
+              <div className="text-xs" style={{color:'#aaa'}}>This Week</div>
+            </div>
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color: P}}>{Math.max(0, 10-week)}</div>
+              <div className="text-xs" style={{color:'#aaa'}}>Weeks Left</div>
+            </div>
+          </div>
+        </div>
+
+        {/* Tabs */}
+        <div className="flex gap-2 mb-5 border-b-2" style={{borderColor:'#FFB6C1'}}>
+          {[['plan', CalIcon, 'Plan'], ['log', PlusIcon, 'Log'], ['history', TrendIcon, 'History']].map(([t, I, label]) => (
+            <button key={t} onClick={() => setTab(t)}
+              className={`px-5 py-3 font-semibold ${tab===t ? 'border-b-2' : ''}`}
+              style={tab===t ? {borderBottomColor: P, color: P} : {color:'#bbb'}}>
+              <I s={16} style={{display:'inline', marginRight:'5px'}}/>{label}
+            </button>
+          ))}
+        </div>
+
+        {/* ── PLAN TAB ── */}
+        {tab === 'plan' && (
+          <div>
+            <HRReference/>
+
+            <div className="flex items-center gap-2 mb-5">
+              <button onClick={() => setWeek(Math.max(1, week-1))} disabled={week===1}
+                className="px-3 py-2 border-2 rounded disabled:opacity-30"
+                style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>←</button>
+              <div className="flex-1 flex gap-2 overflow-x-auto pb-1">
+                {[...Array(9)].map((_, i) => {
+                  const w = i+1;
+                  const c = getCompletion(w);
+                  const label = (w===4||w===5||w===9) ? '🏆' : w===8 ? '🔥' : '';
+                  return (
+                    <button key={w} onClick={() => setWeek(w)}
+                      className="flex-shrink-0 px-3 py-2 rounded-lg font-semibold text-sm border-2"
+                      style={week===w ? {backgroundColor: P, borderColor: P, color:'#fff'} : {backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>
+                      <div>{label}W{w}</div>
+                      {c.completed > 0 && <div className="text-xs opacity-70">{c.pct}%</div>}
+                    </button>
+                  );
+                })}
+              </div>
+              <button onClick={() => setWeek(Math.min(9, week+1))} disabled={week===9}
+                className="px-3 py-2 border-2 rounded disabled:opacity-30"
+                style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>→</button>
+            </div>
+
+            {currentPhase && (
+              <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+                <div className="flex items-start justify-between">
+                  <div>
+                    <div className="text-2xl font-bold" style={{color: P}}>Week {week}</div>
+                    <div className="text-xs mb-2" style={{color:'#aaa'}}>{currentPhase.dates}</div>
+                    <div className="font-semibold" style={{color: PD}}>{currentPhase.phase}</div>
+                  </div>
+                  <div className="text-right">
+                    <div className="text-xs" style={{color:'#aaa'}}>Intensity</div>
+                    <div className="font-bold text-sm" style={{color:'#333'}}>{currentPhase.intensity}</div>
+                    <div className="text-xs mt-1" style={{color: P}}>{getCompletion(week).completed}/{getCompletion(week).total} done</div>
+                  </div>
+                </div>
+                <div className="mt-3 text-xs italic" style={{color:'#888'}}>{currentPhase.notes}</div>
+              </div>
+            )}
+
+            <div className="space-y-3">
+              {currentPlan.map((day, i) => (
+                <WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week, i)} onToggle={() => toggleComp(week, i)}/>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── LOG TAB ── */}
+        {tab === 'log' && (
+          <div>
+            {!showLog ? (
+              <button onClick={() => setShowLog(true)} className="w-full py-10 border-2 border-dashed rounded-lg flex flex-col items-center gap-2"
+                style={{borderColor: P, backgroundColor:'#fff'}}>
+                <PlusIcon s={32} style={{color: P}}/>
+                <span className="text-lg font-semibold" style={{color: P}}>Log Workout</span>
+              </button>
+            ) : (
+              <div className="space-y-4">
+                <h3 className="text-xl font-bold" style={{color: P}}>Log Workout</h3>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Date</label>
+                  <input type="date" value={logData.date} onChange={e => setLogData({...logData, date: e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Type</label>
+                  <select value={logData.type} onChange={e => setLogData({...logData, type: e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>
+                    <option value="">Select...</option>
+                    {['Running — Zone 2','Running — Tempo','Running — Intervals','Hyrox Station Work','Doubles Sim',
+                      'Upper Strength','Lower Strength','Mobility Session','Active Recovery','REST'].map(o => (
+                      <option key={o} value={o}>{o}</option>
+                    ))}
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Duration (min)</label>
+                  <input type="number" value={logData.duration} onChange={e => setLogData({...logData, duration: e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Notes</label>
+                  <textarea value={logData.notes} onChange={e => setLogData({...logData, notes: e.target.value})}
+                    placeholder="How did it feel? Knee status? Key times..." rows="3"
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                </div>
+                <div className="flex gap-3">
+                  <button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor: P}}>Save</button>
+                  <button onClick={() => setShowLog(false)} className="px-6 py-3 border-2 rounded-lg font-semibold" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>Cancel</button>
+                </div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── HISTORY TAB ── */}
+        {tab === 'history' && (
+          <div>
+            <h3 className="text-xl font-bold mb-4" style={{color: P}}>History</h3>
+            {workouts.length === 0 ? (
+              <div className="text-center py-12" style={{color:'#FFB6C1'}}>
+                <ClockIcon s={48} style={{margin:'0 auto 12px', opacity:0.4}}/>
+                <p>No workouts logged yet</p>
+              </div>
+            ) : (
+              <div className="space-y-3">
+                {workouts.map(w => (
+                  <div key={w.id} className="rounded-lg p-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+                    <div className="flex justify-between mb-1">
+                      <div className="font-bold" style={{color:'#333'}}>{w.type}</div>
+                      <div className="text-sm font-semibold" style={{color: P}}>{w.duration} min</div>
+                    </div>
+                    <div className="text-xs mb-1" style={{color:'#aaa'}}>{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
+                    {w.notes && <div className="text-sm mt-2 pt-2 border-t" style={{borderColor:'#FFE4F0', color:'#555'}}>{w.notes}</div>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
+      </div>
+    </div>
+  );
+}
+
+ReactDOM.render(<App/>, document.getElementById('root'));
 </script>
 </body>
 </html>
