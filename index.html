@@ -13,296 +13,390 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     * { -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; }
-    body { overscroll-behavior: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; background: #fff0f7; }
+    body { overscroll-behavior: none; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif; }
   </style>
 </head>
-<body>
+<body style="background:linear-gradient(135deg,#FFE4F0 0%,#FFF0F7 100%)">
 <div id="root"></div>
 <script type="text/babel">
-const {useState, useEffect} = React;
-const P = '#FF69B4';
-const PL = '#FFE4F0';
-const PD = '#C56A9E';
+const {useState,useEffect}=React;
+const P='#FF69B4', PL='#FFE4F0', PD='#C56A9E';
 
-const Icon = ({d,s=24}) => <svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{__html:d}}/>;
-const CalIcon  = ({s=24}) => <Icon s={s} d='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'/>;
-const PlusIcon = ({s=24}) => <Icon s={s} d='<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'/>;
-const TrendIcon= ({s=24}) => <Icon s={s} d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'/>;
-const ClockIcon= ({s=24}) => <Icon s={s} d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'/>;
-const FlameIcon= ({s=24}) => <Icon s={s} d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'/>;
-const InfoIcon = ({s=24}) => <Icon s={s} d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'/>;
+const Icon=({d,s=24})=><svg width={s} height={s} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" dangerouslySetInnerHTML={{__html:d}}/>;
+const CalIcon =({s=24})=><Icon s={s} d='<rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>'/>;
+const PlusIcon=({s=24})=><Icon s={s} d='<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>'/>;
+const TrendIcon=({s=24})=><Icon s={s} d='<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/>'/>;
+const ClockIcon=({s=24})=><Icon s={s} d='<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'/>;
+const FlameIcon=({s=24})=><Icon s={s} d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'/>;
+const InfoIcon=({s=24})=><Icon s={s} d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'/>;
 
-// ── KNEE PROTOCOL ─────────────────────────────────────────────────
-// Suspected right meniscus tear throughout ALL phases:
-// • No deep squats past 90° under load
-// • No high-impact plyometrics (box jumps removed)
-// • No kneeling under heavy load
-// • Avoid pivot/twist movements
-// • Eccentric quad strengthening preferred (VMO focus)
-// • Ice knee 10min post every session
-// • Compression sleeve recommended for all running
-// • Elevate leg post session
+// ── ITBS PROTOCOL ─────────────────────────────────────────────────
+// IT band syndrome — right knee lateral pain
+// ROOT CAUSE: weak glute med + TFL tightness → hip drop → IT band friction at knee
+// STRENGTHENING: glute med, glute max, hip abductors (progressive overload each week)
+// STRETCHING: TFL, glutes, hip flexors — NOT the IT band itself (it's fascia, can't stretch)
+// FOAM ROLLING: TFL (top outer hip) and glutes ONLY — not the IT band directly
+// RUNNING: avoid cambered/banked surfaces, downhill, sudden mileage spikes
+// OK TO DO: squats, lunges — watch for knee valgus (knee caving in) which aggravates ITBS
+// COMPRESSION: IT band strap just above knee recommended for running
 
-// ── STRETCHES BY SESSION TYPE ────────────────────────────────────
-const KNEE_CARE = '\n\n🦵 KNEE CARE (after EVERY session):\n• Seated Quad Stretch: 60s/leg (gentle, no forcing)\n• Supine Hamstring Stretch: 60s/leg\n• Calf Stretch (wall, straight knee): 45s/leg\n• Figure-4 Glute Stretch: 60s/side\n• Ice right knee: 10min\n• Elevate right leg: 10min\n• Compression sleeve recommended for all running';
+// ── ITBS REHAB BLOCK — embedded in every lower/run session ────────
+// Progressive glute med overload:
+// W1-2: bodyweight → W3-4: band → W5-6: weighted → W7-8: heavy → W9: maintain
+const ITBS_CARE=`
+🦵 ITBS CARE (after EVERY session):
+• IT Band Strap: wear just above right knee for all runs
+• TFL Release (foam roll top outer hip): 90s/side — NOT the IT band itself
+• Glute foam roll: 90s/side
+• Ice right knee lateral side: 10min if any pain/heat
+• Elevation: 5min post run sessions`;
 
-const RUN_STRETCH = '\n\n🧘 POST-RUN STRETCHES:\n• Standing Hip Flexor Lunge Stretch: 60s/side\n• Seated Hamstring Stretch: 60s/leg\n• Calf Stretch (wall, straight + bent knee): 45s each/leg\n• IT Band Cross Stretch (standing): 45s/side\n• Pigeon Pose: 90s/side (key for knee health)\n• Quad Stretch (lying, gentle): 45s/leg — do NOT force right knee\n• Ankle Circles: 30s each direction\n• Foam roll quads and IT band: 2min/leg';
+const RUN_STRETCH=`
+🧘 POST-RUN COOLDOWN + ITBS MOBILITY (12 min):
+• Standing TFL/IT Band Stretch (cross-leg lean): 60s/side — key ITBS stretch
+• Pigeon Pose (glute + TFL): 90s/side
+• Hip Flexor Lunge Stretch: 60s/side
+• Calf Stretch (wall, straight + bent knee): 45s each/leg — Hyrox station prep
+• Hamstring Stretch (supine): 60s/leg — marathon prep
+• Ankle Circles: 30s each direction — Hyrox agility
+• Foam roll TFL (top outer hip): 90s/side
+• Foam roll glutes: 90s/side
+• Foam roll calves: 60s/leg — sled push/lunge recovery`;
 
-const STRENGTH_LOWER_STRETCH = '\n\n🧘 POST LOWER STRENGTH STRETCHES:\n• Pigeon Pose: 90s/side\n• Hip 90/90 Stretch: 90s/side\n• Couch Stretch (hip flexor): 60s/side — keep right knee padded\n• Supine Hamstring Stretch: 60s/leg\n• Adductor Stretch (butterfly): 60s\n• Glute Bridge Hold (decompression): 3x30s\n• Foam roll quads, glutes, IT band: 2min/side\n• Legs Up The Wall: 5min';
+const LOWER_STRETCH=`
+🧘 POST LOWER STRENGTH COOLDOWN + MOBILITY (15 min):
+• TFL/IT Band Cross Stretch (standing, lean away): 75s/side
+• Pigeon Pose: 90s/side — glute release, ITBS priority
+• Hip 90/90 Stretch: 90s/side — hip rotator mobility for running gait
+• Glute Bridge Hold (decompression + activation): 3x30s
+• Adductor Stretch (butterfly seated): 60s — sled pull prep
+• Couch Stretch (hip flexor): 60s/side — lunge/squat recovery
+• Hamstring Stretch (supine): 60s/leg
+• Foam roll TFL: 90s/side
+• Foam roll glutes: 90s/side
+• Foam roll quads: 60s/leg — squat + sled recovery
+• Legs Up The Wall: 5min — full lower recovery`;
 
-const STRENGTH_UPPER_STRETCH = '\n\n🧘 POST UPPER STRENGTH STRETCHES:\n• Thread the Needle: 10 reps/side\n• Doorway Pec Stretch: 60s/arm\n• Wall Slide + Overhead Reach: 3x10\n• Lat Stretch (band or bar hang): 30s x3\n• Upper Trap + Neck Stretch: 45s/side\n• Wrist Flexor/Extensor Stretch: 60s total\n• Child\'s Pose with arm reach: 60s\n• Seated Spinal Twist: 45s/side';
+const UPPER_STRETCH=`
+🧘 POST UPPER STRENGTH COOLDOWN + MOBILITY (10 min):
+• Thread the Needle (thoracic rotation): 10 reps/side — SkiErg/Row mobility
+• Doorway Pec Stretch: 60s/arm — SkiErg pull recovery
+• Lat Stretch (band or bar hang): 30s x3 — Row + SkiErg recovery
+• Wall Slide + Overhead Reach: 3x10 — shoulder health for carries/overhead
+• Upper Trap + Neck Stretch: 45s/side
+• Wrist Flexor/Extensor Stretch: 60s — Farmers Carry recovery
+• Seated Spinal Twist: 45s/side — thoracic mobility
+• Child's Pose with arm reach: 60s`;
 
-const HYROX_STRETCH = '\n\n🧘 POST HYROX/STATION STRETCHES:\n• Pigeon Pose: 90s/side (priority — hip flexors take a beating)\n• Hip 90/90: 90s/side\n• Supine Hamstring Stretch: 60s/leg\n• Calf Stretch (straight + bent): 45s each/leg\n• Thoracic Rotation (lying): 10/side\n• Doorway Pec Stretch: 60s/arm (for SkiErg/Row)\n• Lat Stretch: 30s x3\n• Foam roll quads, glutes, upper back: 2min each\n• Legs Up The Wall: 8min';
+const HYROX_STRETCH=`
+🧘 POST HYROX/STATION COOLDOWN + MOBILITY (15 min):
+• TFL/IT Band Cross Stretch: 75s/side — ITBS priority post running
+• Pigeon Pose: 90s/side — hip flexors take a beating in Hyrox
+• Hip 90/90: 90s/side
+• Doorway Pec Stretch: 60s/arm — SkiErg + Row chest recovery
+• Lat Stretch: 30s x3 — SkiErg + Row lat recovery
+• Hamstring Stretch (supine): 60s/leg — run + lunge recovery
+• Calf Stretch (straight + bent): 45s each/leg — sled push recovery
+• Wrist Stretch: 60s — Farmers Carry recovery
+• Foam roll TFL: 90s/side
+• Foam roll glutes: 90s/side
+• Foam roll upper back: 60s — Row + SkiErg thoracic release
+• Foam roll calves: 60s/leg
+• Legs Up The Wall: 8min — full Hyrox recovery`;
 
-const REST_MOBILITY = '\n\n🧘 REST DAY MOBILITY (20 min):\n• Gentle Knee Circles (seated): 10 each direction\n• Supine Hamstring Stretch: 60s/leg\n• Figure-4 Glute Stretch: 90s/side\n• Hip 90/90: 60s/side\n• Calf + Ankle Mobility: 60s/leg\n• Cat-Cow: 15 reps\n• Child\'s Pose: 60s\n• Ice right knee if any discomfort from previous day';
+const REST_MOBILITY=`
+🧘 REST DAY MOBILITY + ITBS ROUTINE (20 min):
+• TFL Cross Stretch: 75s/side
+• Pigeon Pose: 90s/side
+• Hip 90/90: 60s/side
+• Clamshells (bodyweight): 2x20/side — glute med activation
+• Side-lying Hip Abduction: 2x15/side — IT band stabiliser
+• Glute Bridge: 2x20 — posterior chain
+• Cat-Cow: 15 reps — spinal mobility
+• Child's Pose: 60s
+• Foam roll TFL: 90s/side
+• Foam roll glutes: 90s/side`;
 
-// ── PROGRAM PHASES ────────────────────────────────────────────────
-// Block starts: ~Mar 2 (post half marathon)
-// W1: Mar 2-8    Post-race recovery + return
-// W2: Mar 9-15   Hyrox peak #1
-// W3: Mar 16-22  Hyrox peak #2
-// W4: Mar 23-29  🏆 Hyrox Taper + Race (Mar 29)
-// W5: Mar 30-Apr 5  Post-Hyrox recovery + marathon build
-// W6: Apr 6 - May 2 🏆 Marathon (Apr 5 — NOTE: marathon is Apr 5 not Apr 12 per brief)
-//     Wait — brief says Full Marathon Apr 5, Doubles May 2
-// W6: Apr 6-12 was old. New dates: Marathon Apr 5 = race week starts ~Mar 30
-// Recalculating: Hyrox Mar 29 → 1 week recovery → Marathon Apr 5 (7 days gap — very tight)
-// Marathon race week: Mar 30-Apr 5
-// Then recovery + Jade Doubles with Tony: May 2
-// W1: Mar 2-8 | W2: Mar 9-15 | W3: Mar 16-22 | W4: Mar 23-29 (Hyrox race)
-// W5: Mar 30-Apr 5 (Marathon race — only 7 days post Hyrox, completion focus)
-// W6: Apr 6-12 recovery
-// W7: Apr 13-19 | W8: Apr 20-26 | W9: Apr 27-May 2 (Doubles race)
+// ── ITBS STRENGTH PROGRESSION ─────────────────────────────────────
+// Added to lower sessions, progressively overloaded week by week
+// This directly addresses the root cause of ITBS
+const ITBS_W1=`
+💪 ITBS REHAB STRENGTH (W1-2 — Bodyweight foundation):
+• Clamshells: 3x20/side (glute med activation)
+• Side-lying Hip Abduction: 3x15/side
+• Glute Bridge: 3x20 (glute max)
+• Single Leg Glute Bridge: 3x10/side
+• Monster Walks (band): 3x15 steps/direction — if band available`;
 
-const phases = {
-  1:{phase:'Post Half Marathon — Recovery + Return',dates:'Mon Mar 2 – Sun Mar 8',focus:'Recover, ease back in, protect knee',intensity:'Very Low → Low',
-     notes:'Half marathon done! Mon-Thu full rest, gentle return Fri onwards. Knee management is priority this entire block. All sessions adapted for suspected meniscus tear.'},
-  2:{phase:'Hyrox Peak #1 — Full Simulations',dates:'Mon Mar 9 – Sun Mar 15',focus:'Full 8-station sim + race pace running',intensity:'High',
-     notes:'3 weeks to Hyrox. Full simulation sessions Tue and Sun. Station power work Fri. All knee-adapted — no deep loaded squats, no plyometrics.'},
-  3:{phase:'Hyrox Peak #2 — Final Prep',dates:'Mon Mar 16 – Sun Mar 22',focus:'Race pace confidence, taper begins',intensity:'High → Moderate',
-     notes:'2 weeks out. Near-race effort simulation early in week, then begin reducing volume Fri onwards. Knee compression sleeve for all runs.'},
-  4:{phase:'🏆 Hyrox Taper + Race Week',dates:'Mon Mar 23 – Sun Mar 29',focus:'Race Day Sun Mar 29 — Sub 1:25:00',intensity:'Taper → Race',
-     notes:'Light technique work only Mon-Sat. Race Sunday. Knee: ice daily, elevation every evening, compression sleeve race day.'},
-  5:{phase:'Post-Hyrox Recovery + Marathon Build',dates:'Mon Mar 30 – Sun Apr 5',focus:'Recover from Hyrox, stay loose for marathon',intensity:'Very Low → Low',
-     notes:'2 weeks post-Hyrox before marathon on Apr 12. More time to recover properly. Light movement Mon-Wed, gentle return Thu-Sun. Knee monitoring priority.'},
-  6:{phase:'🏆 Marathon Race Week',dates:'Mon Apr 6 – Sun Apr 12',focus:'Race Day Sun Apr 12 — Completion',intensity:'Taper → Race',
-     notes:'14 days post-Hyrox — much better recovery window. Light shakeouts Mon-Sat, race Sunday. Knee should be well settled by now.'},
-  7:{phase:'Post-Marathon Recovery + Doubles Build',dates:'Mon Apr 13 – Sun Apr 19',focus:'Recover, then begin Doubles prep',intensity:'Very Low → Moderate',
-     notes:'Mon-Wed full recovery post-marathon. Thu onwards begin rebuilding for Doubles with Tony on May 2. 3 weeks out.'},
-  8:{phase:'Jade + Tony Doubles — Peak + Sim',dates:'Sun Apr 20 – Sat Apr 26',focus:'Full doubles sim with Tony (Sat Apr 25)',intensity:'High',
-     notes:'2 weeks out. Full mixed doubles simulation Saturday. Jade leads strategy — 60% station work. Knee: full protocol every session.'},
-  9:{phase:'🏆 Doubles Race Week',dates:'Sun Apr 27 – Fri May 2',focus:'Race Day Fri May 2 — Sub 1:15:00',intensity:'Taper → Race',
-     notes:'Final taper. Light activation only. Race Friday with Tony. Knee: ice daily, compression race day.'}
+const ITBS_W3=`
+💪 ITBS REHAB STRENGTH (W3-4 — Band resistance):
+• Banded Clamshells: 3x20/side (light band)
+• Banded Side Steps: 3x20 steps/direction
+• Banded Hip Abduction (standing): 3x15/side
+• Single Leg Glute Bridge: 3x12/side
+• Lateral Band Walk (squat position): 3x15 steps/direction`;
+
+const ITBS_W5=`
+💪 ITBS REHAB STRENGTH (W5-6 — Loaded progression):
+• Banded Clamshells: 3x25/side (medium band)
+• Cable/Band Hip Abduction (standing): 3x15/side @ light load
+• Single Leg RDL: 3x10/side @ 8kg DB (hip stability + glute)
+• Lateral Step-ups: 3x12/side @ bodyweight → 8kg DB
+• Copenhagen Plank: 3x20s/side (adductor + abductor balance)`;
+
+const ITBS_W7=`
+💪 ITBS REHAB STRENGTH (W7-8 — Peak loading):
+• Banded Clamshells: 3x25/side (heavy band)
+• Single Leg RDL: 3x12/side @ 10-12kg DB
+• Lateral Step-ups: 3x15/side @ 10kg DB
+• Copenhagen Plank: 3x30s/side
+• Hip Abduction Machine (or cable): 3x15/side @ moderate load`;
+
+const ITBS_W9=`
+💪 ITBS REHAB STRENGTH (W9 — Maintenance):
+• Banded Clamshells: 2x20/side
+• Single Leg RDL: 2x10/side @ 10kg
+• Copenhagen Plank: 2x20s/side`;
+
+// ── HR ZONES (Max 187, Age 33, Female) ────────────────────────────
+const hrZones=[
+  {zone:'Z1',label:'Recovery',    range:'<112 bpm',    color:'#888',    pct:'<60%'},
+  {zone:'Z2',label:'Aerobic Base',range:'112-131 bpm', color:'#4ade80', pct:'60-70%'},
+  {zone:'Z3',label:'Tempo',       range:'131-150 bpm', color:'#facc15', pct:'70-80%'},
+  {zone:'Z4',label:'Threshold',   range:'150-168 bpm', color:'#fb923c', pct:'80-90%'},
+  {zone:'Z5',label:'Race / VO2',  range:'168-187 bpm', color:'#f43f5e', pct:'90-100%'}
+];
+
+// ── PHASES ────────────────────────────────────────────────────────
+const phases={
+  1:{phase:'Post Half Marathon — Recovery + Return',dates:'Mon Mar 2 – Sun Mar 8',
+     focus:'Recover, ease back in, begin ITBS rehab',intensity:'Very Low → Low',
+     notes:'Half marathon done! Mon-Thu full rest, gentle return Fri-Sun. ITBS rehab starts immediately — glute med and hip abductor strengthening from day one. All sessions adapted for IT band syndrome.'},
+  2:{phase:'Hyrox Peak #1 — Full Simulations',dates:'Mon Mar 9 – Sun Mar 15',
+     focus:'Full 8-station sim + race pace running',intensity:'High',
+     notes:'3 weeks to Hyrox. Full simulation Tue + race pace running Sun. ITBS rehab embedded in all lower and station sessions. Watch for lateral knee pain on runs — IT band strap recommended.'},
+  3:{phase:'Hyrox Peak #2 — Final Prep',dates:'Mon Mar 16 – Sun Mar 22',
+     focus:'Near-race effort, taper begins',intensity:'High → Moderate',
+     notes:'2 weeks out. Near-race sim early in week, then volume drops. ITBS rehab continues — banded work now. Avoid cambered road surfaces on all runs this week.'},
+  4:{phase:'🏆 Hyrox Taper + Race Week',dates:'Mon Mar 23 – Sun Mar 29',
+     focus:'Race Day Sun Mar 29 — Sub 1:25:00',intensity:'Taper → Race',
+     notes:'Light touch only. ITBS: IT band strap race day, TFL + glute foam roll daily, ice lateral knee if any irritation. Glute activation before warm-up.'},
+  5:{phase:'Post-Hyrox Recovery + Marathon Build',dates:'Mon Mar 30 – Sun Apr 5',
+     focus:'Recover from Hyrox, build toward marathon',intensity:'Very Low → Low',
+     notes:'14 days to marathon. Proper recovery window Mon-Wed, gentle return Thu-Sun. ITBS rehab continues with loaded progression. Monitor lateral knee carefully — two big races close together.'},
+  6:{phase:'🏆 Marathon Race Week',dates:'Mon Apr 6 – Sun Apr 12',
+     focus:'Race Day Sun Apr 12 — Completion',intensity:'Taper → Race',
+     notes:'Light shakeouts only. ITBS: IT band strap for all runs including race day. TFL + glute roll daily. Glute activation (clamshells x20) before every run this week.'},
+  7:{phase:'Post-Marathon Recovery + Doubles Build',dates:'Mon Apr 13 – Sun Apr 19',
+     focus:'Recover, rebuild for Doubles with Tony',intensity:'Very Low → Moderate-High',
+     notes:'Mon-Wed full recovery post-marathon. Thu onwards rebuild for Doubles (May 2, 2 weeks). ITBS rehab now at peak loading — this is where the hip strength gains lock in for the final race.'},
+  8:{phase:'Jade + Tony Doubles — Peak + Sim',dates:'Mon Apr 20 – Sat Apr 26',
+     focus:'Full doubles sim with Tony (Sat Apr 25)',intensity:'High',
+     notes:'2 weeks to Doubles. Full mixed doubles simulation Saturday. Jade leads strategy — 60% station work. ITBS maintenance protocol throughout.'},
+  9:{phase:'🏆 Doubles Race Week',dates:'Sun Apr 27 – Fri May 2',
+     focus:'Race Day Fri May 2 — Sub 1:15:00 with Tony',intensity:'Taper → Race',
+     notes:'Final taper. Light activation only. IT band strap race day. Glute activation daily. Race Friday with Tony.'}
 };
 
-const plans = {
+// ── WEEKLY PLANS ──────────────────────────────────────────────────
+const plans={
 
-  // ── WEEK 1: Mar 2-8 — Post half recovery ─────────────────────────
+  // W1: Mar 2-8 — Post half recovery + ITBS start
   1:[
-    {day:'Mon Mar 2',  sessionType:'REST — Post Half Marathon',intensity:'None',
-     notes:'FULL REST. You just ran a half marathon!\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs for recovery.\n\nCelebrate your achievement 🏅\n\n🦵 KNEE: Ice right knee 10min. Elevation. Compression sleeve or bandage if any swelling.' + REST_MOBILITY},
-    {day:'Tue Mar 3',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest or 15min gentle walk.\n\nFoam roll lightly — quads, glutes, calves. Avoid rolling directly over the knee joint.\n\n🦵 KNEE: Monitor swelling. If right knee is more swollen or painful than left after the race, see a physio before resuming running.' + REST_MOBILITY},
-    {day:'Wed Mar 4',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest. Light mobility only (see below).\n\nHydration + nutrition focus.' + REST_MOBILITY},
-    {day:'Thu Mar 5',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest. How is the knee feeling today?\n\nIf pain-free or mild discomfort: light return tomorrow.\nIf swollen or sharp: additional rest day and physio consult.' + REST_MOBILITY},
-    {day:'Fri Mar 6',  sessionType:'Easy Return Run',duration:'20 mins',intensity:'Very Low — Zone 1-2',
-     notes:'First post-race run. Very easy. 20min @ 6:45-7:00/km, HR under 130.\n\n~3km. Stop immediately if knee is painful. Compression sleeve on right knee.\n\nThis is blood flow only — not fitness.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sat Mar 7',  sessionType:'Light Strength — Upper Only',duration:'35 mins',intensity:'Low',
-     notes:'Upper body only this week — protect knee from any loading.\n\nWarm-up: 5min row (light)\n\n• Pull-ups: 3x6 bodyweight\n• DB Row: 3x10 @ 14kg\n• Push-ups: 3x12\n• Farmers Carry: 3x30m @ 16kg/hand (short, less knee demand)\n• Wall Balls: SKIP this week\n\nCore (lying only — no knee loading):\n• Dead Bugs: 3x16\n• Hollow Hold: 3x25s\n• Side Plank: 2x30s/side' + STRENGTH_UPPER_STRETCH + KNEE_CARE},
-    {day:'Sun Mar 8',  sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
-     notes:'Gentle progressive return. 30min @ 6:30-6:45/km, HR 120-135.\n\n~4.5km. Compression sleeve. If knee flares, stop and walk.\n\n4 weeks to Hyrox. This week is about arriving healthy, not fit.' + RUN_STRETCH + KNEE_CARE}
+    {day:'Mon Mar 2',sessionType:'REST — Post Half Marathon',intensity:'None',
+     notes:'FULL REST. Half marathon done — celebrate 🏅\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs for recovery.\n\n🦵 ITBS: Begin TFL and glute foam rolling today even on rest. No ice unless lateral knee is actively painful — ITBS responds better to heat/mobility than ice at rest.'+REST_MOBILITY},
+    {day:'Tue Mar 3',sessionType:'REST',intensity:'None',
+     notes:'Complete rest or 15min gentle walk.\n\nFoam roll TFL and glutes today — this is your ITBS rehab starting point.'+REST_MOBILITY},
+    {day:'Wed Mar 4',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. Mobility and ITBS rehab only.'+REST_MOBILITY},
+    {day:'Thu Mar 5',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. How is the lateral right knee feeling?\n\nIf pain-free: light return tomorrow.\nIf still sore laterally: extra rest day.'+REST_MOBILITY},
+    {day:'Fri Mar 6',sessionType:'Easy Return Run',duration:'20 mins',intensity:'Very Low — Zone 1-2',
+     notes:'First post-race run. Very easy. 20min @ 6:45-7:00/km, HR under 130. ~3km.\n\nIT band strap on right knee. Avoid camber — run on flat surface.\nStop if lateral knee pain returns.'+RUN_STRETCH+'\n'+ITBS_W1+ITBS_CARE},
+    {day:'Sat Mar 7',sessionType:'Upper Strength + ITBS Rehab',duration:'45 mins',intensity:'Low',
+     notes:'Upper body strength + begin ITBS rehab lower work.\n\nUPPER:\n• Pull-ups: 3x6 bodyweight\n• DB Row: 3x10 @ 14kg\n• Push-ups: 3x12\n• Farmers Carry: 3x30m @ 16kg/hand\n\nCore:\n• Dead Bugs: 3x16\n• Hollow Hold: 3x25s\n• Side Plank: 2x30s/side'+UPPER_STRETCH+'\n'+ITBS_W1+ITBS_CARE},
+    {day:'Sun Mar 8',sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
+     notes:'30min @ 6:20-6:30/km, HR 115-130. ~4.5km.\n\nIT band strap. Flat surface. 4 weeks to Hyrox.'+RUN_STRETCH+'\n'+ITBS_W1+ITBS_CARE}
   ],
 
-  // ── WEEK 2: Mar 9-15 — Hyrox Peak #1 ────────────────────────────
+  // W2: Mar 9-15 — Hyrox Peak #1
   2:[
-    {day:'Mon Mar 9',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest. 3 weeks to Hyrox.\n\nMobility and knee care only.' + REST_MOBILITY},
-    {day:'Tue Mar 10', sessionType:'Full Hyrox Simulation',duration:'90-100 mins',intensity:'High',
-     notes:'FULL 8-STATION SIMULATION @ 80-85% effort.\n\nWarm-up: 10min easy jog + full dynamic prep, HR 125-140\n\n🦵 KNEE ADAPTATIONS FOR SIM:\n• Sled Push: stay low but do NOT let right knee go past toes significantly — short powerful steps\n• Sled Pull: hand-over-hand seated pull preferred, reduce weight if knee presses on floor\n• Sandbag Lunges: alternate lead leg, stop if right knee sharp\n• Wall Balls: reduce depth — squat to just above 90°, no deeper\n• Burpee BJ: step back instead of jump back for burpee portion\n\n8 runs x 1km @ 5:30/km between stations, HR 158-168 bpm\n\nStations (knee-adapted):\n• SkiErg 1000m\n• Sled Push 50m @ 102kg — short steps, upright-ish\n• Sled Pull 50m @ 78kg\n• Burpee Broad Jumps — step back variation\n• Rowing 1000m\n• Farmers Carry 2x50m @ 16kg each\n• Sandbag Lunges 100m @ 10kg — alternate legs carefully\n• Wall Balls 75 @ 6kg — 90° depth max\n\nCool-down: 10min walk' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Wed Mar 11', sessionType:'Easy Recovery Run',duration:'25 mins',intensity:'Very Low — Zone 1-2',
-     notes:'Very easy jog only. 25min @ 7:00/km, HR under 135. Active recovery from yesterday sim.\n\nCompression sleeve. If knee is flared from sim, replace with 25min walk.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Thu Mar 12', sessionType:'REST',intensity:'None',
-     notes:'Complete rest. How did the sim feel on the knee?\n\nIf knee swollen or sharper than usual: see physio before Sunday sim.' + REST_MOBILITY},
-    {day:'Fri Mar 13', sessionType:'Station Power',duration:'40 mins',intensity:'Moderate-High',
-     notes:'Station speed work — knee adapted.\n\nWarm-up: 10min easy movement\n\n3 rounds (full recovery between):\n• SkiErg: 500m FAST (target <2:00) — 3min rest\n• Rowing: 500m FAST (target <2:00) — 3min rest\n• Farmers Carry: 100m FAST @ 16kg — 3min rest\n• Wall Balls: 20 FAST @ 6kg (90° depth) — 3min rest\n\n⚠️ Sled and lunges removed from power work — knee protection. These are covered in full sim.\n\nCool-down: 5min walk' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Sat Mar 14', sessionType:'Threshold Run',duration:'45 mins',intensity:'High — Zone 3-4',
-     notes:'Warm-up: 2km easy\nMain: 5km @ 5:30/km (Hyrox run pace), HR 160-172\nCool-down: 2km easy\n\nTotal: 9km. This is your race run pace. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sun Mar 15', sessionType:'Race Pace Intervals',duration:'50 mins',intensity:'High — Zone 4',
-     notes:'Warm-up: 2km easy + strides\nMain: 6x1km @ 5:15/km (HR 168-180)\nRecovery: 2min jog between reps\nCool-down: 1km easy\n\nTotal: ~10km. Compression sleeve throughout.' + RUN_STRETCH + KNEE_CARE}
+    {day:'Mon Mar 9',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 3 weeks to Hyrox.\n\nITBS mobility daily.'+REST_MOBILITY},
+    {day:'Tue Mar 10',sessionType:'Full Hyrox Simulation',duration:'90-100 mins',intensity:'High',
+     notes:'FULL 8-STATION SIMULATION @ 80-85% effort.\n\nWarm-up: 10min easy jog + full dynamic, HR 125-140\n\n🦵 ITBS NOTES FOR SIM:\n• IT band strap on right knee\n• Watch for lateral knee pain on runs — if it flares, shorten stride slightly and increase cadence\n• Sled Push: drive from glutes — weak glutes are root cause of ITBS\n• Lunges: keep right knee tracking over toes, not caving in\n• Squats/Wall Balls: same — no knee valgus\n\n8 runs x 1km @ 5:30/km between stations, HR 158-168\n\nStations:\n• SkiErg 1000m\n• Sled Push 50m @ 102kg — glute drive, not quad dominance\n• Sled Pull 50m @ 78kg\n• Burpee Broad Jumps — land softly, glute-led\n• Rowing 1000m\n• Farmers Carry 2x50m @ 16kg each\n• Sandbag Lunges 100m @ 10kg — track knees over toes\n• Wall Balls 75 @ 6kg\n\nCool-down: 10min walk'+HYROX_STRETCH+'\n'+ITBS_W1+ITBS_CARE},
+    {day:'Wed Mar 11',sessionType:'Easy Recovery Run',duration:'25 mins',intensity:'Very Low — Zone 1-2',
+     notes:'25min @ 7:00/km, HR under 135. Active recovery from sim.\n\nIT band strap. Flat surface. If lateral knee sore from sim: replace with 25min walk.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Thu Mar 12',sessionType:'REST + ITBS Rehab',intensity:'None',
+     notes:'Complete rest from training. ITBS rehab strength work today.'+REST_MOBILITY+'\n'+ITBS_W1+ITBS_CARE},
+    {day:'Fri Mar 13',sessionType:'Station Power + Lower Strength',duration:'55 mins',intensity:'Moderate-High',
+     notes:'Station speed work + lower strength with ITBS focus.\n\nSTATIONS (3 rounds, full recovery):\n• SkiErg: 500m FAST (<2:00) — 3min rest\n• Rowing: 500m FAST (<2:00) — 3min rest\n• Farmers Carry: 100m FAST @ 16kg — 3min rest\n• Wall Balls: 20 FAST @ 6kg — 3min rest\n\nLOWER STRENGTH:\n• Goblet Squat: 3x10 @ 24kg KB (glute focus — sit back, drive knees out)\n• Romanian Deadlift: 4x10 @ 65kg\n• Step-ups: 3x12/leg @ 12kg DBs\n\nCool-down: 10min walk'+LOWER_STRETCH+'\n'+ITBS_W1+ITBS_CARE},
+    {day:'Sat Mar 14',sessionType:'Threshold Run',duration:'45 mins',intensity:'High — Zone 3-4',
+     notes:'Warm-up: 2km easy\nMain: 5km @ 5:30/km (Hyrox run pace), HR 160-172\nCool-down: 2km easy\n\nTotal: 9km. IT band strap. Flat route.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Sun Mar 15',sessionType:'Race Pace Intervals',duration:'50 mins',intensity:'High — Zone 4',
+     notes:'Warm-up: 2km easy + strides\nMain: 6x1km @ 5:15/km (HR 168-180)\nRecovery: 2min jog between reps\nCool-down: 1km easy\n\nTotal: ~10km. IT band strap. Flat surface.'+RUN_STRETCH+ITBS_CARE}
   ],
 
-  // ── WEEK 3: Mar 16-22 — Hyrox Peak #2 ───────────────────────────
+  // W3: Mar 16-22 — Hyrox Peak #2
   3:[
-    {day:'Mon Mar 16', sessionType:'REST',intensity:'None',
-     notes:'Complete rest. 2 weeks to Hyrox. Knee care priority today.' + REST_MOBILITY},
-    {day:'Tue Mar 17', sessionType:'Full Hyrox Simulation — Near Race Effort',duration:'90-100 mins',intensity:'High',
-     notes:'FULL 8-STATION SIM @ 90% race effort.\n\nWarm-up: 10min + full dynamic + 6x100m strides, HR 125-140\n\n🦵 SAME KNEE ADAPTATIONS as Week 2:\n• Step-back burpees\n• Wall balls to 90° max\n• Sled push short powerful steps\n• Sandbag lunges alternate legs — stop if sharp pain\n\n8 runs x 1km @ 5:20/km, HR 165-175\n\nAll 8 stations at near-race effort.\n\nCool-down: 10min walk\n\nThis is your confidence-builder. You know this course.' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Wed Mar 18', sessionType:'Easy Recovery Run',duration:'20 mins',intensity:'Very Low',
-     notes:'20min @ 7:00/km, HR under 130. Or 20min walk if knee is sore from yesterday.\n\nActive recovery only.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Thu Mar 19', sessionType:'REST',intensity:'None',
-     notes:'Complete rest. Taper begins from today.\n\nKnee: ice, elevation, compression.' + REST_MOBILITY},
-    {day:'Fri Mar 20', sessionType:'Light Station Touch',duration:'25 mins',intensity:'Low',
-     notes:'2 rounds @ 65% effort — technique only, NOT timed:\n• SkiErg: 400m easy\n• Rowing: 400m easy\n• Farmers Carry: 50m @ 14kg\n• Wall Balls: 15 @ 6kg (90° depth)\n\n10min mobility afterwards.' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Sat Mar 21', sessionType:'Easy Run + Strides',duration:'25 mins',intensity:'Low',
-     notes:'20min @ 6:30/km easy + 4x100m strides building to race pace feel.\n\nLegs should feel light and quick. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sun Mar 22', sessionType:'Active Recovery + Mobility',duration:'20 mins',intensity:'Very Low',
-     notes:'Walk 15min or light bike.\n\n⚡ ONE WEEK TO HYROX.\n\nFull mobility routine below. Ice knee afterwards.' + REST_MOBILITY + KNEE_CARE}
+    {day:'Mon Mar 16',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 2 weeks to Hyrox.'+REST_MOBILITY},
+    {day:'Tue Mar 17',sessionType:'Full Hyrox Simulation — Near Race Effort',duration:'90-100 mins',intensity:'High',
+     notes:'FULL 8-STATION SIM @ 90% race effort.\n\nWarm-up: 10min + full dynamic + 6x100m strides\n\n🦵 ITBS: IT band strap. Focus on glute-driven movement at every station. If lateral knee flares during runs, shorten stride + increase cadence rather than stopping.\n\n8 runs x 1km @ 5:20/km, HR 165-175\nAll 8 stations near-race effort.\n\nCool-down: 10min walk'+HYROX_STRETCH+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Wed Mar 18',sessionType:'Easy Recovery Run',duration:'20 mins',intensity:'Very Low',
+     notes:'20min @ 7:00/km, HR under 130. Or 20min walk if lateral knee sore from sim.\n\nIT band strap.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Thu Mar 19',sessionType:'REST + ITBS Rehab',intensity:'None',
+     notes:'Complete rest. Taper begins from today.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Fri Mar 20',sessionType:'Light Station Touch',duration:'30 mins',intensity:'Low',
+     notes:'2 rounds @ 65% — technique only, not timed:\n• SkiErg: 400m easy\n• Rowing: 400m easy\n• Farmers Carry: 50m @ 14kg\n• Wall Balls: 15 @ 6kg\n\n10min mobility afterwards.'+HYROX_STRETCH+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Sat Mar 21',sessionType:'Easy Run + Strides',duration:'25 mins',intensity:'Low',
+     notes:'20min @ 6:30/km easy + 4x100m strides.\n\nIT band strap. Legs should feel light and quick.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Sun Mar 22',sessionType:'Active Recovery + Mobility',duration:'20 mins',intensity:'Very Low',
+     notes:'Walk 15min or light bike.\n\n⚡ ONE WEEK TO HYROX.\n\nFull mobility + ITBS routine.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE}
   ],
 
-  // ── WEEK 4: Mar 23-29 — Hyrox Race Week ─────────────────────────
+  // W4: Mar 23-29 — Hyrox Race Week
   4:[
-    {day:'Mon Mar 23', sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
-     notes:'Light touch on stations only — 65% effort, NOT timed:\n• SkiErg: 2x250m (technique)\n• Rowing: 2x250m (technique)\n• Wall Balls: 2x12 @ 6kg (90° depth)\n\nThen 10min full body mobility.\n\nMental note: visualise smooth station transitions and your run splits.' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Tue Mar 24', sessionType:'Easy Jog',duration:'15 mins',intensity:'Very Low',
-     notes:'15min @ 6:45/km, HR under 120. Blood flow only. Compression sleeve.\n\nAdd 3x80m strides at end.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Wed Mar 25', sessionType:'REST + Mobility',intensity:'None',
-     notes:'Complete rest from training.\n\nMobility only (20 min). Knee: ice, elevation.\n\nHydration 3-4L. Carb-rich meals begin today.' + REST_MOBILITY},
-    {day:'Thu Mar 26', sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
-     notes:'Jog 10min @ 6:45/km + 3x80m strides.\n\nLegs should feel like springs. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Fri Mar 27', sessionType:'REST — Carb Load',intensity:'None',
-     notes:'COMPLETE REST. Walk 10min max.\n\nCarb load: pasta/rice with protein. Hydrate 4L.\n\nLay out race kit:\n• Bib, shoes, socks, shorts, shirt\n• Watch charged, gels ready\n• Compression sleeve for knee\n\n🦵 KNEE: Elevate right leg this afternoon/evening.'},
-    {day:'Sat Mar 28', sessionType:'REST — Race Eve',intensity:'None',
-     notes:'ZERO activity. Final carb load dinner (6pm). Early bed by 9pm.\n\nVisualise every station. Gentle calf + quad stretch before bed — no aggressive work on knee.\n\nYOU ARE READY. 💪'},
-    {day:'Sun Mar 29', sessionType:'🏆 RACE DAY — Solo Hyrox',duration:'Target: Sub 1:25:00',intensity:'RACE EFFORT',
-     notes:'THIS IS IT. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• Arrive venue 90min early\n• Compression sleeve on right knee before warm-up\n• Warm-up: 10min progressive jog, full dynamic, 4x100m strides, light station touches\n• Gel 15min before start\n\n🦵 KNEE RACE PLAN:\n• Burpee BJs: step-back variation throughout — do not sacrifice pace for a heroic jump-back\n• Sled Push: short powerful steps, do not over-extend right knee\n• Lunges: alternate legs, steady rhythm — if sharp pain, switch to slow walk lunges\n• Wall Balls: 90° depth max — hit target height, don\'t sacrifice depth for speed\n• If right knee becomes sharp/locking at any point: stop station, walk, reassess\n\nRACE STRATEGY:\n• Runs 1-4: 5:20-5:30/km, HR 162-172 — controlled\n• Runs 5-8: 5:15-5:25/km, HR 170-182 — push\n• Stations: controlled power, rhythm over raw speed\n• Stations 5-8: everything you have\n\n🎯 TARGET: SUB 1:25:00\n\nYou ran a half marathon last month. You\'ve put the work in. Leave nothing on the floor. 💪🔥\n\nPOST RACE: Ice knee immediately. Elevation. Compression. Before celebrating!'}
+    {day:'Mon Mar 23',sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
+     notes:'65% effort, NOT timed:\n• SkiErg: 2x250m (technique)\n• Rowing: 2x250m (technique)\n• Wall Balls: 2x12 @ 6kg\n\n10min mobility. Visualise smooth transitions.'+HYROX_STRETCH+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Tue Mar 24',sessionType:'Easy Jog + Strides',duration:'15 mins',intensity:'Very Low',
+     notes:'15min @ 6:45/km + 3x80m strides. IT band strap.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Wed Mar 25',sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest. Mobility only.\n\nHydration 3-4L. Carbs begin today.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Thu Mar 26',sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
+     notes:'Jog 10min @ 6:45/km + 3x80m strides.\n\nIT band strap. Legs should feel like springs.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Fri Mar 27',sessionType:'REST — Carb Load',intensity:'None',
+     notes:'COMPLETE REST. Walk 10min max.\n\nCarb load: pasta/rice + protein. Hydrate 4L.\n\nRace kit:\n• Bib, shoes, socks, shorts, shirt\n• Watch charged, gels ready\n• IT band strap for right knee\n\n🦵 TFL foam roll + glute roll this evening. Clamshells 2x20.'},
+    {day:'Sat Mar 28',sessionType:'REST — Race Eve',intensity:'None',
+     notes:'ZERO activity. Carb load dinner (6pm). Bed by 9pm.\n\nVisualise every station. Glute activation before sleep — 2x20 clamshells, 2x15 hip abductions.\n\nYOU ARE READY. 💪'},
+    {day:'Sun Mar 29',sessionType:'🏆 RACE DAY — Solo Hyrox',duration:'Target: Sub 1:25:00',intensity:'RACE EFFORT',
+     notes:'THIS IS IT. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• IT band strap on right knee before warm-up\n• Arrive venue 90min early\n• Warm-up: 10min progressive jog, full dynamic, 4x100m strides, light station touches\n• GLUTE ACTIVATION before start: 20 clamshells + 15 hip abductions each side\n• Gel 15min before start\n\n🦵 ITBS RACE NOTES:\n• If lateral knee pain starts during runs: shorten stride, increase cadence — do not stop running\n• Every station: drive from glutes, not quads — this reduces IT band stress\n• Sled push: low and powerful, glute-driven\n• Lunges: keep knees tracking over toes, no caving in\n\nRACE STRATEGY:\n• Runs 1-4: 5:20-5:30/km, HR 162-172 — controlled\n• Runs 5-8: 5:15-5:25/km, HR 170-182 — push\n• Stations: controlled power, rhythm over raw speed\n• Stations 5-8: everything you have\n\n🎯 TARGET: SUB 1:25:00\n\nLeave nothing on the floor. 💪🔥\n\nPOST RACE: TFL foam roll + glute roll immediately. IT band strap off. Ice lateral knee if sore.'}
   ],
 
-  // ── WEEK 5: Mar 30-Apr 5 — MARATHON RACE WEEK ────────────────────
+  // W5: Mar 30-Apr 5 — Post-Hyrox recovery
   5:[
-    {day:'Mon Mar 30', sessionType:'REST — Post Hyrox',intensity:'None',
-     notes:'FULL REST. You just raced Hyrox.\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs.\n\n🦵 KNEE: Ice immediately and again this evening. Monitor closely — you\'ve just done a full Hyrox. If right knee is significantly more swollen than left, physio before the marathon.\n\nMarathon is Saturday Apr 5 — only 6 days away. This is a completion race.' + REST_MOBILITY},
-    {day:'Tue Apr 1',  sessionType:'REST or Gentle Walk',duration:'20 mins',intensity:'Very Low',
-     notes:'20min gentle walk maximum. HR under 115.\n\nHow does the body feel? How is the knee?\n\nIf knee feels good: light jog tomorrow.\nIf knee swollen/painful: rest tomorrow too and keep marathon as walk/run.' + REST_MOBILITY + KNEE_CARE},
-    {day:'Wed Apr 2',  sessionType:'Easy Shakeout',duration:'20 mins',intensity:'Low — Zone 1-2',
-     notes:'20min easy jog @ 6:45/km, HR under 130. Compression sleeve.\n\nIf knee is sore from Hyrox, replace with 20min walk. Do NOT run through knee pain 4 days before a marathon.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Thu Apr 3',  sessionType:'REST + Mobility',intensity:'None',
-     notes:'Complete rest. 2 days to marathon.\n\nMobility only — full routine below.\n\nCarb loading begins today. Hydrate 4L.\n\n🦵 KNEE: Ice, elevation, compression.' + REST_MOBILITY},
-    {day:'Fri Apr 4',  sessionType:'REST — Race Eve',intensity:'None',
-     notes:'ZERO activity. Walk 10min max.\n\nFinal carb load dinner (6pm). Lay out race kit. Set 3 alarms. Bed by 9pm.\n\n🦵 KNEE: Compression sleeve for the marathon. Plan a walk/run strategy if knee is not 100% — this is a completion race.\n\nYou\'ve done Hyrox AND a half marathon in the last 5 weeks. Finishing a marathon on top of that is a massive achievement regardless of time.'},
-    {day:'Sat Apr 5',  sessionType:'🏆 RACE DAY — Full Marathon',duration:'Completion Goal',intensity:'RACE EFFORT',
-     notes:'MARATHON DAY. 🏃‍♀️\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + honey + coffee\n• Compression sleeve on right knee\n• Arrive 90min early\n• Warm-up: 10min easy walk/jog + gentle dynamic only\n• Gel 15min before start\n\n🦵 KNEE RACE STRATEGY:\n• If knee feels good at 10km: maintain pace\n• If knee aches at 10km: adopt walk/run (run 8min/walk 2min)\n• If sharp knee pain at any point: walk it in — no medal is worth a full tear\n• Compression sleeve stays on throughout\n\nRACE STRATEGY (standard):\n• Km 1-10: 6:15/km easy, HR 148-158 — settle in, don\'t go out fast\n• Km 11-30: 6:00-6:15/km, HR 155-168 — find rhythm\n• Km 31-42: whatever you can sustain — you\'re a finisher\n\nFUELING:\n• Gel every 5km from km 5\n• Water at every station\n• Electrolytes every other station\n\n⚠️ IMPORTANT: This comes 6 days after Solo Hyrox. Your legs will be tired. Your knee will be under stress. Completion is the goal — not time.\n\n🎯 GOAL: MARATHON FINISHER 🏅\n\nYOU\'VE GOT THIS. 💪🔥\n\nPOST RACE: Ice knee immediately. Elevation. Rest.'},
-    {day:'Sun Apr 6',  sessionType:'REST — Celebrate',intensity:'None',
-     notes:'MARATHON DONE. 🎉\n\nFull rest. Hydrate. Eat. Sleep.\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 5)\n\n🦵 KNEE: Ice twice today. Elevation. Compression. If significantly worse after marathon, see physio before resuming any training.'}
+    {day:'Mon Mar 30',sessionType:'REST — Post Hyrox',intensity:'None',
+     notes:'FULL REST. You just raced Hyrox. 🎉\n\nHydrate 4L+. Sleep 9+hrs. Protein + carbs.\n\n🦵 ITBS: TFL + glute foam roll today. If lateral knee sore post-race: ice 10min. Marathon Apr 12 — 13 days away. Good recovery window.'+REST_MOBILITY},
+    {day:'Tue Apr 1',sessionType:'REST',intensity:'None',
+     notes:'Complete rest or 20min gentle walk.\n\nFoam roll TFL and glutes — ITBS maintenance.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Wed Apr 2',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. Mobility only.\n\nHow is the lateral knee post-Hyrox? If significantly sore: physio before marathon.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
+    {day:'Thu Apr 3',sessionType:'Easy Return Run',duration:'20 mins',intensity:'Very Low — Zone 1-2',
+     notes:'First post-Hyrox run. 20min @ 6:45/km, HR under 130. ~3km.\n\nIT band strap. Flat surface. Stop if lateral knee painful.'+RUN_STRETCH+'\n'+ITBS_W5+ITBS_CARE},
+    {day:'Fri Apr 4',sessionType:'Lower Strength + ITBS Progression',duration:'45 mins',intensity:'Low-Moderate',
+     notes:'LOWER STRENGTH — ITBS loaded progression begins.\n\n• Goblet Squat: 3x12 @ 24kg KB (drive knees out throughout)\n• Romanian Deadlift: 3x10 @ 65kg\n• Lateral Step-ups: 3x12/leg @ 8kg DBs\n• Single Leg RDL: 3x10/leg @ 8kg DB\n\nCore:\n• Dead Bugs: 3x18\n• Side Plank: 3x35s/side\n• Pallof Press: 3x12/side'+LOWER_STRETCH+'\n'+ITBS_W5+ITBS_CARE},
+    {day:'Sat Apr 5',sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
+     notes:'30min @ 6:20-6:30/km, HR 115-130. ~4.5km.\n\nIT band strap. Marathon in 7 days — feeling good.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Sun Apr 6',sessionType:'Active Recovery + Mobility',duration:'25 mins',intensity:'Very Low',
+     notes:'Walk or light bike 20min then full ITBS mobility routine.'+REST_MOBILITY+'\n'+ITBS_W5+ITBS_CARE}
   ],
 
-  // ── WEEK 6: Apr 6-12 — Full Recovery ────────────────────────────
+  // W6: Apr 6-12 — Marathon Race Week
   6:[
-    {day:'Mon Apr 7',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest. Three races in 5 weeks.\n\nBody needs full recovery before Doubles build begins.' + REST_MOBILITY},
-    {day:'Tue Apr 8',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest or 20min walk.\n\nFoam roll gently — quads, glutes, calves. Avoid the knee joint.' + REST_MOBILITY + KNEE_CARE},
-    {day:'Wed Apr 9',  sessionType:'REST',intensity:'None',
-     notes:'Complete rest. How is the knee post-marathon?\n\nIf knee is more swollen or painful than expected: physio appointment before returning to training.' + REST_MOBILITY + KNEE_CARE},
-    {day:'Thu Apr 10', sessionType:'Gentle Walk',duration:'20 mins',intensity:'Very Low',
-     notes:'20min gentle walk. HR under 115.\n\nFirst movement since marathon. Listen to your body.' + REST_MOBILITY + KNEE_CARE},
-    {day:'Fri Apr 11', sessionType:'Easy Return Run',duration:'20 mins',intensity:'Low — Zone 1-2',
-     notes:'First post-marathon run. Very easy. 20min @ 7:00/km, HR under 130. ~3km.\n\nCompression sleeve. Stop if knee is painful.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sat Apr 12', sessionType:'Light Upper Strength',duration:'35 mins',intensity:'Low',
-     notes:'Upper body only — do not load the knee this week.\n\n• Pull-ups: 3x6 bodyweight\n• DB Row: 3x10 @ 14kg\n• Push-ups: 3x12\n• Farmers Carry: 3x30m @ 16kg\n\nCore (lying only):\n• Dead Bugs: 3x16\n• Hollow Hold: 3x25s' + STRENGTH_UPPER_STRETCH + KNEE_CARE},
-    {day:'Sun Apr 13', sessionType:'Easy Run',duration:'30 mins',intensity:'Low — Zone 2',
-     notes:'30min @ 6:30-6:45/km, HR 120-135. ~4.5km.\n\nCompression sleeve. Gentle and controlled.\n\n📋 Begin thinking about mixed doubles strategy with Tony. 3 weeks to race.' + RUN_STRETCH + KNEE_CARE}
+    {day:'Mon Apr 7',sessionType:'Easy Shakeout',duration:'25 mins',intensity:'Low — Zone 2',
+     notes:'25min easy @ 6:20/km, HR 115-130. ~4km.\n\nIT band strap. Feel fresh and relaxed. Marathon in 5 days.\n\nGlute activation before run: 20 clamshells + 15 hip abductions each side.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Tue Apr 8',sessionType:'Easy Run + Marathon Pace Segments',duration:'30 mins',intensity:'Low-Moderate',
+     notes:'Warm-up: 2km easy @ 6:30/km\n\n• 3x1km @ 6:00/km (marathon goal pace), HR 150-162\n• 2min easy jog between\n\nCool-down: walk. Total: ~5km.\n\nIT band strap.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Wed Apr 9',sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest. Hydration 3-4L. Check race kit.\n\nGlute activation: clamshells 2x20 + hip abduction 2x15 — keep firing those glutes before the race.'+REST_MOBILITY+ITBS_CARE},
+    {day:'Thu Apr 10',sessionType:'Easy Run + Strides',duration:'20 mins',intensity:'Very Low',
+     notes:'Easy run 3km @ 6:30/km + 4x100m strides (smooth).\n\nIT band strap. Should feel sharp and light. Total: ~4km.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Fri Apr 11',sessionType:'REST — Race Eve',intensity:'None',
+     notes:'ZERO activity. Walk 10min max.\n\nFinal carb load dinner (6pm). Lay out ALL race kit:\n• Bib, shoes (race-tested), socks, shorts, shirt\n• Watch + gels\n• IT band strap for right knee\n\nSet 3 alarms. Bed by 9pm.\n\n🦵 TFL foam roll + glute roll this evening. Clamshells 2x20 before bed.\n\nYOU ARE READY. 💪'},
+    {day:'Sat Apr 12',sessionType:'🏆 RACE DAY — Full Marathon',duration:'Completion Goal',intensity:'RACE EFFORT',
+     notes:'MARATHON DAY. 🏃‍♀️\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + honey + coffee\n• IT band strap on right knee\n• GLUTE ACTIVATION before warm-up: 20 clamshells + 15 hip abductions each side\n• Arrive 90min early\n• Warm-up: 10-15min easy jog + gentle dynamic drills + 4x100m strides\n• Gel 15min before start\n\n🦵 ITBS MARATHON STRATEGY:\n• If lateral knee tightens around km 15-20 (common ITBS point): shorten stride, increase cadence, focus on glute drive\n• Do NOT stop and stretch the IT band mid-race — keep moving, adjust form\n• IT band strap stays on throughout\n\nRACE STRATEGY:\n• Km 1-10: 6:15/km, HR 148-158 — settle in, controlled\n• Km 11-30: 6:00-6:15/km, HR 155-168 — find rhythm\n• Km 31-42: whatever you can sustain — you are a finisher\n\nFUELING:\n• Gel every 5km from km 5\n• Water at every station\n• Electrolytes every other station\n\n🎯 GOAL: MARATHON FINISHER 🏅\n\nYOU\'VE GOT THIS. 💪🔥\n\nPOST RACE: TFL + glute foam roll as soon as possible. IT band strap off. Elevate legs. Celebrate. 🎉'},
+    {day:'Sun Apr 13',sessionType:'REST — Celebrate',intensity:'None',
+     notes:'MARATHON DONE. 🎉\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 12)\n\nFull rest. Hydrate. Eat. Sleep.\n\n🦵 ITBS: TFL + glute foam roll twice today. If lateral knee significantly worse after marathon, see physio before resuming training. Doubles with Tony is May 2 — 19 days away.'}
   ],
 
-  // ── WEEK 7: Apr 13-19 — Doubles Build ───────────────────────────
+  // W7: Apr 13-19 — Recovery + Doubles Build
   7:[
-    {day:'Mon Apr 14', sessionType:'REST',intensity:'None',
-     notes:'Complete rest. 3 weeks to Doubles with Tony.' + REST_MOBILITY},
-    {day:'Tue Apr 15', sessionType:'Station Endurance',duration:'55 mins',intensity:'Moderate',
-     notes:'Return to full station work — knee adapted.\n\nWarm-up: 10min easy movement\n\n3 rounds @ 75% effort:\n• SkiErg: 500m\n• Rowing: 500m\n• Farmers Carry: 100m @ 16kg/hand\n• Wall Balls: 25 @ 6kg (90° max)\n• Sandbag Lunges: 40m @ 10kg (alternate legs, controlled)\n• Rest 3min between rounds\n\n🦵 No sled this session — knee loading caution after marathon.' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Wed Apr 16', sessionType:'Zone 2 Run',duration:'40 mins',intensity:'Low — Zone 2',
-     notes:'40min @ 6:00-6:15/km, HR 109-130. ~6.5km.\n\nCompression sleeve. Building back run endurance for Doubles.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Thu Apr 17', sessionType:'Lower Body Strength — Knee Adapted', duration:'55 mins', intensity:'Moderate',
-     notes:'Warm-up: 5min bike + leg swings 2x15/side\n\n🦵 ALL EXERCISES KNEE-ADAPTED:\n• Goblet Squat: 4x10 @ 24kg KB (to 90° only, no deeper)\n• Romanian Deadlift: 4x10 @ 65kg (hinge focus, not squat)\n• Step-ups (box): 3x12/leg @ 14kg DBs (controlled, right knee)\n• Sled Push: 4x25m @ 90kg (lighter, protect knee)\n• Seated Leg Press: 3x12 @ moderate (60-90° range only)\n• Eccentric Single Leg Press: 3x10/leg (VMO strengthening — key for meniscus support)\n• Side-lying Hip Abduction: 3x15/side (glute med — reduces knee valgus)\n\nCore:\n• Dead Bugs: 3x20\n• Side Plank: 3x30s/side\n• Pallof Press: 3x12/side' + STRENGTH_LOWER_STRETCH + KNEE_CARE},
-    {day:'Fri Apr 18', sessionType:'Easy Run',duration:'35 mins',intensity:'Low — Zone 2',
-     notes:'35min @ 6:10/km, HR 109-127. ~5.5km. Easy and controlled. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sat Apr 19', sessionType:'Run Club / Tempo Run',duration:'30 mins max',intensity:'Moderate — Zone 3',
-     notes:'Run club or solo tempo — 30min max.\n\nAim for Zone 3 effort (HR 130-145), comfortable-hard. ~5km @ 5:40-5:50/km.\n\nCompression sleeve throughout.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Sun Apr 20', sessionType:'Active Recovery',duration:'25 mins',intensity:'Very Low',
-     notes:'Walk or light bike 20min.\n\nConnect with Tony this week to confirm doubles strategy and station splits.' + REST_MOBILITY + KNEE_CARE}
+    {day:'Mon Apr 14',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 3 weeks to Doubles.\n\nBody needs full recovery after marathon.'+REST_MOBILITY+'\n'+ITBS_W7},
+    {day:'Tue Apr 15',sessionType:'REST',intensity:'None',
+     notes:'Complete rest or 20min gentle walk.\n\nFoam roll TFL and glutes — ITBS maintenance.'+REST_MOBILITY+'\n'+ITBS_W7+ITBS_CARE},
+    {day:'Wed Apr 16',sessionType:'Easy Return Run',duration:'25 mins',intensity:'Low — Zone 1-2',
+     notes:'First post-marathon run. 25min @ 6:45/km, HR under 130. ~3.5km.\n\nIT band strap. Flat surface. Stop if lateral knee painful.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Thu Apr 17',sessionType:'Lower Strength + ITBS Peak Loading',duration:'60 mins',intensity:'Moderate',
+     notes:'LOWER STRENGTH — ITBS peak loading week.\n\nPROGRESSIVE OVERLOAD vs W5:\n• Goblet Squat: 4x12 @ 28kg KB (+4kg)\n• Romanian Deadlift: 4x10 @ 70kg (+5kg)\n• Lateral Step-ups: 3x15/leg @ 10kg DBs (+2kg)\n• Single Leg RDL: 3x12/leg @ 10-12kg DB (+2-4kg)\n• Sled Push: 4x25m @ 95kg — glute-driven\n• Sandbag Lunges: 3x30m @ 10kg (track knees over toes)\n\nCore:\n• Dead Bugs: 3x20\n• Side Plank: 3x40s/side\n• Pallof Press: 3x15/side'+LOWER_STRETCH+'\n'+ITBS_W7+ITBS_CARE},
+    {day:'Fri Apr 18',sessionType:'Easy Run',duration:'35 mins',intensity:'Low — Zone 2',
+     notes:'35min @ 6:10/km, HR 109-130. ~5.5km. IT band strap.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Sat Apr 19',sessionType:'Run Club / Tempo Run',duration:'30 mins max',intensity:'Moderate — Zone 3',
+     notes:'Run club or solo — 30min max.\n\nZone 3 effort, HR 131-150. ~5km @ 5:40-5:50/km.\n\nIT band strap. Flat route — avoid camber.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Sun Apr 20',sessionType:'Active Recovery + Mobility',duration:'25 mins',intensity:'Very Low',
+     notes:'Walk or light bike 20min.\n\nConnect with Tony to confirm doubles strategy and station splits.'+REST_MOBILITY+'\n'+ITBS_W7+ITBS_CARE}
   ],
 
-  // ── WEEK 8: Apr 20-26 — Doubles Peak + Sim ───────────────────────
+  // W8: Apr 20-26 — Doubles Peak + Sim
   8:[
-    {day:'Mon Apr 21', sessionType:'REST',intensity:'None',
-     notes:'Complete rest. 2 weeks to Doubles. Knee care priority.' + REST_MOBILITY},
-    {day:'Tue Apr 22', sessionType:'Station Endurance + Running',duration:'60 mins',intensity:'Moderate-High',
-     notes:'Warm-up: 10min jog + dynamic\n\n3 rounds @ 80-85% effort:\n• SkiErg: 600m\n• Run 600m @ 5:30/km\n• Rowing: 500m\n• Run 600m @ 5:30/km\n• Wall Balls: 25 @ 6kg\n• Rest 3min\n\n🦵 Knee-adapted: no sled, no lunges in this session. These are covered in Saturday sim.\n\nCool-down: 10min walk' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Wed Apr 23', sessionType:'Zone 2 Run',duration:'35 mins',intensity:'Low — Zone 2',
-     notes:'35min @ 6:05-6:15/km, HR 109-127. ~5.5km. Easy. Freshen legs for Saturday sim.\n\nCompression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Thu Apr 24', sessionType:'Lower Body — Light + Mobility',duration:'45 mins',intensity:'Low-Moderate',
-     notes:'Reduced volume — save legs for sim.\n\n🦵 Knee adapted:\n• Goblet Squat: 3x8 @ 20kg KB (90° only)\n• Romanian Deadlift: 3x10 @ 60kg\n• Side-lying Hip Abduction: 3x15/side\n• Eccentric Single Leg Press: 3x8/leg\n• Sled Push: 3x25m @ 90kg (light)\n\nCore: 2 rounds — Dead Bugs 18, Side Plank 30s, Pallof 12/side' + STRENGTH_LOWER_STRETCH + KNEE_CARE},
-    {day:'Fri Apr 25', sessionType:'REST — Pre-Sim',intensity:'None',
-     notes:'Complete rest. Sim tomorrow.\n\nMobility only. Ice knee. Elevation. Confirm meet time and plan with Tony.' + REST_MOBILITY},
-    {day:'Sat Apr 26', sessionType:'🔥 DOUBLES SIM WITH TONY',duration:'90-120 mins',intensity:'90-95% Race Effort',
-     notes:'FULL MIXED DOUBLES SIMULATION WITH TONY @ 90-95% effort.\n\nWarm-up: 15min together + full dynamic + 4x100m strides\n\n⚡ MIXED DOUBLES: Jade completes 60% of station work, Tony 40%.\nJade leads the strategy — you have the doubles experience.\n\n🦵 KNEE SIM PROTOCOL:\n• Burpee BJs: step-back variation throughout\n• Sled Push: short powerful steps, controlled right knee\n• Sandbag Lunges: alternate legs, steady rhythm\n• Wall Balls: 90° depth max\n• If sharp knee pain at any station: pass to Tony, rest, reassess\n\nFull 8-station run-through at agreed splits.\nRun pace: Both @ 5:25-5:30/km.\n\n30min debrief:\n• Record all station times and run splits\n• Transitions smooth?\n• How did the knee hold up?\n• Any adjustments for race day?' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Sun Apr 27', sessionType:'REST + Full Mobility',intensity:'None',
-     notes:'Full rest. Last hard effort done. Taper begins.\n\nFull mobility flow (30 min):\n• Full upper routine\n• Full lower routine\n• Legs Up The Wall: 8min\n\n🦵 KNEE: Ice twice today. Monitor carefully after the sim.' + REST_MOBILITY + KNEE_CARE}
+    {day:'Mon Apr 21',sessionType:'REST',intensity:'None',
+     notes:'Complete rest. 2 weeks to Doubles.'+REST_MOBILITY+'\n'+ITBS_W7},
+    {day:'Tue Apr 22',sessionType:'Station Endurance + Running',duration:'60 mins',intensity:'Moderate-High',
+     notes:'Warm-up: 10min jog + dynamic\n\n3 rounds @ 80-85%:\n• SkiErg: 600m\n• Run 600m @ 5:30/km\n• Rowing: 500m\n• Run 600m @ 5:30/km\n• Wall Balls: 25 @ 6kg\n• Rest 3min\n\n🦵 ITBS: IT band strap. Glute-driven throughout.\n\nCool-down: 10min walk'+HYROX_STRETCH+'\n'+ITBS_W7+ITBS_CARE},
+    {day:'Wed Apr 23',sessionType:'Zone 2 Run',duration:'35 mins',intensity:'Low — Zone 2',
+     notes:'35min @ 6:05-6:15/km, HR 109-127. ~5.5km. IT band strap. Freshen legs for Saturday sim.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Thu Apr 24',sessionType:'Lower Strength + ITBS — Reduced',duration:'50 mins',intensity:'Low-Moderate',
+     notes:'Reduced volume — save legs for sim.\n\nPROGRESSIVE OVERLOAD vs W7 (reduced sets):\n• Goblet Squat: 3x10 @ 28kg KB\n• Romanian Deadlift: 3x10 @ 68kg\n• Lateral Step-ups: 3x12/leg @ 10kg\n• Single Leg RDL: 3x10/leg @ 10kg\n• Sled Push: 3x25m @ 95kg\n\nCore: 2 rounds — Dead Bugs 18, Side Plank 35s, Pallof 12/side'+LOWER_STRETCH+'\n'+ITBS_W7+ITBS_CARE},
+    {day:'Fri Apr 25',sessionType:'REST — Pre-Sim',intensity:'None',
+     notes:'Complete rest. Sim tomorrow.\n\nGlute activation this evening: clamshells 2x20 + hip abduction 2x15.\n\nConfirm meet time and plan with Tony.'+REST_MOBILITY+ITBS_CARE},
+    {day:'Sat Apr 26',sessionType:'🔥 DOUBLES SIM WITH TONY',duration:'90-120 mins',intensity:'90-95% Race Effort',
+     notes:'FULL MIXED DOUBLES SIMULATION WITH TONY @ 90-95% effort.\n\nWarm-up: 15min together + full dynamic + 4x100m strides\n\n⚡ MIXED DOUBLES: Jade completes 60% of station work, Tony 40%.\nJade leads the strategy — you have the doubles experience.\n\n🦵 ITBS SIM PROTOCOL:\n• IT band strap throughout\n• GLUTE ACTIVATION before start: 20 clamshells each side\n• Glute-driven at every station — this is both performance and injury management\n• If lateral knee tightens during runs: shorten stride, increase cadence, do not stop\n\nFull 8-station run-through at agreed splits.\nRun pace: Both @ 5:25-5:30/km.\n\n30min debrief:\n• Record all station times and run splits\n• Transitions smooth?\n• How did the lateral knee hold up?\n• Jade leads — defer to your doubles experience'+HYROX_STRETCH+'\n'+ITBS_W9+ITBS_CARE},
+    {day:'Sun Apr 27',sessionType:'REST + Full Mobility',intensity:'None',
+     notes:'Full rest. Last hard effort done. Taper begins.\n\nFull ITBS mobility flow — prioritise TFL and glute work today.'+REST_MOBILITY+'\n'+ITBS_W9+ITBS_CARE}
   ],
 
-  // ── WEEK 9: Apr 27-May 2 — Race Week ─────────────────────────────
+  // W9: Apr 27-May 2 — Race Week
   9:[
-    {day:'Mon Apr 28', sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
-     notes:'Light touch only — 60% effort, NOT timed:\n• SkiErg: 2x250m\n• Rowing: 2x250m\n• Wall Balls: 2x12 @ 6kg (90° depth)\n\n10min mobility afterwards. Knee: ice, elevation.' + HYROX_STRETCH + KNEE_CARE},
-    {day:'Tue Apr 29', sessionType:'Easy Shakeout',duration:'15 mins',intensity:'Very Low',
-     notes:'15min jog @ 6:30/km, HR under 125. Add 4x80m strides at end.\n\nCompression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Wed Apr 30', sessionType:'REST + Mobility',intensity:'None',
-     notes:'Complete rest. Carb loading starts today.\n\nFull mobility routine. Knee: ice, elevation, compression.\n\nHydration 3-4L. Sleep 8+ hours.' + REST_MOBILITY},
-    {day:'Thu May 1',  sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
-     notes:'Jog 10min @ 6:30/km + 3x80m strides.\n\nLegs should feel like springs. Compression sleeve.' + RUN_STRETCH + KNEE_CARE},
-    {day:'Fri May 2',  sessionType:'🏆 RACE DAY — Tony Mixed Doubles',duration:'Target: Sub 1:15:00',intensity:'RACE EFFORT',
-     notes:'DOUBLES RACE DAY WITH TONY. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• Compression sleeve on right knee before warm-up\n• Arrive venue 90min early\n• Warm-up with Tony: 10min progressive jog, full dynamic, 4x100m strides\n• Gel 15min before start\n\n🦵 KNEE RACE PLAN (same as Hyrox solo):\n• Step-back burpees throughout\n• Sled push: short controlled steps\n• Lunges: alternate legs, walk lunges if needed\n• Wall balls: 90° max depth\n• If sharp pain: communicate to Tony immediately — you have a partner to lean on\n\nRACE:\n• You carry 60% of station work — you know this format\n• Lead the transitions, communicate clearly\n• Run strong between every station: 5:25-5:30/km\n• Trust your training and Tony\n\n🎯 TARGET: SUB 1:15:00\n\nFour races in 9 weeks. You are extraordinary. Leave nothing on the floor. 💪🔥\n\nPOST RACE: Ice knee immediately. You\'ve earned a proper rest. 🏅'},
-    {day:'Sat May 3',  sessionType:'REST — Celebrate',intensity:'None',
-     notes:'FOUR RACES. DONE. 🎉\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 12)\n✅ Mixed Doubles Hyrox with Tony (May 2)\n\nRest. Recover. Celebrate. You\'ve earned every bit of it.\n\n🦵 KNEE: See a physio now the season is over. Get the meniscus properly assessed and treated before your next training block.'}
+    {day:'Mon Apr 28',sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
+     notes:'60% effort, NOT timed:\n• SkiErg: 2x250m\n• Rowing: 2x250m\n• Wall Balls: 2x12 @ 6kg\n\nGlute activation before: clamshells 2x20.\n10min mobility afterwards.'+HYROX_STRETCH+'\n'+ITBS_W9+ITBS_CARE},
+    {day:'Tue Apr 29',sessionType:'Easy Shakeout',duration:'15 mins',intensity:'Very Low',
+     notes:'15min jog @ 6:30/km, HR under 125. Add 4x80m strides.\n\nIT band strap.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Wed Apr 30',sessionType:'REST + Mobility',intensity:'None',
+     notes:'Complete rest. Carb loading starts today.\n\nGlute activation: clamshells 2x20 + hip abduction 2x15 each side.\nFull ITBS mobility routine. Hydration 3-4L.'+REST_MOBILITY+'\n'+ITBS_W9+ITBS_CARE},
+    {day:'Thu May 1',sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
+     notes:'Jog 10min @ 6:30/km + 3x80m strides.\n\nIT band strap. Legs should feel like springs.'+RUN_STRETCH+ITBS_CARE},
+    {day:'Fri May 2',sessionType:'🏆 RACE DAY — Tony Mixed Doubles',duration:'Target: Sub 1:15:00',intensity:'RACE EFFORT',
+     notes:'DOUBLES RACE DAY WITH TONY. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• IT band strap on right knee\n• GLUTE ACTIVATION before warm-up: 20 clamshells + 15 hip abductions each side\n• Arrive venue 90min early\n• Warm-up with Tony: 10min progressive jog, full dynamic, 4x100m strides, light station touches\n• Gel 15min before start\n\n🦵 ITBS RACE PLAN:\n• IT band strap on throughout\n• Glute-driven at every station — performance AND injury prevention\n• If lateral knee tightens on runs: shorten stride, increase cadence, communicate to Tony\n• You have a partner — lean on him if needed\n\nRACE:\n• You carry 60% of station work — you know this format\n• Lead the transitions, communicate clearly\n• Run strong: 5:25-5:30/km\n• Trust 9 weeks of training and your partner\n\n🎯 TARGET: SUB 1:15:00\n\nFour races in 9 weeks. You are extraordinary. Leave nothing on the floor. 💪🔥\n\nPOST RACE: TFL + glute foam roll immediately. IT band strap off. Ice lateral knee if sore. You\'ve earned a long rest. 🏅'},
+    {day:'Sat May 3',sessionType:'REST — Celebrate',intensity:'None',
+     notes:'FOUR RACES. DONE. 🎉\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 12)\n✅ Mixed Doubles Hyrox with Tony (May 2)\n\nRest. Recover. Celebrate. You\'ve earned every bit of it.\n\n🦵 ITBS: Now the season is over — see a physio/sports therapist. Get a full hip strength assessment and a structured ITBS rehab plan before your next training block. The glute work you\'ve done this block is a great foundation to build on.'}
   ]
 };
 
-const hrZones = [
-  {zone:'Z1', label:'Recovery',    range:'<112 bpm',    color:'#888',    pct:'<60%'},
-  {zone:'Z2', label:'Aerobic Base',range:'112-131 bpm', color:'#4ade80', pct:'60-70%'},
-  {zone:'Z3', label:'Tempo',       range:'131-150 bpm', color:'#facc15', pct:'70-80%'},
-  {zone:'Z4', label:'Threshold',   range:'150-168 bpm', color:'#fb923c', pct:'80-90%'},
-  {zone:'Z5', label:'Race / VO2',  range:'168-187 bpm', color:'#f43f5e', pct:'90-100%'}
-];
-// Max HR ~187 (age 33, female)
-
-function WorkoutCard({day, isComplete, onToggle}) {
-  const [open, setOpen] = useState(false);
-  if (!day || !day.sessionType) return null;
-  const isRace = day.sessionType.includes('🏆');
-  const isSim  = day.sessionType.includes('🔥');
-  const isRest = day.intensity === 'None';
-  const borderCol = isComplete ? P : isRace ? '#ffd700' : isSim ? PD : '#FFB6C1';
-
-  return (
-    <div className="border-2 rounded-lg p-4 transition" style={{backgroundColor:'#fff', borderColor: borderCol}}>
+function WorkoutCard({day,isComplete,onToggle}){
+  const [open,setOpen]=useState(false);
+  if(!day||!day.sessionType) return null;
+  const isRace=day.sessionType.includes('🏆');
+  const isSim=day.sessionType.includes('🔥');
+  const isRest=day.intensity==='None';
+  const bc=isComplete?P:isRace?'#b8860b':isSim?PD:'#FFB6C1';
+  return(
+    <div className="border-2 rounded-lg p-4 transition" style={{backgroundColor:'#fff',borderColor:bc}}>
       <div className="flex items-start gap-3">
         <button onClick={onToggle} className="flex-shrink-0 mt-1 w-6 h-6 rounded border-2 flex items-center justify-center"
-          style={isComplete ? {backgroundColor: P, borderColor: P} : {borderColor: P}}>
-          {isComplete && <span style={{color:'#fff', fontSize:'12px'}}>✓</span>}
+          style={isComplete?{backgroundColor:P,borderColor:P}:{borderColor:P}}>
+          {isComplete&&<span style={{color:'#fff',fontSize:'12px'}}>✓</span>}
         </button>
         <div className="flex-1">
           <div className="flex items-start justify-between mb-1">
             <div>
               <div className="font-bold" style={{color:'#222'}}>{day.day}</div>
-              <div className="text-sm" style={{color: isRace ? '#b8860b' : isSim ? PD : '#888'}}>{day.sessionType}</div>
+              <div className="text-sm" style={{color:isRace?'#b8860b':isSim?PD:'#999'}}>{day.sessionType}</div>
             </div>
-            {day.duration && <div className="text-xs text-gray-400 ml-2 flex-shrink-0">{day.duration}</div>}
+            {day.duration&&<div className="text-xs text-gray-400 ml-2 flex-shrink-0">{day.duration}</div>}
           </div>
-          {!isRest && (
+          {!isRest&&(
             <div className="mt-1 mb-2">
-              <span className="text-xs px-2 py-1 rounded-full" style={{backgroundColor: PL, color: PD}}>{day.intensity}</span>
+              <span className="text-xs px-2 py-1 rounded-full" style={{backgroundColor:PL,color:PD}}>{day.intensity}</span>
             </div>
           )}
-          {day.notes && (
-            <button onClick={() => setOpen(!open)} className="text-xs font-semibold mt-1" style={{color: P}}>
-              {open ? '▼ Hide Details' : '▶ Show Full Workout'}
+          {day.notes&&(
+            <button onClick={()=>setOpen(!open)} className="text-xs font-semibold mt-1" style={{color:P}}>
+              {open?'▼ Hide Details':'▶ Show Full Workout'}
             </button>
           )}
-          {open && day.notes && (
+          {open&&day.notes&&(
             <div className="mt-3 p-3 rounded text-sm whitespace-pre-line border max-h-96 overflow-y-auto"
-              style={{backgroundColor: PL, borderColor:'#FFB6C1', color:'#333'}}>
+              style={{backgroundColor:PL,borderColor:'#FFB6C1',color:'#333'}}>
               {day.notes}
             </div>
           )}
@@ -312,20 +406,19 @@ function WorkoutCard({day, isComplete, onToggle}) {
   );
 }
 
-function HRReference() {
-  const [open, setOpen] = useState(false);
-  return (
-    <div className="border-2 rounded-lg mb-4" style={{borderColor:'#FFB6C1', backgroundColor:'#fff'}}>
-      <button onClick={() => setOpen(!open)} className="w-full p-3 flex items-center justify-between text-sm font-semibold"
-        style={{color: PD}}>
-        <span><InfoIcon s={16} style={{display:'inline', marginRight:'6px'}}/>HR Zones — Max 187 bpm (Age 33)</span>
-        <span style={{color: P}}>{open ? '▼' : '▶'}</span>
+function HRReference(){
+  const [open,setOpen]=useState(false);
+  return(
+    <div className="border-2 rounded-lg mb-4" style={{borderColor:'#FFB6C1',backgroundColor:'#fff'}}>
+      <button onClick={()=>setOpen(!open)} className="w-full p-3 flex items-center justify-between text-sm font-semibold" style={{color:PD}}>
+        <span><InfoIcon s={16} style={{display:'inline',marginRight:'6px'}}/>HR Zones — Max 187 bpm (Age 33)</span>
+        <span style={{color:P}}>{open?'▼':'▶'}</span>
       </button>
-      {open && (
+      {open&&(
         <div className="px-3 pb-3 space-y-2">
-          {hrZones.map(z => (
+          {hrZones.map(z=>(
             <div key={z.zone} className="flex items-center gap-3 text-sm">
-              <span className="font-bold w-6" style={{color: z.color}}>{z.zone}</span>
+              <span className="font-bold w-6" style={{color:z.color}}>{z.zone}</span>
               <span className="text-gray-500 w-28">{z.label}</span>
               <span className="font-mono" style={{color:'#333'}}>{z.range}</span>
               <span className="text-gray-400 text-xs">{z.pct}</span>
@@ -334,8 +427,8 @@ function HRReference() {
           <div className="mt-2 pt-2 border-t text-xs text-gray-400" style={{borderColor:'#FFB6C1'}}>
             Solo Hyrox 1:27 | Mixed Doubles PR 1:19 | Hyrox run pace: 5:15-5:30/km
           </div>
-          <div className="mt-1 text-xs font-semibold" style={{color: PD}}>
-            🦵 Suspected right meniscus tear — compression sleeve all runs, 90° squat depth limit, step-back burpees, ice post every session
+          <div className="mt-2 p-2 rounded text-xs font-semibold" style={{backgroundColor:PL,color:PD}}>
+            🦵 ITBS — Right knee. IT band strap all runs. Glute activation before every run + race. TFL + glute foam roll post every session. Drive from glutes at every Hyrox station.
           </div>
         </div>
       )}
@@ -343,157 +436,149 @@ function HRReference() {
   );
 }
 
-function App() {
-  const [tab, setTab]           = useState('plan');
-  const [week, setWeek]         = useState(1);
-  const [comp, setComp]         = useState({});
-  const [workouts, setWorkouts] = useState([]);
-  const [showLog, setShowLog]   = useState(false);
-  const [logData, setLogData]   = useState({date: new Date().toISOString().split('T')[0], type:'', duration:'', notes:''});
+function App(){
+  const [tab,setTab]=useState('plan');
+  const [week,setWeek]=useState(1);
+  const [comp,setComp]=useState({});
+  const [workouts,setWorkouts]=useState([]);
+  const [showLog,setShowLog]=useState(false);
+  const [logData,setLogData]=useState({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
 
-  useEffect(() => {
-    try {
-      setComp(JSON.parse(localStorage.getItem('jade26_comp') || '{}'));
-      setWorkouts(JSON.parse(localStorage.getItem('jade26_workouts') || '[]'));
-    } catch(e) {}
-  }, []);
-  useEffect(() => { localStorage.setItem('jade26_comp', JSON.stringify(comp)); }, [comp]);
-  useEffect(() => { localStorage.setItem('jade26_workouts', JSON.stringify(workouts)); }, [workouts]);
+  useEffect(()=>{
+    try{
+      setComp(JSON.parse(localStorage.getItem('jade26_comp')||'{}'));
+      setWorkouts(JSON.parse(localStorage.getItem('jade26_workouts')||'[]'));
+    }catch(e){}
+  },[]);
+  useEffect(()=>{localStorage.setItem('jade26_comp',JSON.stringify(comp));},[comp]);
+  useEffect(()=>{localStorage.setItem('jade26_workouts',JSON.stringify(workouts));},[workouts]);
 
-  const toggleComp = (w, i) => setComp(p => ({...p, [`${w}-${i}`]: !p[`${w}-${i}`]}));
-  const isComp     = (w, i) => !!comp[`${w}-${i}`];
-
-  const getCompletion = (w) => {
-    const plan = plans[w]; if (!plan) return {completed:0, total:0, pct:0};
-    const c = plan.filter((_, i) => isComp(w, i)).length;
-    return {completed: c, total: plan.length, pct: plan.length ? Math.round(c/plan.length*100) : 0};
+  const toggleComp=(w,i)=>setComp(p=>({...p,[`${w}-${i}`]:!p[`${w}-${i}`]}));
+  const isComp=(w,i)=>!!comp[`${w}-${i}`];
+  const getCompletion=(w)=>{
+    const plan=plans[w]; if(!plan) return {completed:0,total:0,pct:0};
+    const c=plan.filter((_,i)=>isComp(w,i)).length;
+    return {completed:c,total:plan.length,pct:plan.length?Math.round(c/plan.length*100):0};
   };
 
-  const totalDone    = Object.values(comp).filter(Boolean).length;
-  const currentPhase = phases[week];
-  const currentPlan  = plans[week] || [];
+  const totalDone=Object.values(comp).filter(Boolean).length;
+  const currentPhase=phases[week];
+  const currentPlan=plans[week]||[];
 
-  const logWorkout = () => {
-    if (!logData.type) return;
-    setWorkouts([{...logData, id: Date.now()}, ...workouts]);
-    setLogData({date: new Date().toISOString().split('T')[0], type:'', duration:'', notes:''});
+  const logWorkout=()=>{
+    if(!logData.type) return;
+    setWorkouts([{...logData,id:Date.now()},...workouts]);
+    setLogData({date:new Date().toISOString().split('T')[0],type:'',duration:'',notes:''});
     setShowLog(false);
   };
 
-  return (
-    <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg, #FFE4F0 0%, #FFF0F7 100%)'}}>
+  return(
+    <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg,#FFE4F0 0%,#FFF0F7 100%)'}}>
       <div className="max-w-2xl mx-auto pb-20">
 
-        {/* Header */}
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-4">
-            <FlameIcon s={40} style={{color: P}}/>
+            <FlameIcon s={40} style={{color:P}}/>
             <div>
-              <h1 className="text-3xl font-bold" style={{color: P}}>Jade's Training</h1>
-              <p className="text-sm" style={{color: PD}}>9-Week Hyrox + Marathon + Doubles Block</p>
+              <h1 className="text-3xl font-bold" style={{color:P}}>Jade's Training</h1>
+              <p className="text-sm" style={{color:PD}}>9-Week Hyrox + Marathon + Doubles Block</p>
             </div>
           </div>
 
-          {/* Athlete card */}
-          <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+          <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
             <div className="grid grid-cols-3 gap-3 text-sm">
               <div><div className="text-xs" style={{color:'#aaa'}}>Age / Weight</div><div className="font-semibold" style={{color:'#333'}}>33 / 74kg</div></div>
-              <div><div className="text-xs" style={{color:'#aaa'}}>Solo Hyrox PR</div><div className="font-semibold" style={{color: P}}>1:27:00</div></div>
-              <div><div className="text-xs" style={{color:'#aaa'}}>Doubles PR</div><div className="font-semibold" style={{color: P}}>1:19:00</div></div>
+              <div><div className="text-xs" style={{color:'#aaa'}}>Solo Hyrox PR</div><div className="font-semibold" style={{color:P}}>1:27:00</div></div>
+              <div><div className="text-xs" style={{color:'#aaa'}}>Doubles PR</div><div className="font-semibold" style={{color:P}}>1:19:00</div></div>
             </div>
-            <div className="mt-3 pt-3 border-t text-xs font-semibold" style={{borderColor:'#FFB6C1', color: PD}}>
-              🦵 Suspected right meniscus tear — all sessions adapted. See notes for knee protocol.
+            <div className="mt-3 pt-3 border-t text-xs font-semibold" style={{borderColor:'#FFB6C1',color:PD}}>
+              🦵 IT Band Syndrome (ITBS) — right knee. Progressive glute med + hip abductor overload throughout. IT band strap all runs. TFL + glute foam roll post every session.
             </div>
           </div>
 
-          {/* Race cards */}
           <div className="grid grid-cols-3 gap-2 mb-4">
-            <div className="rounded-lg p-3 border-2" style={{borderColor: P, backgroundColor:'#fff'}}>
+            <div className="rounded-lg p-3 border-2" style={{borderColor:P,backgroundColor:'#fff'}}>
               <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 1 — Mar 29</div>
               <div className="font-bold text-sm" style={{color:'#333'}}>Solo Hyrox</div>
-              <div className="font-bold" style={{color: P}}>Sub 1:25</div>
+              <div className="font-bold" style={{color:P}}>Sub 1:25</div>
             </div>
-            <div className="rounded-lg p-3 border-2" style={{borderColor:'#fb923c', backgroundColor:'#fff'}}>
+            <div className="rounded-lg p-3 border-2" style={{borderColor:'#fb923c',backgroundColor:'#fff'}}>
               <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 2 — Apr 12</div>
               <div className="font-bold text-sm" style={{color:'#333'}}>Marathon</div>
               <div className="font-bold" style={{color:'#fb923c'}}>Finisher 🏅</div>
             </div>
-            <div className="rounded-lg p-3 border-2" style={{borderColor: PD, backgroundColor:'#fff'}}>
+            <div className="rounded-lg p-3 border-2" style={{borderColor:PD,backgroundColor:'#fff'}}>
               <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 3 — May 2</div>
               <div className="font-bold text-sm" style={{color:'#333'}}>Doubles + Tony</div>
-              <div className="font-bold" style={{color: PD}}>Sub 1:15</div>
+              <div className="font-bold" style={{color:PD}}>Sub 1:15</div>
             </div>
           </div>
 
-          {/* Stats */}
           <div className="grid grid-cols-3 gap-3 mb-4">
-            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
-              <div className="text-2xl font-bold" style={{color: P}}>{totalDone}</div>
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color:P}}>{totalDone}</div>
               <div className="text-xs" style={{color:'#aaa'}}>Sessions Done</div>
             </div>
-            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
-              <div className="text-2xl font-bold" style={{color: P}}>{getCompletion(week).pct}%</div>
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color:P}}>{getCompletion(week).pct}%</div>
               <div className="text-xs" style={{color:'#aaa'}}>This Week</div>
             </div>
-            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
-              <div className="text-2xl font-bold" style={{color: P}}>{Math.max(0, 10-week)}</div>
+            <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
+              <div className="text-2xl font-bold" style={{color:P}}>{Math.max(0,10-week)}</div>
               <div className="text-xs" style={{color:'#aaa'}}>Weeks Left</div>
             </div>
           </div>
         </div>
 
-        {/* Tabs */}
         <div className="flex gap-2 mb-5 border-b-2" style={{borderColor:'#FFB6C1'}}>
-          {[['plan', CalIcon, 'Plan'], ['log', PlusIcon, 'Log'], ['history', TrendIcon, 'History']].map(([t, I, label]) => (
-            <button key={t} onClick={() => setTab(t)}
-              className={`px-5 py-3 font-semibold ${tab===t ? 'border-b-2' : ''}`}
-              style={tab===t ? {borderBottomColor: P, color: P} : {color:'#bbb'}}>
-              <I s={16} style={{display:'inline', marginRight:'5px'}}/>{label}
+          {[['plan',CalIcon,'Plan'],['log',PlusIcon,'Log'],['history',TrendIcon,'History']].map(([t,I,label])=>(
+            <button key={t} onClick={()=>setTab(t)}
+              className={`px-5 py-3 font-semibold ${tab===t?'border-b-2':''}`}
+              style={tab===t?{borderBottomColor:P,color:P}:{color:'#bbb'}}>
+              <I s={16} style={{display:'inline',marginRight:'5px'}}/>{label}
             </button>
           ))}
         </div>
 
-        {/* ── PLAN TAB ── */}
-        {tab === 'plan' && (
+        {tab==='plan'&&(
           <div>
             <HRReference/>
-
             <div className="flex items-center gap-2 mb-5">
-              <button onClick={() => setWeek(Math.max(1, week-1))} disabled={week===1}
+              <button onClick={()=>setWeek(Math.max(1,week-1))} disabled={week===1}
                 className="px-3 py-2 border-2 rounded disabled:opacity-30"
-                style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>←</button>
+                style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>←</button>
               <div className="flex-1 flex gap-2 overflow-x-auto pb-1">
-                {[...Array(9)].map((_, i) => {
-                  const w = i+1;
-                  const c = getCompletion(w);
-                  const label = (w===4||w===5||w===9) ? '🏆' : w===8 ? '🔥' : '';
-                  return (
-                    <button key={w} onClick={() => setWeek(w)}
+                {[...Array(9)].map((_,i)=>{
+                  const w=i+1;
+                  const c=getCompletion(w);
+                  const lbl=(w===4||w===6||w===9)?'🏆':w===8?'🔥':'';
+                  return(
+                    <button key={w} onClick={()=>setWeek(w)}
                       className="flex-shrink-0 px-3 py-2 rounded-lg font-semibold text-sm border-2"
-                      style={week===w ? {backgroundColor: P, borderColor: P, color:'#fff'} : {backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>
-                      <div>{label}W{w}</div>
-                      {c.completed > 0 && <div className="text-xs opacity-70">{c.pct}%</div>}
+                      style={week===w?{backgroundColor:P,borderColor:P,color:'#fff'}:{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>
+                      <div>{lbl}W{w}</div>
+                      {c.completed>0&&<div className="text-xs opacity-70">{c.pct}%</div>}
                     </button>
                   );
                 })}
               </div>
-              <button onClick={() => setWeek(Math.min(9, week+1))} disabled={week===9}
+              <button onClick={()=>setWeek(Math.min(9,week+1))} disabled={week===9}
                 className="px-3 py-2 border-2 rounded disabled:opacity-30"
-                style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>→</button>
+                style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>→</button>
             </div>
 
-            {currentPhase && (
-              <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+            {currentPhase&&(
+              <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
                 <div className="flex items-start justify-between">
                   <div>
-                    <div className="text-2xl font-bold" style={{color: P}}>Week {week}</div>
+                    <div className="text-2xl font-bold" style={{color:P}}>Week {week}</div>
                     <div className="text-xs mb-2" style={{color:'#aaa'}}>{currentPhase.dates}</div>
-                    <div className="font-semibold" style={{color: PD}}>{currentPhase.phase}</div>
+                    <div className="font-semibold" style={{color:PD}}>{currentPhase.phase}</div>
                   </div>
                   <div className="text-right">
                     <div className="text-xs" style={{color:'#aaa'}}>Intensity</div>
                     <div className="font-bold text-sm" style={{color:'#333'}}>{currentPhase.intensity}</div>
-                    <div className="text-xs mt-1" style={{color: P}}>{getCompletion(week).completed}/{getCompletion(week).total} done</div>
+                    <div className="text-xs mt-1" style={{color:P}}>{getCompletion(week).completed}/{getCompletion(week).total} done</div>
                   </div>
                 </div>
                 <div className="mt-3 text-xs italic" style={{color:'#888'}}>{currentPhase.notes}</div>
@@ -501,80 +586,79 @@ function App() {
             )}
 
             <div className="space-y-3">
-              {currentPlan.map((day, i) => (
-                <WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week, i)} onToggle={() => toggleComp(week, i)}/>
+              {currentPlan.map((day,i)=>(
+                <WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>
               ))}
             </div>
           </div>
         )}
 
-        {/* ── LOG TAB ── */}
-        {tab === 'log' && (
+        {tab==='log'&&(
           <div>
-            {!showLog ? (
-              <button onClick={() => setShowLog(true)} className="w-full py-10 border-2 border-dashed rounded-lg flex flex-col items-center gap-2"
-                style={{borderColor: P, backgroundColor:'#fff'}}>
-                <PlusIcon s={32} style={{color: P}}/>
-                <span className="text-lg font-semibold" style={{color: P}}>Log Workout</span>
+            {!showLog?(
+              <button onClick={()=>setShowLog(true)} className="w-full py-10 border-2 border-dashed rounded-lg flex flex-col items-center gap-2"
+                style={{borderColor:P,backgroundColor:'#fff'}}>
+                <PlusIcon s={32} style={{color:P}}/>
+                <span className="text-lg font-semibold" style={{color:P}}>Log Workout</span>
               </button>
-            ) : (
+            ):(
               <div className="space-y-4">
-                <h3 className="text-xl font-bold" style={{color: P}}>Log Workout</h3>
+                <h3 className="text-xl font-bold" style={{color:P}}>Log Workout</h3>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Date</label>
-                  <input type="date" value={logData.date} onChange={e => setLogData({...logData, date: e.target.value})}
-                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                  <input type="date" value={logData.date} onChange={e=>setLogData({...logData,date:e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}/>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Type</label>
-                  <select value={logData.type} onChange={e => setLogData({...logData, type: e.target.value})}
-                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>
+                  <select value={logData.type} onChange={e=>setLogData({...logData,type:e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>
                     <option value="">Select...</option>
-                    {['Running — Zone 2','Running — Tempo','Running — Intervals','Hyrox Station Work','Doubles Sim',
-                      'Upper Strength','Lower Strength','Mobility Session','Active Recovery','REST'].map(o => (
+                    {['Running — Zone 2','Running — Tempo','Running — Intervals','Hyrox Station Work',
+                      'Doubles Sim','Upper Strength','Lower Strength + ITBS','ITBS Rehab',
+                      'Mobility Session','Active Recovery','REST'].map(o=>(
                       <option key={o} value={o}>{o}</option>
                     ))}
                   </select>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Duration (min)</label>
-                  <input type="number" value={logData.duration} onChange={e => setLogData({...logData, duration: e.target.value})}
-                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                  <input type="number" value={logData.duration} onChange={e=>setLogData({...logData,duration:e.target.value})}
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}/>
                 </div>
                 <div>
                   <label className="block text-sm font-medium mb-2" style={{color:'#333'}}>Notes</label>
-                  <textarea value={logData.notes} onChange={e => setLogData({...logData, notes: e.target.value})}
-                    placeholder="How did it feel? Knee status? Key times..." rows="3"
-                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}/>
+                  <textarea value={logData.notes} onChange={e=>setLogData({...logData,notes:e.target.value})}
+                    placeholder="How did it feel? Lateral knee status? Glute activation done?" rows="3"
+                    className="w-full rounded px-4 py-2 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}/>
                 </div>
                 <div className="flex gap-3">
-                  <button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor: P}}>Save</button>
-                  <button onClick={() => setShowLog(false)} className="px-6 py-3 border-2 rounded-lg font-semibold" style={{backgroundColor:'#fff', borderColor:'#FFB6C1', color:'#333'}}>Cancel</button>
+                  <button onClick={logWorkout} className="flex-1 px-6 py-3 rounded-lg font-semibold text-white" style={{backgroundColor:P}}>Save</button>
+                  <button onClick={()=>setShowLog(false)} className="px-6 py-3 border-2 rounded-lg font-semibold" style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>Cancel</button>
                 </div>
               </div>
             )}
           </div>
         )}
 
-        {/* ── HISTORY TAB ── */}
-        {tab === 'history' && (
+        {tab==='history'&&(
           <div>
-            <h3 className="text-xl font-bold mb-4" style={{color: P}}>History</h3>
-            {workouts.length === 0 ? (
+            <h3 className="text-xl font-bold mb-4" style={{color:P}}>History</h3>
+            {workouts.length===0?(
               <div className="text-center py-12" style={{color:'#FFB6C1'}}>
-                <ClockIcon s={48} style={{margin:'0 auto 12px', opacity:0.4}}/>
+                <ClockIcon s={48} style={{margin:'0 auto 12px',opacity:0.4}}/>
                 <p>No workouts logged yet</p>
               </div>
-            ) : (
+            ):(
               <div className="space-y-3">
-                {workouts.map(w => (
-                  <div key={w.id} className="rounded-lg p-4 border-2" style={{backgroundColor:'#fff', borderColor:'#FFB6C1'}}>
+                {workouts.map(w=>(
+                  <div key={w.id} className="rounded-lg p-4 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
                     <div className="flex justify-between mb-1">
                       <div className="font-bold" style={{color:'#333'}}>{w.type}</div>
-                      <div className="text-sm font-semibold" style={{color: P}}>{w.duration} min</div>
+                      <div className="text-sm font-semibold" style={{color:P}}>{w.duration} min</div>
                     </div>
                     <div className="text-xs mb-1" style={{color:'#aaa'}}>{new Date(w.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</div>
-                    {w.notes && <div className="text-sm mt-2 pt-2 border-t" style={{borderColor:'#FFE4F0', color:'#555'}}>{w.notes}</div>}
+                    {w.notes&&<div className="text-sm mt-2 pt-2 border-t" style={{borderColor:'#FFE4F0',color:'#555'}}>{w.notes}</div>}
                   </div>
                 ))}
               </div>
@@ -586,8 +670,7 @@ function App() {
     </div>
   );
 }
-
-ReactDOM.render(<App/>, document.getElementById('root'));
+ReactDOM.render(<App/>,document.getElementById('root'));
 </script>
 </body>
 </html>
