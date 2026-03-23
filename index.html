@@ -30,19 +30,6 @@ const ClockIcon=({s=24})=><Icon s={s} d='<circle cx="12" cy="12" r="10"/><polyli
 const FlameIcon=({s=24})=><Icon s={s} d='<path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z"/>'/>;
 const InfoIcon=({s=24})=><Icon s={s} d='<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'/>;
 
-// ── ITBS PROTOCOL ─────────────────────────────────────────────────
-// IT band syndrome — right knee lateral pain
-// ROOT CAUSE: weak glute med + TFL tightness → hip drop → IT band friction at knee
-// STRENGTHENING: glute med, glute max, hip abductors (progressive overload each week)
-// STRETCHING: TFL, glutes, hip flexors — NOT the IT band itself (it's fascia, can't stretch)
-// FOAM ROLLING: TFL (top outer hip) and glutes ONLY — not the IT band directly
-// RUNNING: avoid cambered/banked surfaces, downhill, sudden mileage spikes
-// OK TO DO: squats, lunges — watch for knee valgus (knee caving in) which aggravates ITBS
-// COMPRESSION: IT band strap just above knee recommended for running
-
-// ── ITBS REHAB BLOCK — embedded in every lower/run session ────────
-// Progressive glute med overload:
-// W1-2: bodyweight → W3-4: band → W5-6: weighted → W7-8: heavy → W9: maintain
 const ITBS_CARE=`
 🦵 ITBS CARE (after EVERY session):
 • IT Band Strap: wear just above right knee for all runs
@@ -121,9 +108,6 @@ const REST_MOBILITY=`
 • Foam roll TFL: 90s/side
 • Foam roll glutes: 90s/side`;
 
-// ── ITBS STRENGTH PROGRESSION ─────────────────────────────────────
-// Added to lower sessions, progressively overloaded week by week
-// This directly addresses the root cause of ITBS
 const ITBS_W1=`
 💪 ITBS REHAB STRENGTH (W1-2 — Bodyweight foundation):
 • Clamshells: 3x20/side (glute med activation)
@@ -162,7 +146,6 @@ const ITBS_W9=`
 • Single Leg RDL: 2x10/side @ 10kg
 • Copenhagen Plank: 2x20s/side`;
 
-// ── HR ZONES (Max 187, Age 33, Female) ────────────────────────────
 const hrZones=[
   {zone:'Z1',label:'Recovery',    range:'<112 bpm',    color:'#888',    pct:'<60%'},
   {zone:'Z2',label:'Aerobic Base',range:'112-131 bpm', color:'#4ade80', pct:'60-70%'},
@@ -171,7 +154,6 @@ const hrZones=[
   {zone:'Z5',label:'Race / VO2',  range:'168-187 bpm', color:'#f43f5e', pct:'90-100%'}
 ];
 
-// ── PHASES ────────────────────────────────────────────────────────
 const phases={
   1:{phase:'Post Half Marathon — Recovery + Return',dates:'Mon Mar 2 – Sun Mar 8',
      focus:'Recover, ease back in, begin ITBS rehab',intensity:'Very Low → Low',
@@ -183,8 +165,8 @@ const phases={
      focus:'Near-race effort, taper begins',intensity:'High → Moderate',
      notes:'2 weeks out. Near-race sim early in week, then volume drops. ITBS rehab continues — banded work now. Avoid cambered road surfaces on all runs this week.'},
   4:{phase:'🏆 Hyrox Taper + Race Week',dates:'Mon Mar 23 – Sun Mar 29',
-     focus:'Race Day Sun Mar 29 — Sub 1:25:00',intensity:'Taper → Race',
-     notes:'Light touch only. ITBS: IT band strap race day, TFL + glute foam roll daily, ice lateral knee if any irritation. Glute activation before warm-up.'},
+     focus:'Race Day Sun Mar 29 — 1:20pm start — Sub 1:25:00',intensity:'Taper → Race',
+     notes:'Light touch only. 1:20pm start — morning race, everything front-loaded. Last substantial meal by 10:30am. ITBS: IT band strap race day, TFL + glute foam roll daily, ice lateral knee if any irritation. Glute activation before warm-up.'},
   5:{phase:'Post-Hyrox Recovery + Marathon Build',dates:'Mon Mar 30 – Sun Apr 5',
      focus:'Recover from Hyrox, build toward marathon',intensity:'Very Low → Low',
      notes:'14 days to marathon. Proper recovery window Mon-Wed, gentle return Thu-Sun. ITBS rehab continues with loaded progression. Monitor lateral knee carefully — two big races close together.'},
@@ -202,10 +184,8 @@ const phases={
      notes:'Final taper. Light activation only. IT band strap race day. Glute activation daily. Race Friday with Tony.'}
 };
 
-// ── WEEKLY PLANS ──────────────────────────────────────────────────
 const plans={
 
-  // W1: Mar 2-8 — Post half recovery + ITBS start
   1:[
     {day:'Mon Mar 2',sessionType:'REST — Post Half Marathon',intensity:'None',
      notes:'FULL REST. Half marathon done — celebrate 🏅\n\nHydrate 4L+. Sleep 9+ hours. Protein + carbs for recovery.\n\n🦵 ITBS: Begin TFL and glute foam rolling today even on rest. No ice unless lateral knee is actively painful — ITBS responds better to heat/mobility than ice at rest.'+REST_MOBILITY},
@@ -223,7 +203,6 @@ const plans={
      notes:'30min @ 6:20-6:30/km, HR 115-130. ~4.5km.\n\nIT band strap. Flat surface. 4 weeks to Hyrox.'+RUN_STRETCH+'\n'+ITBS_W1+ITBS_CARE}
   ],
 
-  // W2: Mar 9-15 — Hyrox Peak #1
   2:[
     {day:'Mon Mar 9',sessionType:'REST',intensity:'None',
      notes:'Complete rest. 3 weeks to Hyrox.\n\nITBS mobility daily.'+REST_MOBILITY},
@@ -241,7 +220,6 @@ const plans={
      notes:'Warm-up: 2km easy + strides\nMain: 6x1km @ 5:15/km (HR 168-180)\nRecovery: 2min jog between reps\nCool-down: 1km easy\n\nTotal: ~10km. IT band strap. Flat surface.'+RUN_STRETCH+ITBS_CARE}
   ],
 
-  // W3: Mar 16-22 — Hyrox Peak #2
   3:[
     {day:'Mon Mar 16',sessionType:'REST',intensity:'None',
      notes:'Complete rest. 2 weeks to Hyrox.'+REST_MOBILITY},
@@ -259,25 +237,24 @@ const plans={
      notes:'Walk 15min or light bike.\n\n⚡ ONE WEEK TO HYROX.\n\nFull mobility + ITBS routine.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE}
   ],
 
-  // W4: Mar 23-29 — Hyrox Race Week
+  // W4: Mar 23-29 — HYROX RACE WEEK — 1:20pm START
   4:[
     {day:'Mon Mar 23',sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
-     notes:'65% effort, NOT timed:\n• SkiErg: 2x250m (technique)\n• Rowing: 2x250m (technique)\n• Wall Balls: 2x12 @ 6kg\n\n10min mobility. Visualise smooth transitions.'+HYROX_STRETCH+'\n'+ITBS_W3+ITBS_CARE},
+     notes:'65% effort, NOT timed:\n• SkiErg: 2x250m (technique)\n• Rowing: 2x250m (technique)\n• Wall Balls: 2x12 @ 6kg\n\n10min mobility. Visualise smooth transitions.\n\n🍝 FUELING: Carb-rich meals begin today — rice, pasta, oats, potatoes. Keep fat and fibre moderate. Protein at every meal. No alcohol from today.\n\nHydration 3-4L. Sleep 8+ hours.'+HYROX_STRETCH+'\n'+ITBS_W3+ITBS_CARE},
     {day:'Tue Mar 24',sessionType:'Easy Jog + Strides',duration:'15 mins',intensity:'Very Low',
-     notes:'15min @ 6:45/km + 3x80m strides. IT band strap.'+RUN_STRETCH+ITBS_CARE},
+     notes:'15min @ 6:45/km + 3x80m strides. IT band strap.\n\nRun in the morning if possible — keeps the afternoon free for rest and fueling focus.\n\n🍝 FUELING:\n• Continue carb focus — 6-8g carbs per kg bodyweight (~445-593g for 74kg)\n• Familiar foods only — no new foods this week\n• Limit fibre-heavy foods from this evening onwards: no heavy salads, pulses, cruciferous veg\n• Hydrate 3L+'+RUN_STRETCH+ITBS_CARE},
     {day:'Wed Mar 25',sessionType:'REST + Mobility',intensity:'None',
-     notes:'Complete rest. Mobility only.\n\nHydration 3-4L. Carbs begin today.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
+     notes:'Complete rest. Mobility only.\n\n🍝 FUELING:\n• Three carb-rich meals: oats, rice, pasta, potatoes, bread\n• Protein at every meal: chicken, eggs, fish\n• Snacks: rice cakes, banana, medjool dates\n• NO fibre-heavy foods: no salads, pulses, broccoli/cauliflower\n• No new foods — nothing your gut hasn\'t seen before\n• Hydration 3-4L\n\n📋 RACE ADMIN TODAY — do this now, not Saturday:\n• Confirm race start time and venue logistics\n• Check race kit: bib, shoes (race-tested), socks, shorts, shirt, watch (charged), IT band strap, gels (at least 2)\n• Plan Sunday morning transport — you need to be up by 6:30am\n\n🦵 TFL foam roll + glute roll. Clamshells 2x20.'+REST_MOBILITY+'\n'+ITBS_W3+ITBS_CARE},
     {day:'Thu Mar 26',sessionType:'Final Shakeout',duration:'12 mins',intensity:'Very Low',
-     notes:'Jog 10min @ 6:45/km + 3x80m strides.\n\nIT band strap. Legs should feel like springs.'+RUN_STRETCH+ITBS_CARE},
-    {day:'Fri Mar 27',sessionType:'REST — Carb Load',intensity:'None',
-     notes:'COMPLETE REST. Walk 10min max.\n\nCarb load: pasta/rice + protein. Hydrate 4L.\n\nRace kit:\n• Bib, shoes, socks, shorts, shirt\n• Watch charged, gels ready\n• IT band strap for right knee\n\n🦵 TFL foam roll + glute roll this evening. Clamshells 2x20.'},
+     notes:'Jog 10min @ 6:45/km + 3x80m strides. Do this in the morning.\n\nIT band strap. Legs should feel like springs.\n\n🍝 FUELING:\n• Last normal eating day — three solid carb-rich meals\n• Dinner tonight: pasta or rice + lean protein. Keep it moderate — tomorrow is the big carb day and you don\'t want to go into Friday already overfull.\n• Hydrate 3-4L\n• No alcohol'+RUN_STRETCH+ITBS_CARE},
+    {day:'Fri Mar 27',sessionType:'REST — Carb Load Day',intensity:'None',
+     notes:'COMPLETE REST. Walk 10min max.\n\n🍝 FUELING — THIS IS THE KEY DAY:\nRace is tomorrow lunchtime. Today\'s meals fuel the race — not tomorrow\'s breakfast.\n\n• Breakfast: porridge + banana + honey + eggs on the side\n• Lunch: large pasta or rice + lean protein (chicken, tuna). This is your biggest meal of the day.\n• Snacks: rice cakes, bananas, medjool dates throughout the day\n• Dinner (5:30-6pm): MODERATE meal — pasta/rice + chicken, but SMALLER than lunch. Do NOT go to bed stuffed. A big dinner tonight will still be sitting in your stomach at the start line tomorrow.\n\nHydrate 4L. No alcohol.\n\n🦵 TFL foam roll + glute roll. Clamshells 2x20 before bed.'},
     {day:'Sat Mar 28',sessionType:'REST — Race Eve',intensity:'None',
-     notes:'ZERO activity. Carb load dinner (6pm). Bed by 9pm.\n\nVisualise every station. Glute activation before sleep — 2x20 clamshells, 2x15 hip abductions.\n\nYOU ARE READY. 💪'},
-    {day:'Sun Mar 29',sessionType:'🏆 RACE DAY — Solo Hyrox',duration:'Target: Sub 1:25:00',intensity:'RACE EFFORT',
-     notes:'THIS IS IT. 🔥\n\nPRE-RACE:\n• Wake 4hrs before start\n• Breakfast: Porridge + banana + coffee\n• IT band strap on right knee before warm-up\n• Arrive venue 90min early\n• Warm-up: 10min progressive jog, full dynamic, 4x100m strides, light station touches\n• GLUTE ACTIVATION before start: 20 clamshells + 15 hip abductions each side\n• Gel 15min before start\n\n🦵 ITBS RACE NOTES:\n• If lateral knee pain starts during runs: shorten stride, increase cadence — do not stop running\n• Every station: drive from glutes, not quads — this reduces IT band stress\n• Sled push: low and powerful, glute-driven\n• Lunges: keep knees tracking over toes, no caving in\n\nRACE STRATEGY:\n• Runs 1-4: 5:20-5:30/km, HR 162-172 — controlled\n• Runs 5-8: 5:15-5:25/km, HR 170-182 — push\n• Stations: controlled power, rhythm over raw speed\n• Stations 5-8: everything you have\n\n🎯 TARGET: SUB 1:25:00\n\nLeave nothing on the floor. 💪🔥\n\nPOST RACE: TFL foam roll + glute roll immediately. IT band strap off. Ice lateral knee if sore.'}
+     notes:'ZERO training. Walk 5min only if restless.\n\n🍝 FUELING — MORNING RACE RULES APPLY:\nYour last proper meal window is this morning. After midday, keep it light.\n\n• Breakfast (8-9am): porridge + banana + coffee. Normal and familiar.\n• Mid-morning snack (10:30-11am): rice cakes or a banana — optional top-up\n• Lunch (12:30-1pm): LIGHT — eggs on toast, or rice cakes with peanut butter. Not a full meal. Race is tomorrow morning and a heavy lunch today still affects digestion overnight.\n• Dinner (5-6pm): VERY LIGHT — toast, scrambled eggs, a banana. Nothing heavy. Nothing new. This meal is not for fueling — it\'s just to avoid going to bed hungry.\n\nHydrate 3-4L across the day. Sip steadily — don\'t gulp large amounts close to bed.\n\n📋 FINAL PREP THIS EVENING:\n• Lay out ALL race kit: bib, shoes, socks, shorts, shirt, watch, IT band strap, gels\n• Set 3 alarms for 6:00-6:30am\n• Confirm any travel logistics\n• Bed by 9:30pm\n\n🦵 Elevate legs this afternoon. TFL foam roll + glute roll. Clamshells 2x20 before sleep.\n\n🧠 Visualise every station. Glute-driven throughout. You are ready. 💪'},
+    {day:'Sun Mar 29',sessionType:'🏆 RACE DAY — Solo Hyrox (1:20pm)',duration:'Target: Sub 1:25:00',intensity:'RACE EFFORT',
+     notes:'RACE START: 1:20pm — morning race, front-load everything before the gun.\n\n━━━━━━━━━━━━━━━━━━━━━\n⏰ RACE DAY SCHEDULE\n━━━━━━━━━━━━━━━━━━━━━\n\n6:30-7:00am — WAKE UP + BREAKFAST (priority meal)\nEat as soon as you\'re up — you need 3+ hours to digest before race start.\n• Porridge + banana + honey, or eggs on toast + fruit\n• Coffee if that\'s your routine — do NOT skip it\n• 500ml water\n\n9:00-9:30am — MID-MORNING SNACK\nThis is your last substantial top-up — ~4 hours before start.\n• Banana + rice cakes with peanut butter, or a bagel\n• 500ml water\n\n10:30am — FINAL LIGHT SNACK ⚠️\nLast chance to eat before the cutoff — keep it small and easy to digest.\n• 1-2 medjool dates or half a banana\n• Sip water. No more solid food after this.\n\n11:00am — TRAVEL / ARRIVE AT VENUE\n\n11:30am — 12:00pm — GLUTE ACTIVATION + WARM-UP\n🦵 GLUTE ACTIVATION FIRST (10 min):\n• Clamshells: 20/side\n• Banded hip abductions: 15/side\n• Glute bridge: 15 reps\nThen warm-up:\n• 10min progressive jog (easy → race pace feel)\n• Full dynamic mobility: leg swings, hip circles, lateral lunges, inchworms\n• 4x100m strides building to race pace\n• Light station touches if available\n• IT band strap on right knee throughout\n\n12:30pm — FINAL PREP\n• Gel 15min before start (12:45-1:05pm)\n• 200ml water or electrolyte sip — no more, gut must be settled\n• Final strategy check\n\n1:00pm — CALL-UP ZONE\nIT band strap on, mindset locked.\n\n1:20pm — RACE START 🔥\n\n━━━━━━━━━━━━━━━━━━━━━\n🦵 ITBS RACE NOTES\n━━━━━━━━━━━━━━━━━━━━━\n• IT band strap stays on throughout\n• Glute-driven at EVERY station — performance AND injury prevention\n• If lateral knee tightens on runs: shorten stride, increase cadence — do not stop running\n• Sled push: low and powerful, glute-driven\n• Lunges: keep right knee tracking over toes, no caving in\n• Wall Balls: no knee valgus\n\n━━━━━━━━━━━━━━━━━━━━━\n🏁 RACE STRATEGY\n━━━━━━━━━━━━━━━━━━━━━\n• Runs 1-4: 5:20-5:30/km, HR 162-172 — controlled\n• Runs 5-8: 5:15-5:25/km, HR 170-182 — push\n• Stations: controlled power, rhythm over raw speed\n• Stations 5-8: everything you have\n\n🎯 TARGET: SUB 1:25:00\n\n━━━━━━━━━━━━━━━━━━━━━\n✅ POST-RACE\n━━━━━━━━━━━━━━━━━━━━━\n• Keep moving 5-10min after finish\n• TFL foam roll + glute roll immediately\n• IT band strap off\n• Ice lateral knee if sore\n• Carbs + protein within 30min\n• Hydrate 500ml+ in first hour\n• Celebrate 🏅 — Tony will be there to cheer you on!'}
   ],
 
-  // W5: Mar 30-Apr 5 — Post-Hyrox recovery
   5:[
     {day:'Mon Mar 30',sessionType:'REST — Post Hyrox',intensity:'None',
      notes:'FULL REST. You just raced Hyrox. 🎉\n\nHydrate 4L+. Sleep 9+hrs. Protein + carbs.\n\n🦵 ITBS: TFL + glute foam roll today. If lateral knee sore post-race: ice 10min. Marathon Apr 12 — 13 days away. Good recovery window.'+REST_MOBILITY},
@@ -295,7 +272,6 @@ const plans={
      notes:'Walk or light bike 20min then full ITBS mobility routine.'+REST_MOBILITY+'\n'+ITBS_W5+ITBS_CARE}
   ],
 
-  // W6: Apr 6-12 — Marathon Race Week
   6:[
     {day:'Mon Apr 7',sessionType:'Easy Shakeout',duration:'25 mins',intensity:'Low — Zone 2',
      notes:'25min easy @ 6:20/km, HR 115-130. ~4km.\n\nIT band strap. Feel fresh and relaxed. Marathon in 5 days.\n\nGlute activation before run: 20 clamshells + 15 hip abductions each side.'+RUN_STRETCH+ITBS_CARE},
@@ -313,7 +289,6 @@ const plans={
      notes:'MARATHON DONE. 🎉\n\n✅ Half Marathon (Mar 1)\n✅ Solo Hyrox (Mar 29)\n✅ Full Marathon (Apr 12)\n\nFull rest. Hydrate. Eat. Sleep.\n\n🦵 ITBS: TFL + glute foam roll twice today. If lateral knee significantly worse after marathon, see physio before resuming training. Doubles with Tony is May 2 — 19 days away.'}
   ],
 
-  // W7: Apr 13-19 — Recovery + Doubles Build
   7:[
     {day:'Mon Apr 14',sessionType:'REST',intensity:'None',
      notes:'Complete rest. 3 weeks to Doubles.\n\nBody needs full recovery after marathon.'+REST_MOBILITY+'\n'+ITBS_W7},
@@ -331,7 +306,6 @@ const plans={
      notes:'Walk or light bike 20min.\n\nConnect with Tony to confirm doubles strategy and station splits.'+REST_MOBILITY+'\n'+ITBS_W7+ITBS_CARE}
   ],
 
-  // W8: Apr 20-26 — Doubles Peak + Sim
   8:[
     {day:'Mon Apr 21',sessionType:'REST',intensity:'None',
      notes:'Complete rest. 2 weeks to Doubles.'+REST_MOBILITY+'\n'+ITBS_W7},
@@ -349,7 +323,6 @@ const plans={
      notes:'Full rest. Last hard effort done. Taper begins.\n\nFull ITBS mobility flow — prioritise TFL and glute work today.'+REST_MOBILITY+'\n'+ITBS_W9+ITBS_CARE}
   ],
 
-  // W9: Apr 27-May 2 — Race Week
   9:[
     {day:'Mon Apr 28',sessionType:'Light Station Activation',duration:'25 mins',intensity:'Very Low',
      notes:'60% effort, NOT timed:\n• SkiErg: 2x250m\n• Rowing: 2x250m\n• Wall Balls: 2x12 @ 6kg\n\nGlute activation before: clamshells 2x20.\n10min mobility afterwards.'+HYROX_STRETCH+'\n'+ITBS_W9+ITBS_CARE},
@@ -442,7 +415,7 @@ function HRReference(){
 
 function App(){
   const [tab,setTab]=useState('plan');
-  const [week,setWeek]=useState(1);
+  const [week,setWeek]=useState(4);
   const [comp,setComp]=useState({});
   const [workouts,setWorkouts]=useState([]);
   const [showLog,setShowLog]=useState(false);
@@ -479,7 +452,6 @@ function App(){
   return(
     <div className="min-h-screen p-4" style={{background:'linear-gradient(135deg,#FFE4F0 0%,#FFF0F7 100%)'}}>
       <div className="max-w-2xl mx-auto pb-20">
-
         <div className="mb-6">
           <div className="flex items-center gap-3 mb-4">
             <FlameIcon s={40} style={{color:P}}/>
@@ -488,7 +460,6 @@ function App(){
               <p className="text-sm" style={{color:PD}}>9-Week Hyrox + Marathon + Doubles Block</p>
             </div>
           </div>
-
           <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
             <div className="grid grid-cols-3 gap-3 text-sm">
               <div><div className="text-xs" style={{color:'#aaa'}}>Age / Weight</div><div className="font-semibold" style={{color:'#333'}}>33 / 74kg</div></div>
@@ -499,12 +470,12 @@ function App(){
               🦵 IT Band Syndrome (ITBS) — right knee. Progressive glute med + hip abductor overload throughout. IT band strap all runs. TFL + glute foam roll post every session.
             </div>
           </div>
-
           <div className="grid grid-cols-3 gap-2 mb-4">
             <div className="rounded-lg p-3 border-2" style={{borderColor:P,backgroundColor:'#fff'}}>
               <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 1 — Mar 29</div>
               <div className="font-bold text-sm" style={{color:'#333'}}>Solo Hyrox</div>
               <div className="font-bold" style={{color:P}}>Sub 1:25</div>
+              <div className="text-xs mt-1" style={{color:'#aaa'}}>Start: 1:20pm</div>
             </div>
             <div className="rounded-lg p-3 border-2" style={{borderColor:'#fb923c',backgroundColor:'#fff'}}>
               <div className="text-xs mb-1" style={{color:'#aaa'}}>Race 2 — Apr 12</div>
@@ -517,7 +488,6 @@ function App(){
               <div className="font-bold" style={{color:PD}}>Sub 1:15</div>
             </div>
           </div>
-
           <div className="grid grid-cols-3 gap-3 mb-4">
             <div className="rounded-lg p-3 text-center border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
               <div className="text-2xl font-bold" style={{color:P}}>{totalDone}</div>
@@ -570,7 +540,6 @@ function App(){
                 className="px-3 py-2 border-2 rounded disabled:opacity-30"
                 style={{backgroundColor:'#fff',borderColor:'#FFB6C1',color:'#333'}}>→</button>
             </div>
-
             {currentPhase&&(
               <div className="rounded-lg p-4 mb-4 border-2" style={{backgroundColor:'#fff',borderColor:'#FFB6C1'}}>
                 <div className="flex items-start justify-between">
@@ -588,7 +557,6 @@ function App(){
                 <div className="mt-3 text-xs italic" style={{color:'#888'}}>{currentPhase.notes}</div>
               </div>
             )}
-
             <div className="space-y-3">
               {currentPlan.map((day,i)=>(
                 <WorkoutCard key={`${week}-${i}`} day={day} isComplete={isComp(week,i)} onToggle={()=>toggleComp(week,i)}/>
@@ -669,7 +637,6 @@ function App(){
             )}
           </div>
         )}
-
       </div>
     </div>
   );
